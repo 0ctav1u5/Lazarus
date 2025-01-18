@@ -73,6 +73,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>C:\Users\jed12\Desktop\SDL Files\SDL Mixer\SDL2_mixer-2.8.0\include;C:\Users\jed12\Desktop\SDL Files\SDL TTF\SDL2_ttf-2.22.0\include;C:\Users\jed12\Desktop\SDL Files\SDL Images\SDL2_image-2.8.2\include;C:\Users\jed12\Desktop\SDL2\SDL2-2.30.10\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\jed12\Desktop\SDL Files\SDL Mixer\SDL2_mixer-2.8.0\lib\x64;C:\Users\jed12\Desktop\SDL Files\SDL TTF\SDL2_ttf-2.22.0\lib\x64;C:\Users\jed12\Desktop\SDL Files\SDL Images\SDL2_image-2.8.2\lib\x64;C:\Users\jed12\Desktop\SDL2\SDL2-2.30.10\lib\x64;$(LibraryPath)</LibraryPath>
+    <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
+    <CopyLocalProjectReference>true</CopyLocalProjectReference>
+    <CopyLocalDebugSymbols>true</CopyLocalDebugSymbols>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -134,11 +137,15 @@
   <ItemGroup>
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameEngine.cpp" />
+    <ClCompile Include="Level.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameEngine.hpp" />
+    <ClInclude Include="Level.hpp" />
+    <ClInclude Include="Player.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
