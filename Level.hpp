@@ -8,7 +8,7 @@ class Level {
 private:
 	int LevelID;
 	std::string LevelName;
-	const char* BackgroundImage; // NEEDED
+	const char* BackgroundImage; 
 	SDL_Surface* SURFACE = nullptr; 
 	SDL_Texture* BackgroundTexture = nullptr; 
 
@@ -20,7 +20,7 @@ public:
 
 
 	// the first level will be in the load assets function
-		// this function will load the level into the class memory from a map or even a vector
+	// this function will load the level into the class memory from a map or even a vector
 
 
 	void RenderLevel(SDL_Renderer* renderer) { // this will be used to render the level

@@ -1,6 +1,13 @@
 #include <iostream>
 #include "Player.hpp"
 
+int Player::GetX() {
+	return this->PosX;
+}
+
+int Player::GetY() {
+	return this->PosY;
+}
 
 void Player::PrintStats() {
 	std::cout << NAME << " " << HP << " " << PosX << " " << PosY << std::endl;
@@ -64,6 +71,6 @@ void Player::RenderPlayer(SDL_Renderer* renderer) {
 		std::cerr << "SDL_CreateTextureFromSurface Error: " << SDL_GetError() << std::endl;
 		return;
 	}
-	PlayerPos = { PosX, PosY, 100, 100 };
+	PlayerPos = { PosX, PosY, PlayerRectWidth, PlayerRectHeight };
 	SDL_RenderCopy(renderer, texture, NULL, &PlayerPos);
 }

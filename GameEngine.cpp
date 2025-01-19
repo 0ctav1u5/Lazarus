@@ -49,14 +49,13 @@ void GameEngine::GameLoop() {
     const Uint8* keyboardState = SDL_GetKeyboardState(nullptr);
 
     while (running) {
-        // both of these must be drawn to the screen at all times
+        game->HandleEvents(e, running);
+        game->UserInput(running, keyboardState);
+
         SDL_RenderClear(renderer);
-        game->GetLevel(0)->RenderLevel(renderer);
-        game->GetPlayer(0)->RenderPlayer(renderer);
+        game->GetLevel(0)->RenderLevel(renderer); // renderers get drawn on top of eachother
+        game->GetPlayer(0)->RenderPlayer(renderer); // order matters
         SDL_RenderPresent(renderer);
-        while (SDL_PollEvent(&e) != 0) {
-            game->UserInput(e, running, keyboardState, renderer);
-        }
     }
 }
 

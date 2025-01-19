@@ -10,6 +10,7 @@ private:
 	int HP = 100;
 	std::string NAME;
 	int PosX, PosY, SPEED, DIRECTION = 4;
+	const int PlayerRectWidth = 100, PlayerRectHeight = 100;
 	const char* IMAGEPATH;
 	SDL_Surface* SURFACE = nullptr;
 	SDL_Rect PlayerPos = {};
@@ -25,7 +26,8 @@ public:
 	~Player() {
 
 	}
-
+	int GetX();
+	int GetY();
 	void RenderPlayer(SDL_Renderer* renderer);
 	void SetDirectionGraphic(int direction);
 	void Move(int changeX, int changeY);

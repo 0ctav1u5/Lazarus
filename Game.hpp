@@ -17,10 +17,10 @@ public:
 
 	Game() {}
 	bool LoadAssets(SDL_Renderer* renderer);
-	void DrawBackground(SDL_Renderer* renderer);
 	bool MakePlayer(std::string name, int posx, int posy, const char* imagepath, int speed);
 	bool MakeLevel(int ID, std::string levelname, const char* backgroundimagepath);
-	void UserInput(SDL_Event& e, bool& running, const Uint8* keyboardState, SDL_Renderer* renderer);
+	void UserInput(bool& running, const Uint8* keyboardState);
+	void HandleEvents(SDL_Event& e, bool& running);
 	Player* GetPlayer(int i);
 	Level* GetLevel(int i);
 

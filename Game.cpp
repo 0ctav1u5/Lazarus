@@ -5,36 +5,48 @@
 #include "Player.hpp"
 #include "Level.hpp"
 
-void Game::UserInput(SDL_Event& e, bool& running, const Uint8* keyboardState, SDL_Renderer* renderer) {
-    if (e.type == SDL_QUIT || (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)) {
-        running = false;
+
+
+void Game::HandleEvents(SDL_Event& e, bool& running) {
+    while (SDL_PollEvent(&e)) {
+        if (e.type == SDL_QUIT || (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)) {
+            running = false;
+        }
     }
+}
 
+void Game::UserInput(bool& running, const Uint8* keyboardState) {
 
-
-
-
-    if (e.type == SDL_KEYDOWN) {
         if (keyboardState[SDL_SCANCODE_LEFT]) {
-            Players[0].get()->Move(-1, 0); // directions
-            Players[0].get()->SetDirectionGraphic(1);
+            if (Players[0]->GetX() >= -34) {
+                Players[0].get()->Move(-1, 0); // directions
+                Players[0].get()->SetDirectionGraphic(1);
+            }
         }
 
         if (keyboardState[SDL_SCANCODE_RIGHT]) {
-            Players[0].get()->Move(1, 0);
-            Players[0].get()->SetDirectionGraphic(2);
-        }
+            if (Players[0]->GetX() <= 436) {
+                Players[0].get()->Move(1, 0);
+                Players[0].get()->SetDirectionGraphic(2);
+            }
+        } // x 436
 
-        if (keyboardState[SDL_SCANCODE_UP]) {
+        if (keyboardState[SDL_SCANCODE_UP]) { // there will be a checklevel function call here
+            // check level will set the boundaries for where the exit is
             Players[0].get()->Move(0, -1);
             Players[0].get()->SetDirectionGraphic(3);
         }
 
         if (keyboardState[SDL_SCANCODE_DOWN]) {
-            Players[0].get()->Move(0, 1);
-            Players[0].get()->SetDirectionGraphic(4);
+            if (Players[0]->GetY() < 413) { // The player graphic is 87 pixels in height
+                Players[0].get()->Move(0, 1);
+                Players[0].get()->SetDirectionGraphic(4);
+            }
+            std::cout << "X: " << Players[0]->GetX() << " Y: " << Players[0]->GetY() << std::endl;
         }
-    }
+        if (keyboardState[SDLK_ESCAPE]) {
+            SDL_Quit();
+        }
 }
 
 // const std::string NAME;
@@ -74,7 +86,7 @@ Level* Game::GetLevel(int i) {
 
 
 bool Game::LoadAssets(SDL_Renderer* renderer) {
-    int playerstartX = 190, playerstartY = 390, playerspeed = 8;
+    int playerstartX = 190, playerstartY = 390, playerspeed = 2;
 
 
 
