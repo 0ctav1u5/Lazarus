@@ -51,7 +51,7 @@ void GameEngine::GameLoop() {
     while (running) {
         // both of these must be drawn to the screen at all times
         SDL_RenderClear(renderer);
-        game->DrawBackground(renderer);
+        game->GetLevel(0)->RenderLevel(renderer);
         game->GetPlayer(0)->RenderPlayer(renderer);
         SDL_RenderPresent(renderer);
         while (SDL_PollEvent(&e) != 0) {
