@@ -11,8 +11,8 @@
 
 class Game {
 private:
-	std::vector<std::unique_ptr<Player>> Players;
-	std::vector<std::unique_ptr<Level>> Levels;
+	std::vector<std::shared_ptr<Player>> Players;
+	std::vector<std::shared_ptr<Level>> Levels;
 public:
 
 	Game() {}
@@ -21,8 +21,9 @@ public:
 	bool MakeLevel(int ID, std::string levelname, const char* backgroundimagepath);
 	void UserInput(bool& running, const Uint8* keyboardState);
 	void HandleEvents(SDL_Event& e, bool& running);
-	Player* GetPlayer(int i);
-	Level* GetLevel(int i);
+	std::shared_ptr<Player> GetPlayer(int i);
+	std::shared_ptr<Level> GetLevel(int i);
+	void PlayerMove(int x, int y);
 
 };
 #endif

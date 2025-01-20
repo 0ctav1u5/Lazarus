@@ -52,6 +52,10 @@ void GameEngine::GameLoop() {
         game->HandleEvents(e, running);
         game->UserInput(running, keyboardState);
 
+
+        // Rendering needs to be changed for different levels
+        // For instance, a conditional statement which says, render level 1, 2...etc
+        // through getlevel(0-...)
         SDL_RenderClear(renderer);
         game->GetLevel(0)->RenderLevel(renderer); // renderers get drawn on top of eachother
         game->GetPlayer(0)->RenderPlayer(renderer); // order matters

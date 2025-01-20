@@ -16,46 +16,58 @@ void Game::HandleEvents(SDL_Event& e, bool& running) {
 }
 
 void Game::UserInput(bool& running, const Uint8* keyboardState) {
+    int PlayerX = Players[0]->GetX(), PlayerY = Players[0]->GetY(),
+        LeftRoad = 98, RightRoad = 292, UpBoundary = -4, DownBoundary = 413,
+        xLeft = -1, xRight = 1, yDown = 1, yUp = -1;
+
+    
 
         if (keyboardState[SDL_SCANCODE_LEFT]) {
-            if (Players[0]->GetX() >= -34) {
-                Players[0].get()->Move(-1, 0); // directions
+            if (PlayerX != LeftRoad) {
+                PlayerMove(xLeft, 0); // directions
                 Players[0].get()->SetDirectionGraphic(1);
             }
         }
-
         if (keyboardState[SDL_SCANCODE_RIGHT]) {
-            if (Players[0]->GetX() <= 436) {
-                Players[0].get()->Move(1, 0);
+            if (PlayerX <= 436 && PlayerX != RightRoad) {
+                PlayerMove(xRight, 0);
                 Players[0].get()->SetDirectionGraphic(2);
             }
-        } // x 436
+        } 
 
         if (keyboardState[SDL_SCANCODE_UP]) { // there will be a checklevel function call here
             // check level will set the boundaries for where the exit is
-            Players[0].get()->Move(0, -1);
-            Players[0].get()->SetDirectionGraphic(3);
+             
+            if (PlayerY >= UpBoundary) {
+                PlayerMove(0, yUp);
+                Players[0].get()->SetDirectionGraphic(3); // walk through anywhere below that point
+            }
+            else if (Players[0]->GetX() > 96 && Players[0]->GetX() < 306) { // can walk through top
+                PlayerMove(0, yUp);
+                Players[0].get()->SetDirectionGraphic(3); 
+            }
         }
 
         if (keyboardState[SDL_SCANCODE_DOWN]) {
-            if (Players[0]->GetY() < 413) { // The player graphic is 87 pixels in height
-                Players[0].get()->Move(0, 1);
+            if (PlayerY < DownBoundary) { // The player graphic is 87 pixels in height
+                PlayerMove(0, yDown);
                 Players[0].get()->SetDirectionGraphic(4);
             }
-            std::cout << "X: " << Players[0]->GetX() << " Y: " << Players[0]->GetY() << std::endl;
         }
         if (keyboardState[SDLK_ESCAPE]) {
             SDL_Quit();
         }
 }
 
-// const std::string NAME;
-// const char* PLAYERMODELPATH = nullptr;
+
+void Game::PlayerMove(int x, int y) {
+    Players[0].get()->Move(x, y);
+}
 
 bool Game::MakePlayer(std::string name, int posx, int posy, const char* imagepath, int speed) {
     try {
-        auto player = std::make_unique<Player>(name, posx, posy, imagepath, speed);
-        Players.push_back(std::move(player));  
+        auto player = std::make_shared<Player>(name, posx, posy, imagepath, speed);
+        Players.push_back(std::move(player)); // pushing it onto the vector needs transfer of ownership
         return true;
     }
     catch (const std::exception& e) {
@@ -66,7 +78,7 @@ bool Game::MakePlayer(std::string name, int posx, int posy, const char* imagepat
 
 bool Game::MakeLevel(int ID, std::string levelname, const char* backgroundimagepath) {
     try {
-        auto level = std::make_unique<Level>(ID, levelname, backgroundimagepath);
+        auto level = std::make_shared<Level>(ID, levelname, backgroundimagepath);
         Levels.push_back(std::move(level));
         return true;
     } 
@@ -76,21 +88,29 @@ bool Game::MakeLevel(int ID, std::string levelname, const char* backgroundimagep
     }
 }
 
-Player* Game::GetPlayer(int i) {
-    return Players[i].get();
+
+std::shared_ptr<Player> Game::GetPlayer(int i) {
+
+    if (Players[i] != nullptr && i < Players.size()) {
+        return Players[i];
+    }
+    std::cerr << "Player out of bounds!" << std::endl;
+    return nullptr;
 }
 
-Level* Game::GetLevel(int i) {
-    return Levels[i].get();
+std::shared_ptr<Level> Game::GetLevel(int i) {
+    
+    if (Levels[i] != nullptr && i < Levels.size()) {
+        return Levels[i];
+    }
+    std::cerr << "Level out of bounds!" << std::endl;
+    return nullptr;
 }
-
 
 bool Game::LoadAssets(SDL_Renderer* renderer) {
-    int playerstartX = 190, playerstartY = 390, playerspeed = 2;
+    const int PLAYERSTARTX = 190, PLAYERSTARTY = 390, PLAYERSPEED = 2;
 
-
-
-    if (!MakePlayer("Ethan", playerstartX, playerstartY, "Images/PlayerDown.png", playerspeed)) { // x, y and speed for ints
+    if (!MakePlayer("Ethan", PLAYERSTARTX, PLAYERSTARTY, "Images/PlayerDown.png", PLAYERSPEED)) { // x, y and speed for ints
         std::cerr << "Ethan not created!" << std::endl;
         return false;
     }
