@@ -9,8 +9,8 @@ int Player::GetY() {
 	return this->PosY;
 }
 
-void Player::PrintStats() {
-	std::cout << NAME << " " << HP << " " << PosX << " " << PosY << std::endl;
+int Player::GetPlayerWidth() {
+	return this->PlayerRectWidth;
 }
 
 void Player::Move(int changeX, int changeY) {
@@ -72,5 +72,8 @@ void Player::RenderPlayer(SDL_Renderer* renderer) {
 		return;
 	}
 	PlayerPos = { PosX, PosY, PlayerRectWidth, PlayerRectHeight };
+	// SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND); UNCOMMENT WHEN READY
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // RGB make last digit 0 for transparency
+	SDL_RenderFillRect(renderer, &PlayerPos);
 	SDL_RenderCopy(renderer, texture, NULL, &PlayerPos);
 }

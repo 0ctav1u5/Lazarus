@@ -144,6 +144,7 @@
   <ItemGroup>
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameEngine.hpp" />
+    <ClInclude Include="GameObject.hpp" />
     <ClInclude Include="Level.hpp" />
     <ClInclude Include="Player.hpp" />
   </ItemGroup>

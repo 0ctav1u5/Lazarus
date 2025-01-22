@@ -23,14 +23,12 @@ public:
 		SURFACE = IMG_Load(IMAGEPATH);
 	}
 
-	~Player() {
 
-	}
 	int GetX();
 	int GetY();
+	int GetPlayerWidth();
 	void RenderPlayer(SDL_Renderer* renderer);
 	void SetDirectionGraphic(int direction);
 	void Move(int changeX, int changeY);
-	void PrintStats();
 };
 #endif

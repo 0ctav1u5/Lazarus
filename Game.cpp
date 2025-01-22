@@ -4,6 +4,7 @@
 #include "Game.hpp"
 #include "Player.hpp"
 #include "Level.hpp"
+#include "GameObject.hpp"
 
 
 
@@ -17,48 +18,55 @@ void Game::HandleEvents(SDL_Event& e, bool& running) {
 
 void Game::UserInput(bool& running, const Uint8* keyboardState) {
     int PlayerX = Players[0]->GetX(), PlayerY = Players[0]->GetY(),
-        LeftRoad = 98, RightRoad = 292, UpBoundary = -4, DownBoundary = 413,
+        LeftRoad = 98, RightRoad = 292, UpBoundary = -4, DownBoundary = 400,
         xLeft = -1, xRight = 1, yDown = 1, yUp = -1;
 
-    
+    int RealPlayerX = PlayerX + Players[0]->GetPlayerWidth() / 2, RealPlayerY = PlayerY;
 
+   
         if (keyboardState[SDL_SCANCODE_LEFT]) {
-            if (PlayerX != LeftRoad) {
-                PlayerMove(xLeft, 0); // directions
-                Players[0].get()->SetDirectionGraphic(1);
+            if (GameObjects[0]->CheckBoundary(RealPlayerY, RealPlayerX) == false) {
+                if (PlayerX != LeftRoad) {
+                    PlayerMove(xLeft, 0); // directions
+                    Players[0].get()->SetDirectionGraphic(1);
+                }
             }
         }
         if (keyboardState[SDL_SCANCODE_RIGHT]) {
-            if (PlayerX <= 436 && PlayerX != RightRoad) {
-                PlayerMove(xRight, 0);
-                Players[0].get()->SetDirectionGraphic(2);
+            if (GameObjects[0]->CheckBoundary(RealPlayerY, RealPlayerX) == false) {
+                if (PlayerX <= 436 && PlayerX != RightRoad) {
+                    PlayerMove(xRight, 0);
+                    Players[0].get()->SetDirectionGraphic(2);
+                }
             }
         } 
 
         if (keyboardState[SDL_SCANCODE_UP]) { // there will be a checklevel function call here
             // check level will set the boundaries for where the exit is
-             
-            if (PlayerY >= UpBoundary) {
-                PlayerMove(0, yUp);
-                Players[0].get()->SetDirectionGraphic(3); // walk through anywhere below that point
-            }
-            else if (Players[0]->GetX() > 96 && Players[0]->GetX() < 306) { // can walk through top
-                PlayerMove(0, yUp);
-                Players[0].get()->SetDirectionGraphic(3); 
+            if (GameObjects[0]->CheckBoundary(RealPlayerY, RealPlayerX) == false) {
+                if (PlayerY >= UpBoundary) {
+                    PlayerMove(0, yUp);
+                    Players[0].get()->SetDirectionGraphic(3); // walk through anywhere below that point
+                }
+                else if (Players[0]->GetX() > 96 && Players[0]->GetX() < 306) { // can walk through top
+                    PlayerMove(0, yUp);
+                    Players[0].get()->SetDirectionGraphic(3);
+                }
             }
         }
 
         if (keyboardState[SDL_SCANCODE_DOWN]) {
-            if (PlayerY < DownBoundary) { // The player graphic is 87 pixels in height
-                PlayerMove(0, yDown);
-                Players[0].get()->SetDirectionGraphic(4);
+            if (GameObjects[0]->CheckBoundary(RealPlayerY, RealPlayerX) == false) {
+                if (PlayerY < DownBoundary) { // The player graphic is 87 pixels in height
+                    PlayerMove(0, yDown);
+                    Players[0].get()->SetDirectionGraphic(4);
+                }
             }
         }
         if (keyboardState[SDLK_ESCAPE]) {
             SDL_Quit();
         }
 }
-
 
 void Game::PlayerMove(int x, int y) {
     Players[0].get()->Move(x, y);
@@ -88,6 +96,18 @@ bool Game::MakeLevel(int ID, std::string levelname, const char* backgroundimagep
     }
 }
 
+bool Game::MakeGameObject(int x, int y, int width, int height) {
+    try {
+        auto object = std::make_shared<GameObject>(x, y, width, height);
+        GameObjects.push_back(std::move(object));
+        return true;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Cannot make new object: " << e.what() << std::endl;
+        return false;
+    }
+}
+
 
 std::shared_ptr<Player> Game::GetPlayer(int i) {
 
@@ -107,8 +127,18 @@ std::shared_ptr<Level> Game::GetLevel(int i) {
     return nullptr;
 }
 
+std::shared_ptr<GameObject> Game::GetGameObject(int i) {
+
+    if (GameObjects[i] != nullptr && i < GameObjects.size()) {
+        return GameObjects[i];
+    }
+    std::cerr << "Game Objects out of bounds!" << std::endl;
+    return nullptr;
+}
+
 bool Game::LoadAssets(SDL_Renderer* renderer) {
     const int PLAYERSTARTX = 190, PLAYERSTARTY = 390, PLAYERSPEED = 2;
+    const int ObjectX = 200, ObjectY = 200, ObjectWidth = 50, ObjectHeight = 50;
 
     if (!MakePlayer("Ethan", PLAYERSTARTX, PLAYERSTARTY, "Images/PlayerDown.png", PLAYERSPEED)) { // x, y and speed for ints
         std::cerr << "Ethan not created!" << std::endl;
@@ -118,5 +148,10 @@ bool Game::LoadAssets(SDL_Renderer* renderer) {
         std::cerr << "Couldn't create Level one!" << std::endl;
         return false;
     }
+    if (!MakeGameObject(ObjectX, ObjectY, ObjectWidth, ObjectHeight)) {
+        std::cerr << "Couldn't create Level one!" << std::endl;
+        return false;
+    }
+    
 	return true;
 }
