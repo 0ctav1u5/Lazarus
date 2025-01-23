@@ -22,8 +22,6 @@ public:
 		PosX(posx), PosY(posy), IMAGEPATH(imagepath), SPEED(speed) {
 		SURFACE = IMG_Load(IMAGEPATH);
 	}
-
-
 	int GetX();
 	int GetY();
 	int GetPlayerWidth();

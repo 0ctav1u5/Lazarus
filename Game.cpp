@@ -22,46 +22,67 @@ void Game::UserInput(bool& running, const Uint8* keyboardState) {
         xLeft = -1, xRight = 1, yDown = 1, yUp = -1;
 
     int RealPlayerX = PlayerX + Players[0]->GetPlayerWidth() / 2, RealPlayerY = PlayerY;
+    bool blockbottom = false, blocktop = false, blockleft = false, blockright = false;
 
+
+    if (GameObjects[0]->CheckBoundary(PlayerY, PlayerX) == "top") {
+        blockbottom = true;
+    }
+    if (GameObjects[0]->CheckBoundary(PlayerY, PlayerX) == "bottom") {
+        blocktop = true;
+    }
+
+    if (GameObjects[0]->CheckBoundary(PlayerY, PlayerX) == "left") {
+        blockright = true;
+    }
+
+    if (GameObjects[0]->CheckBoundary(PlayerY, PlayerX) == "right") {
+        blockleft = true;
+    }
    
         if (keyboardState[SDL_SCANCODE_LEFT]) {
-            if (GameObjects[0]->CheckBoundary(RealPlayerY, RealPlayerX) == false) {
-                if (PlayerX != LeftRoad) {
+                if (PlayerX != LeftRoad && blockleft == false) {
                     PlayerMove(xLeft, 0); // directions
                     Players[0].get()->SetDirectionGraphic(1);
                 }
-            }
+                blockright = true;
+                blocktop = true;
+                blockbottom = true;
         }
         if (keyboardState[SDL_SCANCODE_RIGHT]) {
-            if (GameObjects[0]->CheckBoundary(RealPlayerY, RealPlayerX) == false) {
-                if (PlayerX <= 436 && PlayerX != RightRoad) {
+                if (PlayerX <= 436 && PlayerX != RightRoad && blockright == false) {
                     PlayerMove(xRight, 0);
                     Players[0].get()->SetDirectionGraphic(2);
                 }
-            }
-        } 
+                blockleft = true;
+                blocktop = true;
+                blockbottom = true;
+        }
 
         if (keyboardState[SDL_SCANCODE_UP]) { // there will be a checklevel function call here
             // check level will set the boundaries for where the exit is
-            if (GameObjects[0]->CheckBoundary(RealPlayerY, RealPlayerX) == false) {
-                if (PlayerY >= UpBoundary) {
+                if (PlayerY >= UpBoundary && blocktop == false) {
                     PlayerMove(0, yUp);
                     Players[0].get()->SetDirectionGraphic(3); // walk through anywhere below that point
                 }
-                else if (Players[0]->GetX() > 96 && Players[0]->GetX() < 306) { // can walk through top
+                else if (Players[0]->GetX() > 96 && Players[0]->GetX() < 306 && blocktop == false) { // can walk through top
                     PlayerMove(0, yUp);
                     Players[0].get()->SetDirectionGraphic(3);
                 }
-            }
+                blockright = true;
+                blockleft = true;
+                blockbottom = true;
         }
 
         if (keyboardState[SDL_SCANCODE_DOWN]) {
-            if (GameObjects[0]->CheckBoundary(RealPlayerY, RealPlayerX) == false) {
-                if (PlayerY < DownBoundary) { // The player graphic is 87 pixels in height
+            
+                if (PlayerY < DownBoundary && blockbottom == false) { // The player graphic is 87 pixels in height
                     PlayerMove(0, yDown);
                     Players[0].get()->SetDirectionGraphic(4);
                 }
-            }
+                blockright = true;
+                blocktop = true;
+                blockleft = true;
         }
         if (keyboardState[SDLK_ESCAPE]) {
             SDL_Quit();

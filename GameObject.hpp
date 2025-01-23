@@ -25,30 +25,28 @@ public:
 
 	// TODO: set 4 ranges, currently using PlayerY and PlayerX to decide Player point of collision
 	// needs to be ranges though so that way, all sides of rect will execute code on impact
-	bool CheckBoundary(int PlayerY, int PlayerX) {
-		if (PlayerY == Y && (PlayerX >= X && PlayerX <= X + WIDTH)) { // TOP
-			std::cout << "TOP!" << std::endl;
-			return true;
-		} 
+	std::string CheckBoundary(int PlayerY, int PlayerX) {
 
-		if (PlayerY == Y + HEIGHT && (PlayerX >= X && PlayerX <= X + WIDTH)) {
-			std::cout << "BOTTOM!" << std::endl;
-			return true;
+		
+
+
+		if (PlayerY + 100 == Y && PlayerX + 100 >= X && PlayerX <= X + 50) { // TOP
+			return "top";
+		}
+		if (PlayerY == Y + HEIGHT && (PlayerX + 100 >= X && PlayerX + 50 <= X + 100)) {
+			return "bottom"; 
 		}
 
-		if (PlayerX == X && (PlayerY >= Y && PlayerY <= Y + HEIGHT)) {
-			std::cout << "LEFT" << std::endl;
-			return true;
+		if (PlayerX + 100 == X && (PlayerY + 100 >= Y && PlayerY <= Y + 50)) {
+			return "left";
 		}
 
-		if (PlayerX == X + WIDTH && (PlayerY >= Y && PlayerY <= Y + HEIGHT)) {
-			std::cout << "RIGHT" << std::endl;
-			return true;
+		if (PlayerX == X + 50 && (PlayerY + 100 >= Y && PlayerY <= Y + 50)) {
+			return "right";
 		}
-		return false;
+
+		return "";
 	}
-
-
 };
 
 
