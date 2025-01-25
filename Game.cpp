@@ -26,19 +26,21 @@ void Game::UserInput(bool& running, const Uint8* keyboardState) {
 
     bool blockbottom = false, blocktop = false, blockleft = false, blockright = false;
 
+    std::shared_ptr<GameObject> g1 = Levels[0]->GetGameObject(0);
 
-    if (GameObjects[0]->CheckBoundary(PlayerY, PlayerX, PlayerWidth, PlayerHeight) == "top") {
+
+    if (g1->CheckBoundary(PlayerY, PlayerX, PlayerWidth, PlayerHeight) == "top") {
         blockbottom = true;
     }
-    if (GameObjects[0]->CheckBoundary(PlayerY, PlayerX, PlayerWidth, PlayerHeight) == "bottom") {
+    if (g1->CheckBoundary(PlayerY, PlayerX, PlayerWidth, PlayerHeight) == "bottom") {
         blocktop = true;
     }
 
-    if (GameObjects[0]->CheckBoundary(PlayerY, PlayerX, PlayerWidth, PlayerHeight) == "left") {
+    if (g1->CheckBoundary(PlayerY, PlayerX, PlayerWidth, PlayerHeight) == "left") {
         blockright = true;
     }
 
-    if (GameObjects[0]->CheckBoundary(PlayerY, PlayerX, PlayerWidth, PlayerHeight) == "right") {
+    if (g1->CheckBoundary(PlayerY, PlayerX, PlayerWidth, PlayerHeight) == "right") {
         blockleft = true;
     }
 
@@ -119,18 +121,6 @@ bool Game::MakeLevel(int ID, std::string levelname, const char* backgroundimagep
     }
 }
 
-bool Game::MakeGameObject(int x, int y, int width, int height) {
-    try {
-        auto object = std::make_shared<GameObject>(x, y, width, height);
-        GameObjects.push_back(std::move(object));
-        return true;
-    }
-    catch (const std::exception& e) {
-        std::cerr << "Cannot make new object: " << e.what() << std::endl;
-        return false;
-    }
-}
-
 
 std::shared_ptr<Player> Game::GetPlayer(int i) {
 
@@ -150,14 +140,7 @@ std::shared_ptr<Level> Game::GetLevel(int i) {
     return nullptr;
 }
 
-std::shared_ptr<GameObject> Game::GetGameObject(int i) {
 
-    if (GameObjects[i] != nullptr && i < GameObjects.size()) {
-        return GameObjects[i];
-    }
-    std::cerr << "Game Objects out of bounds!" << std::endl;
-    return nullptr;
-}
 
 bool Game::LoadAssets(SDL_Renderer* renderer) {
     const int PLAYERSTARTX = 190, PLAYERSTARTY = 390, PLAYERSPEED = 2;
@@ -171,8 +154,8 @@ bool Game::LoadAssets(SDL_Renderer* renderer) {
         std::cerr << "Couldn't create Level one!" << std::endl;
         return false;
     }
-    if (!MakeGameObject(ObjectX, ObjectY, ObjectWidth, ObjectHeight)) {
-        std::cerr << "Couldn't create Level one!" << std::endl;
+    if (!Levels[0]->MakeGameObject(ObjectX, ObjectY, ObjectWidth, ObjectHeight)) {
+        std::cerr << "Couldn't create Game Object!" << std::endl;
         return false;
     }
 

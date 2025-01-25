@@ -62,8 +62,6 @@ void GameEngine::GameLoop() {
         SDL_RenderClear(renderer);
         game->GetLevel(0)->RenderLevel(renderer); // renderers get drawn on top of eachother
         game->GetPlayer(0)->RenderPlayer(renderer); // order matters
-        game->GetGameObject(0)->RenderGameObject(renderer);
-
         SDL_RenderPresent(renderer);
     }
 }
