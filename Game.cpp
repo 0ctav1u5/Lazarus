@@ -161,7 +161,7 @@ std::shared_ptr<GameObject> Game::GetGameObject(int i) {
 
 bool Game::LoadAssets(SDL_Renderer* renderer) {
     const int PLAYERSTARTX = 190, PLAYERSTARTY = 390, PLAYERSPEED = 2;
-    const int ObjectX = 150, ObjectY = 250, ObjectWidth = 50, ObjectHeight = 50;
+    const int ObjectX = 150, ObjectY = 250, ObjectWidth = 100, ObjectHeight = 100;
 
     if (!MakePlayer("Ethan", PLAYERSTARTX, PLAYERSTARTY, "Images/PlayerDown.png", PLAYERSPEED)) { // x, y and speed for ints
         std::cerr << "Ethan not created!" << std::endl;
