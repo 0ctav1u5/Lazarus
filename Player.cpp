@@ -77,7 +77,7 @@ void Player::RenderPlayer(SDL_Renderer* renderer) {
 	}
 	PlayerPos = { PosX, PosY, PlayerRectWidth, PlayerRectHeight };
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND); 
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // RGB make last digit 0 for transparency
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0); // RGB make last digit 0 for transparency
 	SDL_RenderFillRect(renderer, &PlayerPos);
 	SDL_RenderCopy(renderer, texture, NULL, &PlayerPos);
 }

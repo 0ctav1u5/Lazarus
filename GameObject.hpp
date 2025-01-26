@@ -46,9 +46,6 @@ public:
 	}
 };
 
-
-
-
 /*
 
 if (PlayerY + 100 == Y && PlayerX + 100 >= X && PlayerX <= X + 50) { // TOP
@@ -67,36 +64,6 @@ if (PlayerY + 100 == Y && PlayerX + 100 >= X && PlayerX <= X + 50) { // TOP
 		}
 
 		return "";
-
-
-
-
-
-
-
-
-
-
-
-
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #endif 

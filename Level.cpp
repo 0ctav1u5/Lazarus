@@ -18,7 +18,9 @@ void Level::RenderLevel(SDL_Renderer* renderer) { // this will be used to render
 	SDL_DestroyTexture(BackgroundTexture);
 
 	// game objects for rendering
-	GameObjects[0]->RenderGameObject(renderer);
+	for (auto& gameobject : GameObjects) {
+		gameobject->RenderGameObject(renderer);
+	}
 }
 
 std::shared_ptr<GameObject> Level::GetGameObject(int i) {
@@ -29,6 +31,9 @@ std::shared_ptr<GameObject> Level::GetGameObject(int i) {
 	return nullptr;
 }
 
+size_t Level::GetGameObjectsCount() const {
+	return GameObjects.size();
+}
 
 bool Level::MakeGameObject(int x, int y, int width, int height) {
 	try {
