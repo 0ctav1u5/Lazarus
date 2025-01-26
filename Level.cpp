@@ -24,10 +24,10 @@ void Level::RenderLevel(SDL_Renderer* renderer) { // this will be used to render
 }
 
 std::shared_ptr<GameObject> Level::GetGameObject(int i) {
-	if (GameObjects[i] != nullptr && i < GameObjects.size()) {
+	if (i >= 0 && i < GameObjects.size()) {
 		return GameObjects[i];
 	}
-	std::cerr << "Game Objects out of bounds!" << std::endl;
+	std::cerr << "Game Object index out of bounds: " << i << std::endl;
 	return nullptr;
 }
 
@@ -47,8 +47,8 @@ bool Level::MakeGameObject(int x, int y, int width, int height) {
 	}
 }
 
-int Level::GetLevelID() {
-	return this->LevelID;
+int Level::GetInstanceID() const {
+	return InstanceID; // The unique identifier for this Level instance
 }
 
 

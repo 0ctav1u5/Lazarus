@@ -33,12 +33,12 @@ bool GameEngine::Initialise() {
         return false;
     }
 
-    // assets loaded here
     game = std::make_unique<Game>();
-    if (!game->LoadAssets(renderer)) {
+    if (!game->LoadAssets(renderer, LevelID)) {
         Cleanup("Error. Failed to load game assets!");
         return false;
     }
+
     return true;
 }
 
@@ -48,23 +48,29 @@ void GameEngine::GameLoop() {
     SDL_Event e;
     const Uint8* keyboardState = SDL_GetKeyboardState(nullptr);
 
-
     while (running) {
         game->HandleEvents(e, running);
         game->UserInput(running, keyboardState);
-        CheckLevelID(); // checks level ID, when a level is created LevelID gets incremented by 1
+
+        // CheckLevelID(); uncomment when debugging
 
         SDL_RenderClear(renderer);
-        game->GetLevel(LevelID)->RenderLevel(renderer); // renderers get drawn on top of eachother
-        game->GetPlayer(0)->RenderPlayer(renderer); // order matters
+        game->GetLevel(LevelID)->RenderLevel(renderer);
+        game->GetPlayer(0)->RenderPlayer(renderer); 
         SDL_RenderPresent(renderer);
     }
 }
 
 
 void GameEngine::CheckLevelID() {
-    LevelID = game->GetLevel(LevelID)->GetLevelID();
-    std::cout << LevelID << std::endl;
+    if (LevelID >= 0 && LevelID < game->GetLevelsCount()) {
+        std::cout << "Current LevelID (index): " << LevelID
+            << ", InstanceID: " << game->GetLevel(LevelID)->GetInstanceID() << std::endl;
+    }
+    else {
+        std::cerr << "Invalid LevelID: " << LevelID << std::endl;
+        LevelID = 0; // reset to first level
+    }
 }
 
 void GameEngine::Cleanup(const std::string& errormsg) {

@@ -6,7 +6,7 @@
 #include "Level.hpp"
 
 
-int Level::LevelID = 0; // initialising the levelID
+int Level::LevelIDCounter = 0;
 
 const signed int LEFT_BOUNDARY = -30;
 const int RIGHT_BOUNDARY = 530;
@@ -27,7 +27,7 @@ void Game::UserInput(bool& running, const Uint8* keyboardState) {
 
     bool blockBottom = false, blockTop = false, blockLeft = false, blockRight = false;
 
-
+    // LevelNum used for collisionchecker of objects
     int LevelNum = GetLevelsCount() - 1; // tells us the position of each level in the array
 
 
@@ -68,6 +68,18 @@ void Game::UserInput(bool& running, const Uint8* keyboardState) {
     }
 }
 
+
+//void Game::ChangeLevel() {
+//
+//    if (Players[0]->GetY() == -20) {
+//        if (!MakeLevel("LevelTwo", "Images/RoadBackground.png", LevelID)) {
+//            std::cerr << "Couldn't create Level one!" << std::endl;
+//            return;
+//        }
+//    }
+//    return;
+//}
+
 void Game::PlayerMove(int x, int y) {
     Players[0].get()->Move(x, y);
 }
@@ -75,7 +87,7 @@ void Game::PlayerMove(int x, int y) {
 bool Game::MakePlayer(std::string name, int posx, int posy, const char* imagepath, int speed) {
     try {
         auto player = std::make_shared<Player>(name, posx, posy, imagepath, speed);
-        Players.push_back(std::move(player)); // pushing it onto the vector needs transfer of ownership
+        Players.push_back(std::move(player)); 
         return true;
     }
     catch (const std::exception& e) {
@@ -84,10 +96,11 @@ bool Game::MakePlayer(std::string name, int posx, int posy, const char* imagepat
     }
 }
 
-bool Game::MakeLevel(std::string levelname, const char* backgroundimagepath) {
+bool Game::MakeLevel(std::string levelname, const char* backgroundimagepath, int& LevelID) {
     try {
         auto level = std::make_shared<Level>(levelname, backgroundimagepath);
-        Levels.push_back(std::move(level));
+        Levels.push_back(std::move(level)); 
+        LevelID = Levels.size() - 1;       
         return true;
     }
     catch (const std::exception& e) {
@@ -106,11 +119,10 @@ std::shared_ptr<Player> Game::GetPlayer(int i) {
 }
 
 std::shared_ptr<Level> Game::GetLevel(int i) {
-
-    if (Levels[i] != nullptr && i < Levels.size()) {
+    if (i >= 0 && i < Levels.size()) {
         return Levels[i];
     }
-    std::cerr << "Level out of bounds!" << std::endl;
+    std::cerr << "Level index out of bounds!" << std::endl;
     return nullptr;
 }
 
@@ -118,19 +130,21 @@ size_t Game::GetLevelsCount() const {
     return Levels.size();
 }
 
-bool Game::LoadAssets(SDL_Renderer* renderer) {
+bool Game::LoadAssets(SDL_Renderer* renderer, int& LevelID) {
     const int PLAYERSTARTX = 190, PLAYERSTARTY = 390, PLAYERSPEED = 2;
     const int ObjectX = -10, ObjectY = -100, ObjectWidth = 100, ObjectHeight = 100;
 
-    if (!MakePlayer("Ethan", PLAYERSTARTX, PLAYERSTARTY, "Images/PlayerDown.png", PLAYERSPEED)) { // x, y and speed for ints
+    if (!MakePlayer("Ethan", PLAYERSTARTX, PLAYERSTARTY, "Images/PlayerDown.png", PLAYERSPEED)) {
         std::cerr << "Ethan not created!" << std::endl;
         return false;
     }
-    // 0 is level 1, as it's the first in the vector
-    if (!MakeLevel("LevelOne", "Images/RoadBackground.png")) {
+
+    // Create Level One and update LevelID
+    if (!MakeLevel("LevelOne", "Images/RoadBackground.png", LevelID)) {
         std::cerr << "Couldn't create Level one!" << std::endl;
         return false;
     }
+
     if (!Levels[0]->MakeGameObject(ObjectX, ObjectY, ObjectWidth, ObjectHeight)) {
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return false;
@@ -141,15 +155,13 @@ bool Game::LoadAssets(SDL_Renderer* renderer) {
         return false;
     }
 
+
     return true;
 }
 
 
 void Game::CollisionChecker(int levelnum, int playerY, int playerX, int playerWidth, int playerHeight,
     bool& blockBottom, bool& blockTop, bool& blockRight, bool& blockLeft) {
-
-
-    
 
     for (size_t i = 0; i < Levels[levelnum]->GetGameObjectsCount(); ++i) {
         auto gameObject = Levels[levelnum]->GetGameObject(i); // get all game objects in level[i]
