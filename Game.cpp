@@ -5,6 +5,9 @@
 #include "Player.hpp"
 #include "Level.hpp"
 
+
+int Level::LevelID = 0; // initialising the levelID
+
 const signed int LEFT_BOUNDARY = -30;
 const int RIGHT_BOUNDARY = 530;
 const signed int UPPER_BOUNDARY = -4;
@@ -22,32 +25,14 @@ void Game::UserInput(bool& running, const Uint8* keyboardState) {
     int playerX = Players[0]->GetX(), playerY = Players[0]->GetY();
     int playerWidth = Players[0]->GetPlayerWidth(), playerHeight = Players[0]->GetPlayerHeight();
 
-
     bool blockBottom = false, blockTop = false, blockLeft = false, blockRight = false;
 
-    // Iterate through game objects to check for collisions
-    // TODO: currentlevel = Levels[i]
-    for (size_t i = 0; i < Levels[0]->GetGameObjectsCount(); ++i) {
-        auto gameObject = Levels[0]->GetGameObject(i); // get all game objects in level[i]
-        if (!gameObject) {
-            continue;
-        }
 
-        std::string boundaryCheck = gameObject->CheckBoundary(playerY, playerX, playerWidth, playerHeight);
+    int LevelNum = GetLevelsCount() - 1; // tells us the position of each level in the array
 
-        if (boundaryCheck == "top") {
-            blockBottom = true;
-        }
-        if (boundaryCheck == "bottom") {
-            blockTop = true;
-        }
-        if (boundaryCheck == "left") {
-            blockRight = true;
-        }
-        if (boundaryCheck == "right") {
-            blockLeft = true;
-        }
-    }
+
+    CollisionChecker(LevelNum, playerY, playerX, playerWidth, playerHeight, blockBottom, blockTop, blockRight, blockLeft);
+    
 
     if (keyboardState[SDL_SCANCODE_LEFT]) {
         if (!blockLeft && playerX > LEFT_BOUNDARY) { 
@@ -99,9 +84,9 @@ bool Game::MakePlayer(std::string name, int posx, int posy, const char* imagepat
     }
 }
 
-bool Game::MakeLevel(int ID, std::string levelname, const char* backgroundimagepath) {
+bool Game::MakeLevel(std::string levelname, const char* backgroundimagepath) {
     try {
-        auto level = std::make_shared<Level>(ID, levelname, backgroundimagepath);
+        auto level = std::make_shared<Level>(levelname, backgroundimagepath);
         Levels.push_back(std::move(level));
         return true;
     }
@@ -129,6 +114,10 @@ std::shared_ptr<Level> Game::GetLevel(int i) {
     return nullptr;
 }
 
+size_t Game::GetLevelsCount() const {
+    return Levels.size();
+}
+
 bool Game::LoadAssets(SDL_Renderer* renderer) {
     const int PLAYERSTARTX = 190, PLAYERSTARTY = 390, PLAYERSPEED = 2;
     const int ObjectX = -10, ObjectY = -100, ObjectWidth = 100, ObjectHeight = 100;
@@ -137,7 +126,8 @@ bool Game::LoadAssets(SDL_Renderer* renderer) {
         std::cerr << "Ethan not created!" << std::endl;
         return false;
     }
-    if (!MakeLevel(1, "LevelOne", "Images/RoadBackground.png")) {
+    // 0 is level 1, as it's the first in the vector
+    if (!MakeLevel("LevelOne", "Images/RoadBackground.png")) {
         std::cerr << "Couldn't create Level one!" << std::endl;
         return false;
     }
@@ -152,4 +142,34 @@ bool Game::LoadAssets(SDL_Renderer* renderer) {
     }
 
     return true;
+}
+
+
+void Game::CollisionChecker(int levelnum, int playerY, int playerX, int playerWidth, int playerHeight,
+    bool& blockBottom, bool& blockTop, bool& blockRight, bool& blockLeft) {
+
+
+    
+
+    for (size_t i = 0; i < Levels[levelnum]->GetGameObjectsCount(); ++i) {
+        auto gameObject = Levels[levelnum]->GetGameObject(i); // get all game objects in level[i]
+        if (!gameObject) {
+            continue;
+        }
+
+        std::string boundaryCheck = gameObject->CheckBoundary(playerY, playerX, playerWidth, playerHeight);
+
+        if (boundaryCheck == "top") {
+            blockBottom = true;
+        }
+        if (boundaryCheck == "bottom") {
+            blockTop = true;
+        }
+        if (boundaryCheck == "left") {
+            blockRight = true;
+        }
+        if (boundaryCheck == "right") {
+            blockLeft = true;
+        }
+    }
 }

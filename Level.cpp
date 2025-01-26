@@ -47,6 +47,10 @@ bool Level::MakeGameObject(int x, int y, int width, int height) {
 	}
 }
 
+int Level::GetLevelID() {
+	return this->LevelID;
+}
+
 
 
 

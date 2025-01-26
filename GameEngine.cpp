@@ -48,24 +48,24 @@ void GameEngine::GameLoop() {
     SDL_Event e;
     const Uint8* keyboardState = SDL_GetKeyboardState(nullptr);
 
-    // levelnum 1, 2, 3 can be passed into userinput which a switch statement can use to decide
-    // boundaries
 
     while (running) {
         game->HandleEvents(e, running);
         game->UserInput(running, keyboardState);
+        CheckLevelID(); // checks level ID, when a level is created LevelID gets incremented by 1
 
-
-        // Rendering needs to be changed for different levels
-        // For instance, a conditional statement which says, render level 1, 2...etc
-        // through getlevel(0-...)
         SDL_RenderClear(renderer);
-        game->GetLevel(0)->RenderLevel(renderer); // renderers get drawn on top of eachother
+        game->GetLevel(LevelID)->RenderLevel(renderer); // renderers get drawn on top of eachother
         game->GetPlayer(0)->RenderPlayer(renderer); // order matters
         SDL_RenderPresent(renderer);
     }
 }
 
+
+void GameEngine::CheckLevelID() {
+    LevelID = game->GetLevel(LevelID)->GetLevelID();
+    std::cout << LevelID << std::endl;
+}
 
 void GameEngine::Cleanup(const std::string& errormsg) {
     std::cerr << errormsg << std::endl;

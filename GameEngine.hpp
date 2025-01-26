@@ -11,11 +11,13 @@ private:
 	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
 	std::unique_ptr<Game> game;
+	int LevelID = 0;
 
 public:
 	bool Initialise();
 	void Cleanup(const std::string& errormsg);
 	void GameLoop();
+	void CheckLevelID();
 
 
 	GameEngine() {}
