@@ -17,12 +17,13 @@ private:
 public:
 
 	Game() {}
+	void PauseMenu(SDL_Renderer* renderer);
 	bool LoadAssets(SDL_Renderer* renderer, int& LevelID);
 	bool MakePlayer(std::string name, int posx, int posy, const char* imagepath, int speed);
 	bool MakeLevel(std::string levelname, const char* backgroundimagepath, int& LevelID);
 	void ChangeLevel();
 	void UserInput(bool& running, const Uint8* keyboardState);
-	void HandleEvents(SDL_Event& e, bool& running);
+	void HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer);
 	std::shared_ptr<Player> GetPlayer(int i);
 	std::shared_ptr<Level> GetLevel(int i);
 	size_t GetLevelsCount() const;

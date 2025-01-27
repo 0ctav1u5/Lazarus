@@ -49,7 +49,7 @@ void GameEngine::GameLoop() {
     const Uint8* keyboardState = SDL_GetKeyboardState(nullptr);
 
     while (running) {
-        game->HandleEvents(e, running);
+        game->HandleEvents(e, running, renderer);
         game->UserInput(running, keyboardState);
 
         // CheckLevelID(); uncomment when debugging

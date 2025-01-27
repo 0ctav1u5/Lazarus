@@ -13,10 +13,31 @@ const int RIGHT_BOUNDARY = 530;
 const signed int UPPER_BOUNDARY = -4;
 const int LOWER_BOUNDARY = 410;
 
-void Game::HandleEvents(SDL_Event& e, bool& running) {
+void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
     while (SDL_PollEvent(&e)) {
         if (e.type == SDL_QUIT || (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)) {
             running = false;
+        }
+
+        if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE) {
+            PauseMenu(renderer);
+        }
+    }
+}
+
+void Game::PauseMenu(SDL_Renderer* renderer) {
+    SDL_Event p;
+    bool pauseloop = true;
+    while (pauseloop) {
+        while (SDL_PollEvent(&p)) {
+            if (p.type == SDL_KEYDOWN && p.key.keysym.sym == SDLK_SPACE) {
+                pauseloop = false;
+            }
+            SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+            SDL_Rect rect = { 0, 0, 500, 500 }; 
+            SDL_RenderFillRect(renderer, &rect);
+            SDL_RenderPresent(renderer);
         }
     }
 }
@@ -60,11 +81,6 @@ void Game::UserInput(bool& running, const Uint8* keyboardState) {
             PlayerMove(0, 1); // Move down
             Players[0]->SetDirectionGraphic(4); 
         }
-    }
-
-    // Quit game
-    if (keyboardState[SDL_SCANCODE_ESCAPE]) {
-        SDL_Quit();
     }
 }
 
