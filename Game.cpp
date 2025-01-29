@@ -1,5 +1,6 @@
 #include <iostream>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #include <SDL.h>
 #include "Game.hpp"
 #include "Player.hpp"
@@ -26,20 +27,56 @@ void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
 }
 
 void Game::PauseMenu(SDL_Renderer* renderer) {
-    SDL_Event p;
+    // Load font
+    TTF_Font* font = TTF_OpenFont("Fonts/Pixel Game.otf", 24);
+    if (!font) {
+        std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
+        return;  // Exit the function if font fails to load
+    }
+    else {
+        std::cout << "Font loaded successfully!" << std::endl;
+    }
+
     bool pauseloop = true;
+    SDL_Event p;
+
+    SDL_Texture* textTexture = nullptr;
+    SDL_Color textColour = { 255, 255, 255 }; // white color for text
+    SDL_Surface* textSurface = TTF_RenderText_Solid(font, "Paused", textColour); // font, text, colour
+    if (textSurface) {
+        textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+        SDL_FreeSurface(textSurface);  
+    }
+    else {
+        std::cerr << "Text render error: " << TTF_GetError() << std::endl;
+        return; // Return early if there's an error creating the text texture
+    }
+
     while (pauseloop) {
+        // Handle events
         while (SDL_PollEvent(&p)) {
             if (p.type == SDL_KEYDOWN && p.key.keysym.sym == SDLK_SPACE) {
-                pauseloop = false;
+                pauseloop = false;  // Exit the pause menu when space is pressed
             }
-            SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-            SDL_Rect rect = { 0, 0, 500, 500 }; 
-            SDL_RenderFillRect(renderer, &rect);
-            SDL_RenderPresent(renderer);
         }
-    }
+
+        // clears buffer and adds overlay in alpha values
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND); 
+        // sets draw colour for new overlay
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);  // r, g, b, opaqueness
+        SDL_Rect rect = { 0, 0, 500, 500 }; // rectangle for text x, y, width, height
+        SDL_RenderFillRect(renderer, &rect); // render the rectangle
+
+        SDL_Rect textRect = { 140, 200, 200, 50 };  // position of rectangle of text
+        SDL_RenderCopy(renderer, textTexture, nullptr, &textRect); // renders texture and rect
+        // together
+
+        SDL_RenderPresent(renderer);
+    } // end of while loop
+
+
+    SDL_DestroyTexture(textTexture);  // destroy the texture after it's been used
+    TTF_CloseFont(font);  // for closing font when function ends
 }
 
 void Game::UserInput(bool& running, const Uint8* keyboardState) {
@@ -62,12 +99,18 @@ void Game::UserInput(bool& running, const Uint8* keyboardState) {
         }
     }
 
+    // left up
+    // left down
+
     if (keyboardState[SDL_SCANCODE_RIGHT]) {
         if (!blockRight && (playerX + playerWidth < RIGHT_BOUNDARY)) {
             PlayerMove(1, 0); // Move right
             Players[0]->SetDirectionGraphic(2); 
         }
     }
+
+    // right up
+    // right down
 
     if (keyboardState[SDL_SCANCODE_UP]) {
         if (!blockTop && (playerY >= UPPER_BOUNDARY || (playerX > 96 && playerX < 306))) {
@@ -85,16 +128,26 @@ void Game::UserInput(bool& running, const Uint8* keyboardState) {
 }
 
 
-//void Game::ChangeLevel() {
-//
-//    if (Players[0]->GetY() == -20) {
-//        if (!MakeLevel("LevelTwo", "Images/RoadBackground.png", LevelID)) {
-//            std::cerr << "Couldn't create Level one!" << std::endl;
-//            return;
-//        }
-//    }
-//    return;
-//}
+void Game::ChangeLevel(SDL_Renderer* renderer, int& LevelID) {
+    const int ObjectX = -10, ObjectY = -100, ObjectWidth = 100, ObjectHeight = 100;
+        if (Players[0]->GetY() == -90) {
+            if (!MakeLevel("LevelTwo", "Images/Grass.png", LevelID)) {
+                std::cerr << "Couldn't create Level one!" << std::endl;
+                return;
+            }
+            if (!Levels[LevelID]->MakeGameObject(ObjectX, ObjectY, ObjectWidth, ObjectHeight)) {
+                std::cerr << "Couldn't create Game Object!" << std::endl;
+                return;
+            }
+
+            if (!Levels[LevelID]->MakeGameObject(400, ObjectY, ObjectWidth, ObjectHeight)) {
+                std::cerr << "Couldn't create Game Object!" << std::endl;
+                return;
+            }
+            PlayerMove(0, 260); // resets spawn point to bottom of map
+        }
+    return;
+}
 
 void Game::PlayerMove(int x, int y) {
     Players[0].get()->Move(x, y);

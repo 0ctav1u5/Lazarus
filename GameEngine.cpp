@@ -1,5 +1,6 @@
 #include <iostream>
 #include <SDL.h>
+#include <SDL_ttf.h>
 #include <SDL_image.h>
 #include "GameEngine.hpp"
 #include "Game.hpp"
@@ -33,6 +34,11 @@ bool GameEngine::Initialise() {
         return false;
     }
 
+    if (TTF_Init() == -1) {
+        std::cerr << "TTF_Init Error: " << TTF_GetError() << std::endl;
+        return false;
+    }
+
     game = std::make_unique<Game>();
     if (!game->LoadAssets(renderer, LevelID)) {
         Cleanup("Error. Failed to load game assets!");
@@ -57,6 +63,7 @@ void GameEngine::GameLoop() {
         SDL_RenderClear(renderer);
         game->GetLevel(LevelID)->RenderLevel(renderer);
         game->GetPlayer(0)->RenderPlayer(renderer); 
+        game->ChangeLevel(renderer, LevelID);
         SDL_RenderPresent(renderer);
     }
 }

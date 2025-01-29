@@ -31,6 +31,7 @@ public:
 		if (window != nullptr) {
 			SDL_DestroyWindow(window);
 		}
+		TTF_Quit();
 		SDL_Quit(); // on destruction of object, quit SDL subsystem
 	}
 
