@@ -48,7 +48,6 @@ bool GameEngine::Initialise() {
     return true;
 }
 
-
 void GameEngine::GameLoop() {
     bool running = true;
     SDL_Event e;
@@ -67,7 +66,6 @@ void GameEngine::GameLoop() {
         SDL_RenderPresent(renderer);
     }
 }
-
 
 void GameEngine::CheckLevelID() {
     if (LevelID >= 0 && LevelID < game->GetLevelsCount()) {

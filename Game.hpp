@@ -8,8 +8,6 @@
 #include "Level.hpp"
 #include "GameObject.hpp"
 
-
-
 class Game {
 private:
 	std::vector<std::shared_ptr<Player>> Players;

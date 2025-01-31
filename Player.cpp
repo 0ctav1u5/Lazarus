@@ -26,7 +26,6 @@ void Player::SetDirectionGraphic(int direction) {
 	this->DIRECTION = direction;
 }
 
-
 void Player::RenderPlayer(SDL_Renderer* renderer) {
 	if (!texture) {
 		texture = SDL_CreateTextureFromSurface(renderer, SURFACE);

@@ -8,10 +8,12 @@ class GameObject {
 private:
 	SDL_Rect rect;
 	int X, Y, WIDTH, HEIGHT;
+	bool CanCollide;
 public:
 
-
-	GameObject(int x, int y, int width, int height) : X(x), Y(y), WIDTH(width), HEIGHT(height) {
+	GameObject(int x, int y, int width, int height, bool cancollide) : X(x), Y(y), WIDTH(width), 
+		HEIGHT(height), CanCollide(cancollide)
+	{
 		rect = { X, Y, WIDTH, HEIGHT };
 	}
 
@@ -21,6 +23,14 @@ public:
 		SDL_RenderFillRect(renderer, &rect);
 	}
 
+	bool CheckCollidable() {
+		if (CanCollide) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 
 
 	// TODO: set 4 ranges, currently using PlayerY and PlayerX to decide Player point of collision
@@ -45,25 +55,5 @@ public:
 		return "";
 	}
 };
-
-/*
-
-if (PlayerY + 100 == Y && PlayerX + 100 >= X && PlayerX <= X + 50) { // TOP
-			return "top";
-		}
-		if (PlayerY == Y + HEIGHT && (PlayerX + 100 >= X && PlayerX + 50 <= X + 100)) {
-			return "bottom";
-		}
-
-		if (PlayerX + 100 == X && (PlayerY + 100 >= Y && PlayerY <= Y + 50)) {
-			return "left";
-		}
-
-		if (PlayerX == X + 50 && (PlayerY + 100 >= Y && PlayerY <= Y + 50)) {
-			return "right";
-		}
-
-		return "";
-*/
 
 #endif 

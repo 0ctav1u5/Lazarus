@@ -35,9 +35,9 @@ size_t Level::GetGameObjectsCount() const {
 	return GameObjects.size();
 }
 
-bool Level::MakeGameObject(int x, int y, int width, int height) {
+bool Level::MakeGameObject(int x, int y, int width, int height, bool cancollide) {
 	try {
-		auto object = std::make_shared<GameObject>(x, y, width, height);
+		auto object = std::make_shared<GameObject>(x, y, width, height, cancollide);
 		GameObjects.push_back(std::move(object));
 		return true;
 	}

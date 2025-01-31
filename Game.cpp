@@ -6,13 +6,15 @@
 #include "Player.hpp"
 #include "Level.hpp"
 
-
 int Level::LevelIDCounter = 0;
 
+// if level 0, then
+// if level 1, then
+// if level 2, then
 const signed int LEFT_BOUNDARY = -30;
 const int RIGHT_BOUNDARY = 530;
 const signed int UPPER_BOUNDARY = -4;
-const int LOWER_BOUNDARY = 410;
+const int LOWER_BOUNDARY = 410; // this will always be the same
 
 void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
     while (SDL_PollEvent(&e)) {
@@ -99,18 +101,12 @@ void Game::UserInput(bool& running, const Uint8* keyboardState) {
         }
     }
 
-    // left up
-    // left down
-
     if (keyboardState[SDL_SCANCODE_RIGHT]) {
         if (!blockRight && (playerX + playerWidth < RIGHT_BOUNDARY)) {
             PlayerMove(1, 0); // Move right
             Players[0]->SetDirectionGraphic(2); 
         }
     }
-
-    // right up
-    // right down
 
     if (keyboardState[SDL_SCANCODE_UP]) {
         if (!blockTop && (playerY >= UPPER_BOUNDARY || (playerX > 96 && playerX < 306))) {
@@ -127,24 +123,18 @@ void Game::UserInput(bool& running, const Uint8* keyboardState) {
     }
 }
 
-
 void Game::ChangeLevel(SDL_Renderer* renderer, int& LevelID) {
-    const int ObjectX = -10, ObjectY = -100, ObjectWidth = 100, ObjectHeight = 100;
+    const int ObjectX = 10, ObjectY = 150, ObjectWidth = 100, ObjectHeight = 100;
         if (Players[0]->GetY() == -90) {
             if (!MakeLevel("LevelTwo", "Images/Grass.png", LevelID)) {
                 std::cerr << "Couldn't create Level one!" << std::endl;
                 return;
             }
-            if (!Levels[LevelID]->MakeGameObject(ObjectX, ObjectY, ObjectWidth, ObjectHeight)) {
+            if (!Levels[LevelID]->MakeGameObject(ObjectX, ObjectY, ObjectWidth, ObjectHeight, false)) {
                 std::cerr << "Couldn't create Game Object!" << std::endl;
                 return;
             }
-
-            if (!Levels[LevelID]->MakeGameObject(400, ObjectY, ObjectWidth, ObjectHeight)) {
-                std::cerr << "Couldn't create Game Object!" << std::endl;
-                return;
-            }
-            PlayerMove(0, 260); // resets spawn point to bottom of map
+            PlayerMove(0, 500); // resets spawn point to bottom of map
         }
     return;
 }
@@ -200,7 +190,7 @@ size_t Game::GetLevelsCount() const {
 }
 
 bool Game::LoadAssets(SDL_Renderer* renderer, int& LevelID) {
-    const int PLAYERSTARTX = 190, PLAYERSTARTY = 390, PLAYERSPEED = 2;
+    const int PLAYERSTARTX = 190, PLAYERSTARTY = 390, PLAYERSPEED = 1;
     const int ObjectX = -10, ObjectY = -100, ObjectWidth = 100, ObjectHeight = 100;
 
     if (!MakePlayer("Ethan", PLAYERSTARTX, PLAYERSTARTY, "Images/PlayerDown.png", PLAYERSPEED)) {
@@ -214,20 +204,17 @@ bool Game::LoadAssets(SDL_Renderer* renderer, int& LevelID) {
         return false;
     }
 
-    if (!Levels[0]->MakeGameObject(ObjectX, ObjectY, ObjectWidth, ObjectHeight)) {
+    if (!Levels[0]->MakeGameObject(ObjectX, ObjectY, ObjectWidth, ObjectHeight, true)) {
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return false;
     }
 
-    if (!Levels[0]->MakeGameObject(400, ObjectY, ObjectWidth, ObjectHeight)) {
+    if (!Levels[0]->MakeGameObject(400, ObjectY, ObjectWidth, ObjectHeight, true)) {
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return false;
     }
-
-
     return true;
 }
-
 
 void Game::CollisionChecker(int levelnum, int playerY, int playerX, int playerWidth, int playerHeight,
     bool& blockBottom, bool& blockTop, bool& blockRight, bool& blockLeft) {
@@ -240,16 +227,16 @@ void Game::CollisionChecker(int levelnum, int playerY, int playerX, int playerWi
 
         std::string boundaryCheck = gameObject->CheckBoundary(playerY, playerX, playerWidth, playerHeight);
 
-        if (boundaryCheck == "top") {
+        if (boundaryCheck == "top" && gameObject->CheckCollidable() == true) {
             blockBottom = true;
         }
-        if (boundaryCheck == "bottom") {
+        if (boundaryCheck == "bottom" && gameObject->CheckCollidable() == true) {
             blockTop = true;
         }
-        if (boundaryCheck == "left") {
+        if (boundaryCheck == "left" && gameObject->CheckCollidable() == true) {
             blockRight = true;
         }
-        if (boundaryCheck == "right") {
+        if (boundaryCheck == "right" && gameObject->CheckCollidable() == true) {
             blockLeft = true;
         }
     }
