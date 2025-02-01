@@ -1,8 +1,14 @@
 #include <iostream>
 #include "Player.hpp"
 
+
+
 int Player::GetX() {
 	return this->PosX;
+}
+
+int Player::GetHP() {
+	return this->HP;
 }
 
 int Player::GetY() {
@@ -24,6 +30,11 @@ void Player::Move(int changeX, int changeY) {
 
 void Player::SetDirectionGraphic(int direction) {
 	this->DIRECTION = direction;
+}
+
+void Player::DamagePlayer(int damage) {
+	this->HP -= damage;
+	std::cout << "Player HP: " << this->HP << std::endl;
 }
 
 void Player::RenderPlayer(SDL_Renderer* renderer) {

@@ -6,6 +6,7 @@
 #include "Player.hpp"
 #include "Level.hpp"
 
+int HP = 100;
 int Level::LevelIDCounter = 0;
 
 // if level 0, then
@@ -36,7 +37,7 @@ void Game::PauseMenu(SDL_Renderer* renderer) {
         return;  // Exit the function if font fails to load
     }
     else {
-        std::cout << "Font loaded successfully!" << std::endl;
+        std::cout << "Game Paused!" << std::endl;
     }
 
     bool pauseloop = true;
@@ -93,7 +94,7 @@ void Game::UserInput(bool& running, const Uint8* keyboardState) {
 
     CollisionChecker(LevelNum, playerY, playerX, playerWidth, playerHeight, blockBottom, blockTop, blockRight, blockLeft);
     
-
+    // for instance, it would be level[i]->LEFT_BOUNDARY
     if (keyboardState[SDL_SCANCODE_LEFT]) {
         if (!blockLeft && playerX > LEFT_BOUNDARY) { 
             PlayerMove(-1, 0); // Move left
@@ -123,20 +124,62 @@ void Game::UserInput(bool& running, const Uint8* keyboardState) {
     }
 }
 
-void Game::ChangeLevel(SDL_Renderer* renderer, int& LevelID) {
-    const int ObjectX = 10, ObjectY = 150, ObjectWidth = 100, ObjectHeight = 100;
-        if (Players[0]->GetY() == -90) {
-            if (!MakeLevel("LevelTwo", "Images/Grass.png", LevelID)) {
-                std::cerr << "Couldn't create Level one!" << std::endl;
-                return;
+// this function will check if the player is being damaged, as well as other effects
+void Game::CheckPlayerStatus(int& LevelID) {
+    static int OldTime = 0;  
+    int cooldown = 500;
+    int NewTime = SDL_GetTicks();
+
+    int PlayerX = Players[0]->GetX(), PlayerY = Players[0]->GetY();
+    int PlayerWidth = Players[0]->GetPlayerWidth(), PlayerHeight = Players[0]->GetPlayerHeight();
+
+    if (NewTime - OldTime > cooldown) {
+        for (int i = 0; i < Levels[LevelID]->GetGameObjectsCount(); ++i) {
+            bool objectcandamage = Levels[LevelID]->GetGameObject(i)->GetCanDamage();
+
+            int ObjectX = Levels[LevelID]->GetGameObject(i)->GetX();
+            int ObjectY = Levels[LevelID]->GetGameObject(i)->GetY();
+            int ObjectWidth = Levels[LevelID]->GetGameObject(i)->GetGameObjectWidth();
+
+            if (objectcandamage &&
+                PlayerY + PlayerHeight - 60 == ObjectY &&
+                PlayerX + PlayerWidth >= ObjectX &&
+                PlayerX <= ObjectX + ObjectWidth) {
+
+                Players[0]->DamagePlayer(10);
+                OldTime = NewTime;  
+                break;  
             }
-            if (!Levels[LevelID]->MakeGameObject(ObjectX, ObjectY, ObjectWidth, ObjectHeight, false)) {
-                std::cerr << "Couldn't create Game Object!" << std::endl;
-                return;
-            }
-            PlayerMove(0, 500); // resets spawn point to bottom of map
+        }
+    }
+
+    if (Players[0]->GetHP() <= 0) {
+        std::cout << "GAME OVER!" << std::endl;
+        exit(1);
+    }
+}
+
+void Game::ChangeLevel(int& LevelID) {
+        if (LevelID == 0 && Players[0]->GetY() == -90) {
+            Level2(LevelID);
         }
     return;
+}
+
+
+void Game::Level2(int& LevelID) { // loads assets for level 2
+    ObjectProperties Fire = { 10, 150, 100, 100 };
+
+    if (!MakeLevel("LevelTwo", "Images/Grass.png", LevelID)) {
+        std::cerr << "Couldn't create Level two!" << std::endl;
+        return;
+    }
+    if (!Levels[LevelID]->MakeGameObject(Fire.ObjectX, Fire.ObjectY, Fire.ObjectWidth, 
+        Fire.ObjectHeight, false, true, false)) {
+        std::cerr << "Couldn't create Game Object!" << std::endl;
+        return;
+    }
+    PlayerMove(0, 300); // resets spawn point to bottom of map
 }
 
 void Game::PlayerMove(int x, int y) {
@@ -190,7 +233,7 @@ size_t Game::GetLevelsCount() const {
 }
 
 bool Game::LoadAssets(SDL_Renderer* renderer, int& LevelID) {
-    const int PLAYERSTARTX = 190, PLAYERSTARTY = 390, PLAYERSPEED = 1;
+    const int PLAYERSTARTX = 190, PLAYERSTARTY = 390, PLAYERSPEED = 2;
     const int ObjectX = -10, ObjectY = -100, ObjectWidth = 100, ObjectHeight = 100;
 
     if (!MakePlayer("Ethan", PLAYERSTARTX, PLAYERSTARTY, "Images/PlayerDown.png", PLAYERSPEED)) {
@@ -204,12 +247,12 @@ bool Game::LoadAssets(SDL_Renderer* renderer, int& LevelID) {
         return false;
     }
 
-    if (!Levels[0]->MakeGameObject(ObjectX, ObjectY, ObjectWidth, ObjectHeight, true)) {
+    if (!Levels[0]->MakeGameObject(ObjectX, ObjectY, ObjectWidth, ObjectHeight, true, false, false)) {
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return false;
     }
 
-    if (!Levels[0]->MakeGameObject(400, ObjectY, ObjectWidth, ObjectHeight, true)) {
+    if (!Levels[0]->MakeGameObject(400, ObjectY, ObjectWidth, ObjectHeight, true, false, false)) {
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return false;
     }

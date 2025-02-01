@@ -56,13 +56,14 @@ void GameEngine::GameLoop() {
     while (running) {
         game->HandleEvents(e, running, renderer);
         game->UserInput(running, keyboardState);
+        game->CheckPlayerStatus(LevelID);
 
         // CheckLevelID(); uncomment when debugging
 
         SDL_RenderClear(renderer);
         game->GetLevel(LevelID)->RenderLevel(renderer);
         game->GetPlayer(0)->RenderPlayer(renderer); 
-        game->ChangeLevel(renderer, LevelID);
+        game->ChangeLevel(LevelID);
         SDL_RenderPresent(renderer);
     }
 }

@@ -35,12 +35,15 @@ size_t Level::GetGameObjectsCount() const {
 	return GameObjects.size();
 }
 
-bool Level::MakeGameObject(int x, int y, int width, int height, bool cancollide) {
+bool Level::MakeGameObject(int x, int y, int width, int height, bool cancollide,
+	bool candamage, bool cancollect) {
 	try {
-		auto object = std::make_shared<GameObject>(x, y, width, height, cancollide);
-		GameObjects.push_back(std::move(object));
+		auto object = std::make_shared<GameObject>(x, y, width, height, cancollide, candamage, 
+		cancollect);
+		GameObjects.push_back(object);
 		return true;
 	}
+
 	catch (const std::exception& e) {
 		std::cerr << "Cannot make new object: " << e.what() << std::endl;
 		return false;

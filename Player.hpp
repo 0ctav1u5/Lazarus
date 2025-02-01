@@ -24,10 +24,12 @@ public:
 	}
 	int GetX();
 	int GetY();
+	int GetHP();
 	int GetPlayerWidth();
 	int GetPlayerHeight();
 	void RenderPlayer(SDL_Renderer* renderer);
 	void SetDirectionGraphic(int direction);
 	void Move(int changeX, int changeY);
+	void DamagePlayer(int damage);
 };
 #endif

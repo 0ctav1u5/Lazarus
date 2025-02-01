@@ -19,7 +19,7 @@ public:
 	bool LoadAssets(SDL_Renderer* renderer, int& LevelID);
 	bool MakePlayer(std::string name, int posx, int posy, const char* imagepath, int speed);
 	bool MakeLevel(std::string levelname, const char* backgroundimagepath, int& LevelID);
-	void ChangeLevel(SDL_Renderer* renderer, int& LevelID);
+	void ChangeLevel(int& LevelID);
 	void UserInput(bool& running, const Uint8* keyboardState);
 	void HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer);
 	std::shared_ptr<Player> GetPlayer(int i);
@@ -28,6 +28,15 @@ public:
 	void PlayerMove(int x, int y);
 	void CollisionChecker(int levelnum, int playerY, int playerX, int playerWidth, int playerHeight,
 	bool& blockBottom, bool& blockTop, bool& blockRight, bool& blockLeft);
+	void CheckPlayerStatus(int& LevelID);
+	void Level2(int& LevelID);
 
+};
+
+struct ObjectProperties {
+	int ObjectX;
+	int ObjectY;
+	int ObjectWidth;
+	int ObjectHeight;
 };
 #endif
