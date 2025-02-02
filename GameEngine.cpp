@@ -56,7 +56,7 @@ void GameEngine::GameLoop() {
     while (running) {
         game->HandleEvents(e, running, renderer);
         game->UserInput(running, keyboardState, LevelID);
-        game->CheckPlayerStatus(LevelID);
+        game->CheckPlayerStatus(LevelID, running);
 
         // CheckLevelID(); uncomment when debugging
 
@@ -66,6 +66,7 @@ void GameEngine::GameLoop() {
         game->ChangeLevel(LevelID);
         SDL_RenderPresent(renderer);
     }
+    std::cout << "Game Over!" << std::endl;
 }
 
 void GameEngine::CheckLevelID() {

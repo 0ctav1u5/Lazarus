@@ -142,7 +142,7 @@ void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID) {
 }
 
 // this function will check if the player is being damaged, as well as other effects
-void Game::CheckPlayerStatus(int& LevelID) {
+void Game::CheckPlayerStatus(int& LevelID, bool& running) {
     static int OldTime = 0;  
     int cooldown = 500;
     int NewTime = SDL_GetTicks();
@@ -170,8 +170,7 @@ void Game::CheckPlayerStatus(int& LevelID) {
     }
 
     if (Players[0]->GetHP() <= 0) {
-        std::cout << "GAME OVER!" << std::endl;
-        exit(1);
+        running = false;
     }
 }
 
@@ -182,21 +181,30 @@ void Game::ChangeLevel(int& LevelID) {
     return;
 }
 
-//const signed int LEFT_BOUNDARY = -30;
-//const int RIGHT_BOUNDARY = 530;
-//const signed int UPPER_BOUNDARY = -4;
-//const int LOWER_BOUNDARY = 410; 
-
-
 void Game::Level2(int& LevelID) { // loads assets for level 2
-    ObjectProperties Fire = { 10, 150, 100, 100 };
+    ObjectProperties Fire = { 10, 150, 100, 100 }; // x, y, width, height
+    ObjectProperties Barrier = { 530, 200, 100, 100 };
+    ObjectProperties Barrier2 = { 530, 390, 100, 100 };
 
-    if (!MakeLevel("LevelTwo", "Images/Grass.png", LevelID, -30, 530, -4, 410)) { // left, right, upper, down
+    if (!MakeLevel("LevelTwo", "Images/Grass.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
         std::cerr << "Couldn't create Level two!" << std::endl;
         return;
     }
+
+    // In the makegameobject method, there are 4 bools at the end, for cancollide, candamage
+    // cancollect and visible
     if (!Levels[LevelID]->MakeGameObject(Fire.ObjectX, Fire.ObjectY, Fire.ObjectWidth, 
-        Fire.ObjectHeight, false, true, false)) {
+        Fire.ObjectHeight, false, true, false, false)) {
+        std::cerr << "Couldn't create Game Object!" << std::endl;
+        return;
+    }
+    if (!Levels[LevelID]->MakeGameObject(Barrier.ObjectX, Barrier.ObjectY, Barrier.ObjectWidth,
+        Barrier.ObjectHeight, true, false, false, true)) {
+        std::cerr << "Couldn't create Game Object!" << std::endl;
+        return;
+    }
+    if (!Levels[LevelID]->MakeGameObject(Barrier2.ObjectX, Barrier2.ObjectY, Barrier2.ObjectWidth,
+        Barrier2.ObjectHeight, true, false, false, true)) {
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return;
     }
@@ -218,11 +226,6 @@ bool Game::MakePlayer(std::string name, int posx, int posy, const char* imagepat
         return false;
     }
 }
-
-//const signed int LEFT_BOUNDARY = -30;
-//const int RIGHT_BOUNDARY = 530;
-//const signed int UPPER_BOUNDARY = -4;
-//const int LOWER_BOUNDARY = 410; 
 
 bool Game::MakeLevel(std::string levelname, const char* backgroundimagepath, int& LevelID,
     int lb, int rb, int ub, int lwb) {
@@ -274,12 +277,12 @@ bool Game::LoadAssets(SDL_Renderer* renderer, int& LevelID) {
         return false;
     }
 
-    if (!Levels[0]->MakeGameObject(ObjectX, ObjectY, ObjectWidth, ObjectHeight, true, false, false)) {
+    if (!Levels[0]->MakeGameObject(ObjectX, ObjectY, ObjectWidth, ObjectHeight, true, false, false, true)) {
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return false;
     }
 
-    if (!Levels[0]->MakeGameObject(400, ObjectY, ObjectWidth, ObjectHeight, true, false, false)) {
+    if (!Levels[0]->MakeGameObject(400, ObjectY, ObjectWidth, ObjectHeight, true, false, false, true)) {
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return false;
     }

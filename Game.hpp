@@ -29,7 +29,7 @@ public:
 	void PlayerMove(int x, int y);
 	void CollisionChecker(int levelnum, int playerY, int playerX, int playerWidth, int playerHeight,
 	bool& blockBottom, bool& blockTop, bool& blockRight, bool& blockLeft);
-	void CheckPlayerStatus(int& LevelID);
+	void CheckPlayerStatus(int& LevelID, bool& running);
 	void Level2(int& LevelID);
 
 };

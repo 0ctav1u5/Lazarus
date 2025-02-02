@@ -17,7 +17,7 @@ void Level::RenderLevel(SDL_Renderer* renderer) { // this will be used to render
 	SDL_RenderCopy(renderer, BackgroundTexture, NULL, NULL);
 	SDL_DestroyTexture(BackgroundTexture);
 
-	// game objects for rendering
+	// this is where all the game objects are rendered for the level
 	for (auto& gameobject : GameObjects) {
 		gameobject->RenderGameObject(renderer);
 	}
@@ -36,10 +36,10 @@ size_t Level::GetGameObjectsCount() const {
 }
 
 bool Level::MakeGameObject(int x, int y, int width, int height, bool cancollide,
-	bool candamage, bool cancollect) {
+	bool candamage, bool cancollect, bool visible) {
 	try {
 		auto object = std::make_shared<GameObject>(x, y, width, height, cancollide, candamage, 
-		cancollect);
+		cancollect, visible);
 		GameObjects.push_back(object);
 		return true;
 	}

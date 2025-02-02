@@ -11,11 +11,13 @@ private:
 	bool CanCollide;
 	bool CanDamage;
 	bool CanCollect;
+	bool Visible;
 public:
 
-	GameObject(int x, int y, int width, int height, bool cancollide, bool candamage, bool cancollect)
+	GameObject(int x, int y, int width, int height, bool cancollide, bool candamage, bool cancollect,
+		bool visible)
 		: X(x), Y(y), WIDTH(width), HEIGHT(height), CanCollide(cancollide), CanDamage(candamage), 
-		CanCollect(cancollect)
+		CanCollect(cancollect), Visible(visible)
 	{
 		rect = { X, Y, WIDTH, HEIGHT };
 	}
@@ -23,8 +25,15 @@ public:
 
 
 	void RenderGameObject(SDL_Renderer* renderer) {
-		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0); // RGB
+		int Visibility = 0;
+		if (this->Visible) {
+			Visibility = 255;
+		}
+		else {
+			SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+			Visibility = 0;
+		}
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, Visibility); // RGB
 		SDL_RenderFillRect(renderer, &rect);
 	}
 
