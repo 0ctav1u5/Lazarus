@@ -18,9 +18,10 @@ public:
 	void PauseMenu(SDL_Renderer* renderer);
 	bool LoadAssets(SDL_Renderer* renderer, int& LevelID);
 	bool MakePlayer(std::string name, int posx, int posy, const char* imagepath, int speed);
-	bool MakeLevel(std::string levelname, const char* backgroundimagepath, int& LevelID);
+	bool MakeLevel(std::string levelname, const char* backgroundimagepath, int& LevelID,
+	int lb, int rb, int ub, int lwb);
 	void ChangeLevel(int& LevelID);
-	void UserInput(bool& running, const Uint8* keyboardState);
+	void UserInput(bool& running, const Uint8* keyboardState, int& LevelID);
 	void HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer);
 	std::shared_ptr<Player> GetPlayer(int i);
 	std::shared_ptr<Level> GetLevel(int i);
@@ -39,4 +40,5 @@ struct ObjectProperties {
 	int ObjectWidth;
 	int ObjectHeight;
 };
+
 #endif

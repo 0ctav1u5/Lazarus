@@ -55,7 +55,7 @@ void GameEngine::GameLoop() {
 
     while (running) {
         game->HandleEvents(e, running, renderer);
-        game->UserInput(running, keyboardState);
+        game->UserInput(running, keyboardState, LevelID);
         game->CheckPlayerStatus(LevelID);
 
         // CheckLevelID(); uncomment when debugging

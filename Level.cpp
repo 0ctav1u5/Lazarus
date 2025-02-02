@@ -50,6 +50,24 @@ bool Level::MakeGameObject(int x, int y, int width, int height, bool cancollide,
 	}
 }
 
+int Level::GetLeftBoundary() {
+	return this->LEFT_BOUNDARY;
+}
+
+int Level::GetRightBoundary() {
+	return this->RIGHT_BOUNDARY;
+}
+
+int Level::GetUpperBoundary() {
+	return this->UPPER_BOUNDARY;
+}
+
+int Level::GetLowerBoundary() {
+	return this->LOWER_BOUNDARY;
+}
+
+
+
 int Level::GetInstanceID() const {
 	return InstanceID; // The unique identifier for this Level instance
 }

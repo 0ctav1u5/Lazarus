@@ -6,16 +6,7 @@
 #include "Player.hpp"
 #include "Level.hpp"
 
-int HP = 100;
 int Level::LevelIDCounter = 0;
-
-// if level 0, then
-// if level 1, then
-// if level 2, then
-const signed int LEFT_BOUNDARY = -30;
-const int RIGHT_BOUNDARY = 530;
-const signed int UPPER_BOUNDARY = -4;
-const int LOWER_BOUNDARY = 410; // this will always be the same
 
 void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
     while (SDL_PollEvent(&e)) {
@@ -31,10 +22,10 @@ void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
 
 void Game::PauseMenu(SDL_Renderer* renderer) {
     // Load font
-    TTF_Font* font = TTF_OpenFont("Fonts/Pixel Game.otf", 24);
+    TTF_Font* font = TTF_OpenFont("Fonts/Vipnagorgialla Rg.otf", 24);
     if (!font) {
         std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
-        return;  // Exit the function if font fails to load
+        return;  
     }
     else {
         std::cout << "Game Paused!" << std::endl;
@@ -44,22 +35,33 @@ void Game::PauseMenu(SDL_Renderer* renderer) {
     SDL_Event p;
 
     SDL_Texture* textTexture = nullptr;
-    SDL_Color textColour = { 255, 255, 255 }; // white color for text
+    SDL_Texture* textTexture2 = nullptr;
+    SDL_Color textColour = { 255, 0, 0 }; // white color for text
     SDL_Surface* textSurface = TTF_RenderText_Solid(font, "Paused", textColour); // font, text, colour
+    SDL_Surface* textSurface2 = TTF_RenderText_Solid(font, "Save", textColour); // font, text, colour
     if (textSurface) {
         textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
         SDL_FreeSurface(textSurface);  
     }
     else {
         std::cerr << "Text render error: " << TTF_GetError() << std::endl;
-        return; // Return early if there's an error creating the text texture
+        return; 
+    }
+
+    if (textSurface2) {
+        textTexture2 = SDL_CreateTextureFromSurface(renderer, textSurface2);
+        SDL_FreeSurface(textSurface2);
+    }
+    else {
+        std::cerr << "Text render error: " << TTF_GetError() << std::endl;
+        return;
     }
 
     while (pauseloop) {
         // Handle events
         while (SDL_PollEvent(&p)) {
             if (p.type == SDL_KEYDOWN && p.key.keysym.sym == SDLK_SPACE) {
-                pauseloop = false;  // Exit the pause menu when space is pressed
+                pauseloop = false;  
             }
         }
 
@@ -67,11 +69,20 @@ void Game::PauseMenu(SDL_Renderer* renderer) {
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND); 
         // sets draw colour for new overlay
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);  // r, g, b, opaqueness
-        SDL_Rect rect = { 0, 0, 500, 500 }; // rectangle for text x, y, width, height
-        SDL_RenderFillRect(renderer, &rect); // render the rectangle
 
-        SDL_Rect textRect = { 140, 200, 200, 50 };  // position of rectangle of text
+
+        SDL_Rect textRect = { 140, 220, 200, 50 };  // drawing the transparent background rect
+        SDL_Rect textRect2 = { 10, 0, 100, 50 };  
         SDL_RenderCopy(renderer, textTexture, nullptr, &textRect); // renders texture and rect
+
+
+        // clears buffer and adds overlay in alpha values
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+        // sets draw colour for new overlay
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);  // r, g, b, opaqueness
+
+
+        SDL_RenderCopy(renderer, textTexture2, nullptr, &textRect2); // renders texture and rect
         // together
 
         SDL_RenderPresent(renderer);
@@ -82,7 +93,11 @@ void Game::PauseMenu(SDL_Renderer* renderer) {
     TTF_CloseFont(font);  // for closing font when function ends
 }
 
-void Game::UserInput(bool& running, const Uint8* keyboardState) {
+
+// we'll use LevelID here to determine which level, for setting boundaries
+// boundaries will be a struct, and we'll have an array
+// we'll have boundaries as a member of the level class
+void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID) {
     int playerX = Players[0]->GetX(), playerY = Players[0]->GetY();
     int playerWidth = Players[0]->GetPlayerWidth(), playerHeight = Players[0]->GetPlayerHeight();
 
@@ -96,28 +111,30 @@ void Game::UserInput(bool& running, const Uint8* keyboardState) {
     
     // for instance, it would be level[i]->LEFT_BOUNDARY
     if (keyboardState[SDL_SCANCODE_LEFT]) {
-        if (!blockLeft && playerX > LEFT_BOUNDARY) { 
+        if (!blockLeft && playerX > Levels[LevelID]->GetLeftBoundary()) {
             PlayerMove(-1, 0); // Move left
             Players[0]->SetDirectionGraphic(1); 
         }
     }
 
     if (keyboardState[SDL_SCANCODE_RIGHT]) {
-        if (!blockRight && (playerX + playerWidth < RIGHT_BOUNDARY)) {
+        if (!blockRight && (playerX + playerWidth < Levels[LevelID]->GetRightBoundary())) {
             PlayerMove(1, 0); // Move right
             Players[0]->SetDirectionGraphic(2); 
         }
     }
 
+    // || (playerX > 96 && playerX < 306) for below
+
     if (keyboardState[SDL_SCANCODE_UP]) {
-        if (!blockTop && (playerY >= UPPER_BOUNDARY || (playerX > 96 && playerX < 306))) {
+        if (!blockTop && (playerY >= Levels[LevelID]->GetUpperBoundary())) {
             PlayerMove(0, -1); // Move up
             Players[0]->SetDirectionGraphic(3); 
         }
     }
 
     if (keyboardState[SDL_SCANCODE_DOWN]) {
-        if (!blockBottom && playerY < LOWER_BOUNDARY) {
+        if (!blockBottom && playerY < Levels[LevelID]->GetLowerBoundary()) {
             PlayerMove(0, 1); // Move down
             Players[0]->SetDirectionGraphic(4); 
         }
@@ -142,10 +159,9 @@ void Game::CheckPlayerStatus(int& LevelID) {
             int ObjectWidth = Levels[LevelID]->GetGameObject(i)->GetGameObjectWidth();
 
             if (objectcandamage &&
-                PlayerY + PlayerHeight - 60 == ObjectY &&
-                PlayerX + PlayerWidth >= ObjectX &&
-                PlayerX <= ObjectX + ObjectWidth) {
-
+                PlayerY + PlayerHeight - 20 == ObjectY + 50 &&
+                PlayerX + 10 >= ObjectX &&
+                PlayerX <= ObjectX + 50) {
                 Players[0]->DamagePlayer(10);
                 OldTime = NewTime;  
                 break;  
@@ -166,11 +182,16 @@ void Game::ChangeLevel(int& LevelID) {
     return;
 }
 
+//const signed int LEFT_BOUNDARY = -30;
+//const int RIGHT_BOUNDARY = 530;
+//const signed int UPPER_BOUNDARY = -4;
+//const int LOWER_BOUNDARY = 410; 
+
 
 void Game::Level2(int& LevelID) { // loads assets for level 2
     ObjectProperties Fire = { 10, 150, 100, 100 };
 
-    if (!MakeLevel("LevelTwo", "Images/Grass.png", LevelID)) {
+    if (!MakeLevel("LevelTwo", "Images/Grass.png", LevelID, -30, 530, -4, 410)) { // left, right, upper, down
         std::cerr << "Couldn't create Level two!" << std::endl;
         return;
     }
@@ -179,7 +200,7 @@ void Game::Level2(int& LevelID) { // loads assets for level 2
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return;
     }
-    PlayerMove(0, 300); // resets spawn point to bottom of map
+    PlayerMove(0, 280); // resets spawn point to bottom of map
 }
 
 void Game::PlayerMove(int x, int y) {
@@ -198,9 +219,15 @@ bool Game::MakePlayer(std::string name, int posx, int posy, const char* imagepat
     }
 }
 
-bool Game::MakeLevel(std::string levelname, const char* backgroundimagepath, int& LevelID) {
+//const signed int LEFT_BOUNDARY = -30;
+//const int RIGHT_BOUNDARY = 530;
+//const signed int UPPER_BOUNDARY = -4;
+//const int LOWER_BOUNDARY = 410; 
+
+bool Game::MakeLevel(std::string levelname, const char* backgroundimagepath, int& LevelID,
+    int lb, int rb, int ub, int lwb) {
     try {
-        auto level = std::make_shared<Level>(levelname, backgroundimagepath);
+        auto level = std::make_shared<Level>(levelname, backgroundimagepath, lb, rb, ub, lwb);
         Levels.push_back(std::move(level)); 
         LevelID = Levels.size() - 1;       
         return true;
@@ -242,7 +269,7 @@ bool Game::LoadAssets(SDL_Renderer* renderer, int& LevelID) {
     }
 
     // Create Level One and update LevelID
-    if (!MakeLevel("LevelOne", "Images/RoadBackground.png", LevelID)) {
+    if (!MakeLevel("LevelOne", "Images/RoadBackground.png", LevelID, -30, 530, -100, 410)) { // l, r, u, b
         std::cerr << "Couldn't create Level one!" << std::endl;
         return false;
     }
@@ -270,6 +297,7 @@ void Game::CollisionChecker(int levelnum, int playerY, int playerX, int playerWi
 
         std::string boundaryCheck = gameObject->CheckBoundary(playerY, playerX, playerWidth, playerHeight);
 
+        // checkcollidable returns true if the object is collidable
         if (boundaryCheck == "top" && gameObject->CheckCollidable() == true) {
             blockBottom = true;
         }
