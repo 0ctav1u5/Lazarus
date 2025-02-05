@@ -52,8 +52,16 @@ void GameEngine::GameLoop() {
     bool running = true;
     SDL_Event e;
     const Uint8* keyboardState = SDL_GetKeyboardState(nullptr);
+    
+    const int FPS = 70; // increase to improve framerate
+    const int frameDelay = 1000 / FPS;  // maximum amount of time per frame
+
+    Uint32 frameStart;
+    int frameTime;
+
 
     while (running) {
+        frameStart = SDL_GetTicks(); // start of frame
         game->HandleEvents(e, running, renderer);
         game->UserInput(running, keyboardState, LevelID);
         game->CheckPlayerStatus(LevelID, running);
@@ -65,6 +73,10 @@ void GameEngine::GameLoop() {
         game->GetPlayer(0)->RenderPlayer(renderer); 
         game->ChangeLevel(LevelID);
         SDL_RenderPresent(renderer);
+        frameTime = SDL_GetTicks() - frameStart;  // time taken for this frame to have been rendered
+        if (frameDelay > frameTime) {
+            SDL_Delay(frameDelay - frameTime);  // delay to maintain a consistent fps
+        }
     }
     std::cout << "Game Over!" << std::endl;
 }

@@ -13,15 +13,15 @@ void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
         if (e.type == SDL_QUIT || (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)) {
             running = false;
         }
-
         if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE) {
-            PauseMenu(renderer);
+            PauseMenu(renderer, running);
         }
     }
 }
 
-void Game::PauseMenu(SDL_Renderer* renderer) {
-    // Load font
+void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
+    int mouseX, mouseY;
+    // load font
     TTF_Font* font = TTF_OpenFont("Fonts/Vipnagorgialla Rg.otf", 24);
     if (!font) {
         std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
@@ -36,9 +36,12 @@ void Game::PauseMenu(SDL_Renderer* renderer) {
 
     SDL_Texture* textTexture = nullptr;
     SDL_Texture* textTexture2 = nullptr;
+    SDL_Texture* textTexture3 = nullptr;
     SDL_Color textColour = { 255, 0, 0 }; // white color for text
     SDL_Surface* textSurface = TTF_RenderText_Solid(font, "Paused", textColour); // font, text, colour
     SDL_Surface* textSurface2 = TTF_RenderText_Solid(font, "Save", textColour); // font, text, colour
+    SDL_Surface* textSurface3 = TTF_RenderText_Solid(font, "Exit", textColour); // font, text, colour
+
     if (textSurface) {
         textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
         SDL_FreeSurface(textSurface);  
@@ -57,35 +60,60 @@ void Game::PauseMenu(SDL_Renderer* renderer) {
         return;
     }
 
+    if (textSurface3) {
+        textTexture3 = SDL_CreateTextureFromSurface(renderer, textSurface3);
+        SDL_FreeSurface(textSurface3);
+    }
+    else {
+        std::cerr << "Text render error: " << TTF_GetError() << std::endl;
+        return;
+    }
+
+    SDL_Rect PauseText = { 140, 220, 200, 50 };  // drawing the transparent background rect
+    SDL_Rect SaveText = { 10, 0, 100, 50 };
+    SDL_Rect ExitText = { 390, 0, 100, 50 };
+
     while (pauseloop) {
-        // Handle events
+        SDL_GetMouseState(&mouseX, &mouseY);
+
         while (SDL_PollEvent(&p)) {
             if (p.type == SDL_KEYDOWN && p.key.keysym.sym == SDLK_SPACE) {
                 pauseloop = false;  
+            } // button left = lmb
+            else if (p.type == SDL_MOUSEBUTTONDOWN && p.button.button == SDL_BUTTON_LEFT) {
+                if (mouseX >= SaveText.x && mouseX <= SaveText.x + SaveText.w &&
+                    mouseY >= SaveText.y && mouseY <= SaveText.y + SaveText.h) {
+                    std::cout << "Save button clicked!" << std::endl;
+                }
+
+                if (mouseX >= ExitText.x && mouseX <= ExitText.x + ExitText.w &&
+                    mouseY >= ExitText.y && mouseY <= ExitText.y + ExitText.h) {
+                    std::cout << "Exit button clicked!" << std::endl;
+                    running = false;  // Exit pause menu
+                    pauseloop = false;
+                }
             }
         }
 
-        // clears buffer and adds overlay in alpha values
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND); 
-        // sets draw colour for new overlay
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);  // r, g, b, opaqueness
-
-
-        SDL_Rect textRect = { 140, 220, 200, 50 };  // drawing the transparent background rect
-        SDL_Rect textRect2 = { 10, 0, 100, 50 };  
-        SDL_RenderCopy(renderer, textTexture, nullptr, &textRect); // renders texture and rect
-
+        SDL_RenderCopy(renderer, textTexture, nullptr, &PauseText); // renders texture and rect
 
         // clears buffer and adds overlay in alpha values
         SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
         // sets draw colour for new overlay
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);  // r, g, b, opaqueness
 
+        SDL_RenderCopy(renderer, textTexture2, nullptr, &SaveText); // draws rectangle + texture
 
-        SDL_RenderCopy(renderer, textTexture2, nullptr, &textRect2); // renders texture and rect
-        // together
+        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+
+        SDL_RenderCopy(renderer, textTexture3, nullptr, &ExitText);
 
         SDL_RenderPresent(renderer);
+
+        
+
     } // end of while loop
 
 
@@ -178,6 +206,9 @@ void Game::ChangeLevel(int& LevelID) {
         if (LevelID == 0 && Players[0]->GetY() == -90) {
             Level2(LevelID);
         }
+        if (LevelID == 1 && Players[0]->GetX() == 470) {
+            Level3(LevelID);
+        }
     return;
 }
 
@@ -209,6 +240,14 @@ void Game::Level2(int& LevelID) { // loads assets for level 2
         return;
     }
     PlayerMove(0, 280); // resets spawn point to bottom of map
+}
+
+void Game::Level3(int& LevelID) {
+    if (!MakeLevel("LevelThree", "Images/RoadBackground2.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
+        std::cerr << "Couldn't create Level three!" << std::endl;
+        return;
+    }
+    PlayerMove(-260, 140);
 }
 
 void Game::PlayerMove(int x, int y) {

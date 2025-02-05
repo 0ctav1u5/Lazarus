@@ -15,7 +15,7 @@ private:
 public:
 
 	Game() {}
-	void PauseMenu(SDL_Renderer* renderer);
+	void PauseMenu(SDL_Renderer* renderer, bool& running);
 	bool LoadAssets(SDL_Renderer* renderer, int& LevelID);
 	bool MakePlayer(std::string name, int posx, int posy, const char* imagepath, int speed);
 	bool MakeLevel(std::string levelname, const char* backgroundimagepath, int& LevelID,
@@ -31,6 +31,7 @@ public:
 	bool& blockBottom, bool& blockTop, bool& blockRight, bool& blockLeft);
 	void CheckPlayerStatus(int& LevelID, bool& running);
 	void Level2(int& LevelID);
+	void Level3(int& LevelID);
 
 };
 
