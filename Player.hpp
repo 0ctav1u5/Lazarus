@@ -31,5 +31,6 @@ public:
 	void SetDirectionGraphic(int direction);
 	void Move(int changeX, int changeY);
 	void DamagePlayer(int damage);
+	void RenderPlayerHP(SDL_Renderer* renderer);
 };
 #endif

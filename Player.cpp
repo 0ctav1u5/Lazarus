@@ -1,4 +1,8 @@
 #include <iostream>
+#include <string>
+#include <SDL_image.h>
+#include <SDL_ttf.h>
+#include <SDL.h>
 #include "Player.hpp"
 
 
@@ -34,7 +38,6 @@ void Player::SetDirectionGraphic(int direction) {
 
 void Player::DamagePlayer(int damage) {
 	this->HP -= damage;
-	std::cout << "Player HP: " << this->HP << std::endl;
 }
 
 void Player::RenderPlayer(SDL_Renderer* renderer) {
@@ -90,4 +93,32 @@ void Player::RenderPlayer(SDL_Renderer* renderer) {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0); // RGB make last digit 0 for transparency
 	SDL_RenderFillRect(renderer, &PlayerPos);
 	SDL_RenderCopy(renderer, texture, NULL, &PlayerPos);
+}
+
+void Player::RenderPlayerHP(SDL_Renderer* renderer) {
+	TTF_Font* font = TTF_OpenFont("Fonts/Vipnagorgialla Rg.otf", 24);
+
+	int localHP = this->HP;
+	std::string HPstring = std::to_string(localHP);
+	const char* cstr = HPstring.c_str();
+
+	SDL_Color textColour = { 255, 0, 0 }; // red
+
+	SDL_Texture* HPtexture = nullptr;
+	SDL_Surface* HPSurface = TTF_RenderText_Solid(font, cstr, textColour); // font, text, colour
+
+	if (HPSurface) {
+		HPtexture = SDL_CreateTextureFromSurface(renderer, HPSurface);
+		SDL_FreeSurface(HPSurface);
+	}
+	else {
+		std::cerr << "Text render error: " << TTF_GetError() << std::endl;
+		return;
+	}
+
+	// rectangle size determines text size
+	SDL_Rect HealthBar = { 10, 440, 50, 40 }; // size of rectangle
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // colour of rectangle
+	SDL_RenderFillRect(renderer, &HealthBar);
+	SDL_RenderCopy(renderer, HPtexture, nullptr, &HealthBar);
 }

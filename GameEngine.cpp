@@ -71,6 +71,7 @@ void GameEngine::GameLoop() {
         SDL_RenderClear(renderer);
         game->GetLevel(LevelID)->RenderLevel(renderer);
         game->GetPlayer(0)->RenderPlayer(renderer); 
+        game->GetPlayer(0)->RenderPlayerHP(renderer);
         game->ChangeLevel(LevelID);
         SDL_RenderPresent(renderer);
         frameTime = SDL_GetTicks() - frameStart;  // time taken for this frame to have been rendered

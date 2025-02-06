@@ -2,6 +2,7 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <SDL.h>
+#include <string>
 #include "Game.hpp"
 #include "Player.hpp"
 #include "Level.hpp"
@@ -33,6 +34,11 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
 
     bool pauseloop = true;
     SDL_Event p;
+    static int HP = 100;
+    std::string str = std::to_string(HP);
+    const char* cstr = str.c_str();
+
+
 
     SDL_Texture* textTexture = nullptr;
     SDL_Texture* textTexture2 = nullptr;
@@ -41,6 +47,7 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
     SDL_Surface* textSurface = TTF_RenderText_Solid(font, "Paused", textColour); // font, text, colour
     SDL_Surface* textSurface2 = TTF_RenderText_Solid(font, "Save", textColour); // font, text, colour
     SDL_Surface* textSurface3 = TTF_RenderText_Solid(font, "Exit", textColour); // font, text, colour
+    
 
     if (textSurface) {
         textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
@@ -68,10 +75,13 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
         std::cerr << "Text render error: " << TTF_GetError() << std::endl;
         return;
     }
+    
 
-    SDL_Rect PauseText = { 140, 220, 200, 50 };  // drawing the transparent background rect
+    SDL_Rect PauseText = { 140, 220, 200, 50 };  // x, y, width, height
     SDL_Rect SaveText = { 10, 0, 100, 50 };
     SDL_Rect ExitText = { 390, 0, 100, 50 };
+ 
+
 
     while (pauseloop) {
         SDL_GetMouseState(&mouseX, &mouseY);
@@ -98,21 +108,17 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
         SDL_RenderCopy(renderer, textTexture, nullptr, &PauseText); // renders texture and rect
 
         // clears buffer and adds overlay in alpha values
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
         // sets draw colour for new overlay
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);  // r, g, b, opaqueness
-
-        SDL_RenderCopy(renderer, textTexture2, nullptr, &SaveText); // draws rectangle + texture
-
-        SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-
-        SDL_RenderCopy(renderer, textTexture3, nullptr, &ExitText);
-
-        SDL_RenderPresent(renderer);
-
         
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);  // r, g, b, opaqueness
+        SDL_RenderFillRect(renderer, &SaveText);
+        SDL_RenderCopy(renderer, textTexture2, nullptr, &SaveText); // draws rectangle + texture
+        
+        // exit
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderFillRect(renderer, &ExitText);
+        SDL_RenderCopy(renderer, textTexture3, nullptr, &ExitText);
+        SDL_RenderPresent(renderer);
 
     } // end of while loop
 
@@ -169,6 +175,8 @@ void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID) {
     }
 }
 
+
+
 // this function will check if the player is being damaged, as well as other effects
 void Game::CheckPlayerStatus(int& LevelID, bool& running) {
     static int OldTime = 0;  
@@ -187,7 +195,8 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running) {
             int ObjectWidth = Levels[LevelID]->GetGameObject(i)->GetGameObjectWidth();
 
             if (objectcandamage &&
-                PlayerY + PlayerHeight - 20 == ObjectY + 50 &&
+                ((PlayerY + PlayerHeight - 20 >= ObjectY + 40) && 
+                (PlayerY + PlayerHeight - 20 <= ObjectY + 60)) &&
                 PlayerX + 10 >= ObjectX &&
                 PlayerX <= ObjectX + 50) {
                 Players[0]->DamagePlayer(10);
