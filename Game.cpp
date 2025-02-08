@@ -35,10 +35,8 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
     bool pauseloop = true;
     SDL_Event p;
     static int HP = 100;
-    std::string str = std::to_string(HP);
-    const char* cstr = str.c_str();
-
-
+    std::string str = std::to_string(HP); // converts HP member to a string
+    const char* cstr = str.c_str(); // converts that string to a const char*
 
     SDL_Texture* textTexture = nullptr;
     SDL_Texture* textTexture2 = nullptr;
@@ -107,7 +105,6 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
 
         SDL_RenderCopy(renderer, textTexture, nullptr, &PauseText); // renders texture and rect
 
-        // clears buffer and adds overlay in alpha values
         // sets draw colour for new overlay
         
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);  // r, g, b, opaqueness
@@ -141,7 +138,8 @@ void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID) {
     int LevelNum = GetLevelsCount() - 1; // tells us the position of each level in the array
 
 
-    CollisionChecker(LevelNum, playerY, playerX, playerWidth, playerHeight, blockBottom, blockTop, blockRight, blockLeft);
+    GameObjectCollisionChecker(LevelNum, playerY, playerX, playerWidth, playerHeight, blockBottom, blockTop, blockRight, blockLeft);
+    BarrierCollisionChecker(LevelNum, playerY, playerX, playerWidth, playerHeight, blockBottom, blockTop, blockRight, blockLeft);
     
     // for instance, it would be level[i]->LEFT_BOUNDARY
     if (keyboardState[SDL_SCANCODE_LEFT]) {
@@ -175,8 +173,6 @@ void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID) {
     }
 }
 
-
-
 // this function will check if the player is being damaged, as well as other effects
 void Game::CheckPlayerStatus(int& LevelID, bool& running) {
     static int OldTime = 0;  
@@ -195,10 +191,10 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running) {
             int ObjectWidth = Levels[LevelID]->GetGameObject(i)->GetGameObjectWidth();
 
             if (objectcandamage &&
-                ((PlayerY + PlayerHeight - 20 >= ObjectY + 40) && 
+                ((PlayerY + PlayerHeight - 20 >= ObjectY + 30) && 
                 (PlayerY + PlayerHeight - 20 <= ObjectY + 60)) &&
                 PlayerX + 10 >= ObjectX &&
-                PlayerX <= ObjectX + 50) {
+                PlayerX <= ObjectX + 40) {
                 Players[0]->DamagePlayer(10);
                 OldTime = NewTime;  
                 break;  
@@ -223,8 +219,9 @@ void Game::ChangeLevel(int& LevelID) {
 
 void Game::Level2(int& LevelID) { // loads assets for level 2
     ObjectProperties Fire = { 10, 150, 100, 100 }; // x, y, width, height
-    ObjectProperties Barrier = { 530, 200, 100, 100 };
-    ObjectProperties Barrier2 = { 530, 390, 100, 100 };
+    ObjectProperties Barrier = { 470, 200, 100, 100 };
+    ObjectProperties Barrier2 = { 470, 370, 100, 100 };
+
 
     if (!MakeLevel("LevelTwo", "Images/Grass.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
         std::cerr << "Couldn't create Level two!" << std::endl;
@@ -238,16 +235,13 @@ void Game::Level2(int& LevelID) { // loads assets for level 2
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return;
     }
-    if (!Levels[LevelID]->MakeGameObject(Barrier.ObjectX, Barrier.ObjectY, Barrier.ObjectWidth,
-        Barrier.ObjectHeight, true, false, false, true)) {
-        std::cerr << "Couldn't create Game Object!" << std::endl;
+    if (!Levels[LevelID]->MakeBarrier(530, 220, 100,
+        300)) {
+        std::cerr << "Couldn't create barrier!" << std::endl;
         return;
     }
-    if (!Levels[LevelID]->MakeGameObject(Barrier2.ObjectX, Barrier2.ObjectY, Barrier2.ObjectWidth,
-        Barrier2.ObjectHeight, true, false, false, true)) {
-        std::cerr << "Couldn't create Game Object!" << std::endl;
-        return;
-    }
+    
+
     PlayerMove(0, 280); // resets spawn point to bottom of map
 }
 
@@ -337,7 +331,7 @@ bool Game::LoadAssets(SDL_Renderer* renderer, int& LevelID) {
     return true;
 }
 
-void Game::CollisionChecker(int levelnum, int playerY, int playerX, int playerWidth, int playerHeight,
+void Game::GameObjectCollisionChecker(int levelnum, int playerY, int playerX, int playerWidth, int playerHeight,
     bool& blockBottom, bool& blockTop, bool& blockRight, bool& blockLeft) {
 
     for (size_t i = 0; i < Levels[levelnum]->GetGameObjectsCount(); ++i) {
@@ -359,6 +353,33 @@ void Game::CollisionChecker(int levelnum, int playerY, int playerX, int playerWi
             blockRight = true;
         }
         if (boundaryCheck == "right" && gameObject->CheckCollidable() == true) {
+            blockLeft = true;
+        }
+    }
+}
+
+void Game::BarrierCollisionChecker(int levelnum, int playerY, int playerX, int playerWidth, int playerHeight,
+    bool& blockBottom, bool& blockTop, bool& blockRight, bool& blockLeft) {
+
+    for (size_t i = 0; i < Levels[levelnum]->GetBarriersCount(); ++i) {
+        auto barrier = Levels[levelnum]->GetBarrier(i); // get all game objects in level[i]
+        if (!barrier) {
+            continue;
+        }
+
+        std::string boundaryCheck = barrier->CheckBoundary(playerY, playerX, playerWidth, playerHeight);
+
+        // checkcollidable returns true if the object is collidable
+        if (boundaryCheck == "top") {
+            blockBottom = true;
+        }
+        if (boundaryCheck == "bottom") {
+            blockTop = true;
+        }
+        if (boundaryCheck == "left") {
+            blockRight = true;
+        }
+        if (boundaryCheck == "right") {
             blockLeft = true;
         }
     }

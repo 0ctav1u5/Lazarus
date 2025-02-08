@@ -27,7 +27,9 @@ public:
 	std::shared_ptr<Level> GetLevel(int i);
 	size_t GetLevelsCount() const;
 	void PlayerMove(int x, int y);
-	void CollisionChecker(int levelnum, int playerY, int playerX, int playerWidth, int playerHeight,
+	void GameObjectCollisionChecker(int levelnum, int playerY, int playerX, int playerWidth, int playerHeight,
+	bool& blockBottom, bool& blockTop, bool& blockRight, bool& blockLeft);
+	void BarrierCollisionChecker(int levelnum, int playerY, int playerX, int playerWidth, int playerHeight,
 	bool& blockBottom, bool& blockTop, bool& blockRight, bool& blockLeft);
 	void CheckPlayerStatus(int& LevelID, bool& running);
 	void Level2(int& LevelID);

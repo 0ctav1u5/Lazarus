@@ -1,5 +1,6 @@
 #include "Level.hpp"
 #include "GameObject.hpp"
+#include "Barrier.hpp"
 
 void Level::RenderLevel(SDL_Renderer* renderer) { // this will be used to render the level
 	SDL_Surface* surface = IMG_Load(BackgroundImage);
@@ -21,6 +22,10 @@ void Level::RenderLevel(SDL_Renderer* renderer) { // this will be used to render
 	for (auto& gameobject : GameObjects) {
 		gameobject->RenderGameObject(renderer);
 	}
+	for (auto& barrier : Barriers) {
+		barrier->RenderBarrier(renderer);
+	}
+	
 }
 
 std::shared_ptr<GameObject> Level::GetGameObject(int i) {
@@ -50,6 +55,31 @@ bool Level::MakeGameObject(int x, int y, int width, int height, bool cancollide,
 	}
 }
 
+std::shared_ptr<Barrier> Level::GetBarrier(int i) {
+	if (i >= 0 && i < Barriers.size()) {
+		return Barriers[i];
+	}
+	std::cerr << "Barrier index out of bounds: " << i << std::endl;
+	return nullptr;
+}
+
+size_t Level::GetBarriersCount() const {
+	return Barriers.size();
+}
+
+bool Level::MakeBarrier(int x, int y, int width, int height) {
+	try {
+		auto object = std::make_shared<Barrier>(x, y, width, height);
+		Barriers.push_back(object);
+		return true;
+	}
+
+	catch (const std::exception& e) {
+		std::cerr << "Cannot make new object: " << e.what() << std::endl;
+		return false;
+	}
+}
+
 int Level::GetLeftBoundary() {
 	return this->LEFT_BOUNDARY;
 }
@@ -65,8 +95,6 @@ int Level::GetUpperBoundary() {
 int Level::GetLowerBoundary() {
 	return this->LOWER_BOUNDARY;
 }
-
-
 
 int Level::GetInstanceID() const {
 	return InstanceID; // The unique identifier for this Level instance

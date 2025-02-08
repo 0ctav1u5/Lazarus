@@ -142,6 +142,7 @@
     <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Barrier.hpp" />
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameEngine.hpp" />
     <ClInclude Include="GameObject.hpp" />

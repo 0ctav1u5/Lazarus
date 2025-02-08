@@ -9,7 +9,7 @@ private:
 	SDL_Rect rect;
 	int X, Y, WIDTH, HEIGHT;
 	bool CanCollide;
-	bool CanDamage;
+	bool CanDamage; // damage zone is in the centre point line and right of the rect
 	bool CanCollect;
 	bool Visible;
 public:

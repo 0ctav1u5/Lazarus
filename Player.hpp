@@ -15,6 +15,7 @@ private:
 	SDL_Surface* SURFACE = nullptr;
 	SDL_Rect PlayerPos = {};
 	SDL_Texture* texture = nullptr;
+	bool DEBUG_MODE = false; // for the programmer only
 
 public:
 

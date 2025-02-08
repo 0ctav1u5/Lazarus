@@ -6,6 +6,7 @@
 #include <vector>
 #include <memory>
 #include "GameObject.hpp"
+#include "Barrier.hpp"
 
 class Level {
 private:
@@ -22,6 +23,7 @@ private:
 
 
     std::vector<std::shared_ptr<GameObject>> GameObjects; 
+    std::vector<std::shared_ptr<Barrier>> Barriers;
 
 public:
 
@@ -37,6 +39,9 @@ public:
     bool MakeGameObject(int x, int y, int width, int height, bool cancollide,
     bool candamage, bool cancollect, bool visible);
     std::shared_ptr<GameObject> GetGameObject(int i);
+    std::shared_ptr<Barrier> GetBarrier(int i);
+    size_t GetBarriersCount() const;
+    bool MakeBarrier(int x, int y, int width, int height);
     int GetInstanceID() const; 
     int GetRightBoundary();
     int GetLeftBoundary();

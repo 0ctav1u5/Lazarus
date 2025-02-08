@@ -89,11 +89,18 @@ void Player::RenderPlayer(SDL_Renderer* renderer) {
 		return;
 	}
 	PlayerPos = { PosX, PosY, PlayerRectWidth, PlayerRectHeight };
-	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND); 
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0); // RGB make last digit 0 for transparency
+	if (DEBUG_MODE) {
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	}
+	else {
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+	}
+	 // RGB make last digit 0 for transparency
 	SDL_RenderFillRect(renderer, &PlayerPos);
 	SDL_RenderCopy(renderer, texture, NULL, &PlayerPos);
 }
+
 
 void Player::RenderPlayerHP(SDL_Renderer* renderer) {
 	TTF_Font* font = TTF_OpenFont("Fonts/Vipnagorgialla Rg.otf", 24);
