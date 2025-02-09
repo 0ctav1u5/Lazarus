@@ -3,15 +3,19 @@
 #include <iostream>
 #include <SDL.h>
 
-
+// TODO: Add unique ID for each object so we can destroy after collecting 
 class GameObject {
 private:
-	SDL_Rect rect;
+	SDL_Rect rect = {};
+	SDL_Surface* SURFACE = nullptr;
+	SDL_Texture* texture = nullptr;
+	const char* IMAGEPATH = "";
 	int X, Y, WIDTH, HEIGHT;
 	bool CanCollide;
 	bool CanDamage; // damage zone is in the centre point line and right of the rect
 	bool CanCollect;
 	bool Visible;
+	bool HasTexture = false;
 public:
 
 	GameObject(int x, int y, int width, int height, bool cancollide, bool candamage, bool cancollect,
@@ -21,6 +25,23 @@ public:
 	{
 		rect = { X, Y, WIDTH, HEIGHT };
 	}
+
+	~GameObject() {
+		if (SURFACE) {
+			SDL_FreeSurface(SURFACE);
+		}
+		if (texture) {
+			SDL_DestroyTexture(texture);
+		}
+	}
+
+
+	void SetTexture(const char* imagepath) {
+		HasTexture = true;
+		this->IMAGEPATH = imagepath;
+		SURFACE = IMG_Load(IMAGEPATH);
+	}
+
 
 
 
@@ -33,8 +54,21 @@ public:
 			SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 			Visibility = 0;
 		}
+		
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, Visibility); // RGB
-		SDL_RenderFillRect(renderer, &rect);
+		SDL_RenderFillRect(renderer, &rect); // draws the rectangle
+
+		if (HasTexture) {
+			if (!texture && SURFACE) {
+				texture = SDL_CreateTextureFromSurface(renderer, SURFACE);
+				SDL_FreeSurface(SURFACE); // frees the surface after texture has been
+				SURFACE = nullptr; // created
+			}
+			if (texture) { // if texture does exist then execute this condition
+				SDL_RenderCopy(renderer, texture, nullptr, &rect);
+				return; // prevents drawing over the texture with the black rectangle
+			}
+		}
 	}
 
 	bool GetCanDamage() { // getters
@@ -90,5 +124,4 @@ public:
 		return "";
 	}
 };
-
 #endif 

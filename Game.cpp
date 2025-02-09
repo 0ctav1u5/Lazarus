@@ -233,7 +233,7 @@ void Game::Level2(int& LevelID) { // loads assets for level 2
 
     // In the makegameobject method, there are 4 bools at the end, for cancollide, candamage
     // cancollect and visible
-    if (!Levels[LevelID]->MakeGameObject(Fire.ObjectX, Fire.ObjectY, Fire.ObjectWidth, 
+    if (!Levels[LevelID]->MakeGameObject(Fire.ObjectX, Fire.ObjectY, Fire.ObjectWidth,
         Fire.ObjectHeight, false, true, false, false)) {
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return;
@@ -264,11 +264,18 @@ void Game::Level3(int& LevelID) {
 }
 
 void Game::Level4(int& LevelID) {
-    if (!MakeLevel("LevelThree", "Images/Map4.png", LevelID, -30, 530, -100, 410)) { // left, right, upper, down
+    if (!MakeLevel("LevelThree", "Images/Map4.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
         std::cerr << "Couldn't create Level three!" << std::endl;
         return;
     }
-    PlayerMove(0, 280); // resets spawn point to bottom of map
+    if (!Levels[LevelID]->MakeGameObject(170, -10, 150,
+        150, false, false, true, false)) { // cancollide, candamage, cancollect, visible, hastexture
+        std::cerr << "Couldn't create Game Object!" << std::endl;
+        return;
+    }
+
+    Levels[LevelID]->GetGameObject(0)->SetTexture("Images/Rifle.png"); // sets texture to true
+    PlayerMove(-150, 280); // resets spawn point to bottom of map
 }
 
 void Game::PlayerMove(int x, int y) {
