@@ -78,8 +78,6 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
     SDL_Rect PauseText = { 140, 220, 200, 50 };  // x, y, width, height
     SDL_Rect SaveText = { 10, 0, 100, 50 };
     SDL_Rect ExitText = { 390, 0, 100, 50 };
- 
-
 
     while (pauseloop) {
         SDL_GetMouseState(&mouseX, &mouseY);
@@ -213,6 +211,9 @@ void Game::ChangeLevel(int& LevelID) {
         if (LevelID == 1 && Players[0]->GetX() == 470) {
             Level3(LevelID);
         }
+        if (LevelID == 2 && Players[0]->GetY() == -90) {
+            Level4(LevelID);
+        }
     return;
 }
 
@@ -260,6 +261,14 @@ void Game::Level3(int& LevelID) {
         return;
     }
     PlayerMove(-260, 140);
+}
+
+void Game::Level4(int& LevelID) {
+    if (!MakeLevel("LevelThree", "Images/Map4.png", LevelID, -30, 530, -100, 410)) { // left, right, upper, down
+        std::cerr << "Couldn't create Level three!" << std::endl;
+        return;
+    }
+    PlayerMove(0, 280); // resets spawn point to bottom of map
 }
 
 void Game::PlayerMove(int x, int y) {

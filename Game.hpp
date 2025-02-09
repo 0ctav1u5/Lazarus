@@ -32,6 +32,7 @@ public:
 	void CheckPlayerStatus(int& LevelID, bool& running);
 	void Level2(int& LevelID);
 	void Level3(int& LevelID);
+	void Level4(int& LevelID);
 
 };
 
