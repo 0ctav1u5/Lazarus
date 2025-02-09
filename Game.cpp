@@ -139,7 +139,6 @@ void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID) {
 
 
     GameObjectCollisionChecker(LevelNum, playerY, playerX, playerWidth, playerHeight, blockBottom, blockTop, blockRight, blockLeft);
-    BarrierCollisionChecker(LevelNum, playerY, playerX, playerWidth, playerHeight, blockBottom, blockTop, blockRight, blockLeft);
     
     // for instance, it would be level[i]->LEFT_BOUNDARY
     if (keyboardState[SDL_SCANCODE_LEFT]) {
@@ -218,9 +217,12 @@ void Game::ChangeLevel(int& LevelID) {
 }
 
 void Game::Level2(int& LevelID) { // loads assets for level 2
+
+    // TODO: Make four structs for MakeLevel functions, such that we can have
+    // standardized borders for left, right, up and down
+
     ObjectProperties Fire = { 10, 150, 100, 100 }; // x, y, width, height
-    ObjectProperties Barrier = { 470, 200, 100, 100 };
-    ObjectProperties Barrier2 = { 470, 370, 100, 100 };
+    ObjectProperties Barrier = { 530, 220, 100, 300 };
 
 
     if (!MakeLevel("LevelTwo", "Images/Grass.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
@@ -235,19 +237,26 @@ void Game::Level2(int& LevelID) { // loads assets for level 2
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return;
     }
-    if (!Levels[LevelID]->MakeBarrier(530, 220, 100,
-        300)) {
+    if (!Levels[LevelID]->MakeBarrier(Barrier.ObjectX, Barrier.ObjectY, Barrier.ObjectWidth,
+        Barrier.ObjectHeight)) {
         std::cerr << "Couldn't create barrier!" << std::endl;
         return;
     }
-    
-
     PlayerMove(0, 280); // resets spawn point to bottom of map
 }
 
+
 void Game::Level3(int& LevelID) {
-    if (!MakeLevel("LevelThree", "Images/RoadBackground2.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
+    ObjectProperties Barrier = { 0, -50, 250, 50 };
+
+    if (!MakeLevel("LevelThree", "Images/RoadBackground2.png", LevelID, -30, 530, -100, 410)) { // left, right, upper, down
         std::cerr << "Couldn't create Level three!" << std::endl;
+        return;
+    }
+
+    if (!Levels[LevelID]->MakeBarrier(Barrier.ObjectX, Barrier.ObjectY, Barrier.ObjectWidth,
+        Barrier.ObjectHeight)) {
+        std::cerr << "Couldn't create barrier!" << std::endl;
         return;
     }
     PlayerMove(-260, 140);
@@ -356,10 +365,6 @@ void Game::GameObjectCollisionChecker(int levelnum, int playerY, int playerX, in
             blockLeft = true;
         }
     }
-}
-
-void Game::BarrierCollisionChecker(int levelnum, int playerY, int playerX, int playerWidth, int playerHeight,
-    bool& blockBottom, bool& blockTop, bool& blockRight, bool& blockLeft) {
 
     for (size_t i = 0; i < Levels[levelnum]->GetBarriersCount(); ++i) {
         auto barrier = Levels[levelnum]->GetBarrier(i); // get all game objects in level[i]
@@ -384,3 +389,4 @@ void Game::BarrierCollisionChecker(int levelnum, int playerY, int playerX, int p
         }
     }
 }
+

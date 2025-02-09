@@ -36,7 +36,7 @@ public:
 			return "left";
 		}
 
-		if (PlayerX == X + WIDTH && (PlayerY + PlayerHeight >= Y && PlayerY <= Y + WIDTH)) {
+		if (PlayerX == X + WIDTH && (PlayerY + PlayerHeight >= Y && PlayerY <= Y + HEIGHT)) {
 			return "right";
 		}
 
