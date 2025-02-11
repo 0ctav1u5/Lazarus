@@ -31,13 +31,15 @@ public:
         : LevelName(levelname), BackgroundImage(backgroundimage), LEFT_BOUNDARY(lb),
         RIGHT_BOUNDARY(rb), UPPER_BOUNDARY(ub), LOWER_BOUNDARY(lwb)
     {
-        InstanceID = LevelIDCounter++; 
+        InstanceID = LevelIDCounter++; // this increments everytime a Level Object is created
+        std::cout << "Level " << InstanceID << " created!" << std::endl;
     }
 
     size_t GetGameObjectsCount() const;
     void RenderLevel(SDL_Renderer* renderer);
     bool MakeGameObject(int x, int y, int width, int height, bool cancollide,
     bool candamage, bool cancollect, bool visible);
+    void RemoveGameObject(int i);
     std::shared_ptr<GameObject> GetGameObject(int i);
     std::shared_ptr<Barrier> GetBarrier(int i);
     size_t GetBarriersCount() const;
@@ -47,5 +49,6 @@ public:
     int GetLeftBoundary();
     int GetUpperBoundary();
     int GetLowerBoundary();
+    std::vector<std::shared_ptr<GameObject>>& GetGameObjectVector();
 };
 #endif 

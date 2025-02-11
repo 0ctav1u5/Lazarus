@@ -28,6 +28,10 @@ void Level::RenderLevel(SDL_Renderer* renderer) { // this will be used to render
 	
 }
 
+std::vector<std::shared_ptr<GameObject>>& Level::GetGameObjectVector() {
+	return this->GameObjects;
+}
+
 std::shared_ptr<GameObject> Level::GetGameObject(int i) {
 	if (i >= 0 && i < GameObjects.size()) {
 		return GameObjects[i];
@@ -53,6 +57,10 @@ bool Level::MakeGameObject(int x, int y, int width, int height, bool cancollide,
 		std::cerr << "Cannot make new object: " << e.what() << std::endl;
 		return false;
 	}
+}
+
+void Level::RemoveGameObject(int i) { // now call this
+		GameObjects.erase(GameObjects.begin() + i);
 }
 
 std::shared_ptr<Barrier> Level::GetBarrier(int i) {

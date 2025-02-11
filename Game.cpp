@@ -7,6 +7,7 @@
 #include "Player.hpp"
 #include "Level.hpp"
 
+bool swordcollected = false;
 int Level::LevelIDCounter = 0;
 
 void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
@@ -182,6 +183,7 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running) {
     if (NewTime - OldTime > cooldown) {
         for (int i = 0; i < Levels[LevelID]->GetGameObjectsCount(); ++i) {
             bool objectcandamage = Levels[LevelID]->GetGameObject(i)->GetCanDamage();
+            
 
             int ObjectX = Levels[LevelID]->GetGameObject(i)->GetX();
             int ObjectY = Levels[LevelID]->GetGameObject(i)->GetY();
@@ -198,6 +200,37 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running) {
             }
         }
     }
+
+
+    std::shared_ptr<Level> level = Levels[LevelID];  
+    auto& objects = level->GetGameObjectVector();   
+
+    // had to use a lambda expression here to solve the problem of removing shared pointers from vector
+    objects.erase(std::remove_if(objects.begin(), objects.end(),
+        [&](const std::shared_ptr<GameObject>& obj) {
+            // check if the object must be removed
+            bool objectcollectible = obj->GetCanCollect();
+            int ObjectX = obj->GetX();
+            int ObjectY = obj->GetY();
+
+            // if object can be collected and is within the specified range
+            if (objectcollectible &&
+                ((PlayerY + PlayerHeight - 20 >= ObjectY + 30) &&
+                    (PlayerY + PlayerHeight - 20 <= ObjectY + 60)) &&
+                PlayerX + 10 >= ObjectX &&
+                PlayerX <= ObjectX + 40) {
+
+                // we need to have a function here which passes the game object
+                // and I will give the game objects names so we know whats been
+                // picked up 
+
+                // if true is returned, then the object is removed
+                return true;
+            }
+
+            // if false, then do not remove the object
+            return false;
+        }), objects.end());
 
     if (Players[0]->GetHP() <= 0) {
         running = false;
@@ -268,8 +301,8 @@ void Game::Level4(int& LevelID) {
         std::cerr << "Couldn't create Level three!" << std::endl;
         return;
     }
-    if (!Levels[LevelID]->MakeGameObject(170, -10, 150,
-        150, false, false, true, false)) { // cancollide, candamage, cancollect, visible, hastexture
+    if (!Levels[LevelID]->MakeGameObject(170, 50, 150,
+        150, false, false, true, false)) { // cancollide, candamage, cancollect, visible
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return;
     }

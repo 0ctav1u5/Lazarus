@@ -35,15 +35,20 @@ public:
 		}
 	}
 
+	void FlipTexture() { // check rendergameobject
+		if (HasTexture) {
+			HasTexture = false;
+		}
+		else {
+			HasTexture = true;
+		}
+	}
 
 	void SetTexture(const char* imagepath) {
 		HasTexture = true;
 		this->IMAGEPATH = imagepath;
 		SURFACE = IMG_Load(IMAGEPATH);
 	}
-
-
-
 
 	void RenderGameObject(SDL_Renderer* renderer) {
 		int Visibility = 0;
@@ -67,6 +72,14 @@ public:
 			if (texture) { // if texture does exist then execute this condition
 				SDL_RenderCopy(renderer, texture, nullptr, &rect);
 				return; // prevents drawing over the texture with the black rectangle
+			}
+		}
+		else { // TODO: have this be for collectible items instead of clicking save button
+			if (SURFACE) {
+				SDL_FreeSurface(SURFACE);
+			}
+			if (texture) {
+				SDL_DestroyTexture(texture);
 			}
 		}
 	}
