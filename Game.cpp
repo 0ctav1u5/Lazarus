@@ -6,6 +6,11 @@
 #include "Game.hpp"
 #include "Player.hpp"
 #include "Level.hpp"
+#include "Message.hpp"
+
+
+
+// TODO: ADD MESSAGE CLASS
 
 bool swordcollected = false;
 int Level::LevelIDCounter = 0;
@@ -21,8 +26,10 @@ void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
     }
 }
 
+// TODO: convert all ttf messages to message class objects directly
 void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
     int mouseX, mouseY;
+    Message msg1("Hello World!", 100, 100, 200, 100); // x, y, w, h
     // load font
     TTF_Font* font = TTF_OpenFont("Fonts/Vipnagorgialla Rg.otf", 24);
     if (!font) {
@@ -47,7 +54,6 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
     SDL_Surface* textSurface2 = TTF_RenderText_Solid(font, "Save", textColour); // font, text, colour
     SDL_Surface* textSurface3 = TTF_RenderText_Solid(font, "Exit", textColour); // font, text, colour
     
-
     if (textSurface) {
         textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
         SDL_FreeSurface(textSurface);  
@@ -75,7 +81,6 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
         return;
     }
     
-
     SDL_Rect PauseText = { 140, 220, 200, 50 };  // x, y, width, height
     SDL_Rect SaveText = { 10, 0, 100, 50 };
     SDL_Rect ExitText = { 390, 0, 100, 50 };
@@ -216,7 +221,7 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running) {
             // if object can be collected and is within the specified range
             if (objectcollectible &&
                 ((PlayerY + PlayerHeight - 20 >= ObjectY + 30) &&
-                    (PlayerY + PlayerHeight - 20 <= ObjectY + 60)) &&
+                    (PlayerY + PlayerHeight - 20 <= ObjectY + 70)) &&
                 PlayerX + 10 >= ObjectX &&
                 PlayerX <= ObjectX + 40) {
 
@@ -231,6 +236,9 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running) {
             // if false, then do not remove the object
             return false;
         }), objects.end());
+
+
+    
 
     if (Players[0]->GetHP() <= 0) {
         running = false;
@@ -301,7 +309,7 @@ void Game::Level4(int& LevelID) {
         std::cerr << "Couldn't create Level three!" << std::endl;
         return;
     }
-    if (!Levels[LevelID]->MakeGameObject(170, 50, 150,
+    if (!Levels[LevelID]->MakeGameObject(170, 10, 150,
         150, false, false, true, false)) { // cancollide, candamage, cancollect, visible
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return;

@@ -7,11 +7,13 @@
 #include "Player.hpp"
 #include "Level.hpp"
 #include "GameObject.hpp"
+#include "Message.hpp"
 
 class Game {
 private:
 	std::vector<std::shared_ptr<Player>> Players;
 	std::vector<std::shared_ptr<Level>> Levels;
+	std::vector <std::shared_ptr<Message>> Messages;
 public:
 
 	Game() {}

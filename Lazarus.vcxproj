@@ -147,6 +147,7 @@
     <ClInclude Include="GameEngine.hpp" />
     <ClInclude Include="GameObject.hpp" />
     <ClInclude Include="Level.hpp" />
+    <ClInclude Include="Message.hpp" />
     <ClInclude Include="Player.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
