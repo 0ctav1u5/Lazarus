@@ -8,9 +8,8 @@
 #include "Level.hpp"
 #include "Message.hpp"
 
+std::vector<std::string> inventory = {};
 
-
-// TODO: ADD MESSAGE CLASS
 
 bool swordcollected = false;
 int Level::LevelIDCounter = 0;
@@ -29,7 +28,7 @@ void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
 // TODO: convert all ttf messages to message class objects directly
 void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
     int mouseX, mouseY;
-    Message msg1("Hello World!", 100, 100, 200, 100); // x, y, w, h
+    
     // load font
     TTF_Font* font = TTF_OpenFont("Fonts/Vipnagorgialla Rg.otf", 24);
     if (!font) {
@@ -225,6 +224,15 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running) {
                 PlayerX + 10 >= ObjectX &&
                 PlayerX <= ObjectX + 40) {
 
+                for (auto& game : objects) {
+                    inventory.push_back(game->GetName());
+            }
+
+                for (int i = 0; i < inventory.size(); i++) {
+                    std::cout << "You currently have in your inventory: " << std::endl;
+                    std::cout << inventory[i] << std::endl;
+                }
+
                 // we need to have a function here which passes the game object
                 // and I will give the game objects names so we know whats been
                 // picked up 
@@ -238,7 +246,7 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running) {
         }), objects.end());
 
 
-    
+    // Message msg1("Hello World!", 100, 100, 200, 100); // x, y, w, h
 
     if (Players[0]->GetHP() <= 0) {
         running = false;
@@ -274,7 +282,7 @@ void Game::Level2(int& LevelID) { // loads assets for level 2
 
     // In the makegameobject method, there are 4 bools at the end, for cancollide, candamage
     // cancollect and visible
-    if (!Levels[LevelID]->MakeGameObject(Fire.ObjectX, Fire.ObjectY, Fire.ObjectWidth,
+    if (!Levels[LevelID]->MakeGameObject("Fire", Fire.ObjectX, Fire.ObjectY, Fire.ObjectWidth,
         Fire.ObjectHeight, false, true, false, false)) {
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return;
@@ -309,7 +317,7 @@ void Game::Level4(int& LevelID) {
         std::cerr << "Couldn't create Level three!" << std::endl;
         return;
     }
-    if (!Levels[LevelID]->MakeGameObject(170, 10, 150,
+    if (!Levels[LevelID]->MakeGameObject("Gun", 170, 10, 150,
         150, false, false, true, false)) { // cancollide, candamage, cancollect, visible
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return;
@@ -385,12 +393,12 @@ bool Game::LoadAssets(SDL_Renderer* renderer, int& LevelID) {
         return false;
     }
 
-    if (!Levels[0]->MakeGameObject(ObjectX, ObjectY, ObjectWidth, ObjectHeight, true, false, false, true)) {
+    if (!Levels[0]->MakeGameObject("Block1", ObjectX, ObjectY, ObjectWidth, ObjectHeight, true, false, false, true)) {
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return false;
     }
 
-    if (!Levels[0]->MakeGameObject(400, ObjectY, ObjectWidth, ObjectHeight, true, false, false, true)) {
+    if (!Levels[0]->MakeGameObject("Block2", 400, ObjectY, ObjectWidth, ObjectHeight, true, false, false, true)) {
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return false;
     }

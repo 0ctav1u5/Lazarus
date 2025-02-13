@@ -6,6 +6,7 @@
 // TODO: Add unique ID for each object so we can destroy after collecting 
 class GameObject {
 private:
+	std::string NAME = "";
 	SDL_Rect rect = {};
 	SDL_Surface* SURFACE = nullptr;
 	SDL_Texture* texture = nullptr;
@@ -18,9 +19,9 @@ private:
 	bool HasTexture = false;
 public:
 
-	GameObject(int x, int y, int width, int height, bool cancollide, bool candamage, bool cancollect,
+	GameObject(std::string name, int x, int y, int width, int height, bool cancollide, bool candamage, bool cancollect,
 		bool visible)
-		: X(x), Y(y), WIDTH(width), HEIGHT(height), CanCollide(cancollide), CanDamage(candamage), 
+		: NAME(name), X(x), Y(y), WIDTH(width), HEIGHT(height), CanCollide(cancollide), CanDamage(candamage), 
 		CanCollect(cancollect), Visible(visible)
 	{
 		rect = { X, Y, WIDTH, HEIGHT };
@@ -82,6 +83,10 @@ public:
 				SDL_DestroyTexture(texture);
 			}
 		}
+	}
+
+	std::string GetName() {
+		return this->NAME;
 	}
 
 	bool GetCanDamage() { // getters

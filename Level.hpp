@@ -37,7 +37,7 @@ public:
 
     size_t GetGameObjectsCount() const;
     void RenderLevel(SDL_Renderer* renderer);
-    bool MakeGameObject(int x, int y, int width, int height, bool cancollide,
+    bool MakeGameObject(std::string name, int x, int y, int width, int height, bool cancollide,
     bool candamage, bool cancollect, bool visible);
     void RemoveGameObject(int i);
     std::shared_ptr<GameObject> GetGameObject(int i);
