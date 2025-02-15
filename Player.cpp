@@ -5,7 +5,9 @@
 #include <SDL.h>
 #include "Player.hpp"
 
-
+void Player::GunCollected() {
+	this->guncollected = true;
+}
 
 int Player::GetX() {
 	return this->PosX;
@@ -49,16 +51,36 @@ void Player::RenderPlayer(SDL_Renderer* renderer) {
 
 	switch (DIRECTION) {
 	case 1: // Left
-		newImagePath = "Images/PlayerLeft.png";
+		if (guncollected) {
+			newImagePath = "Images/PlayerGunLeft.png";
+		}
+		else {
+			newImagePath = "Images/PlayerLeft.png";
+		}
 		break;
 	case 2: // Right
-		newImagePath = "Images/PlayerRight.png";
+		if (guncollected) {
+			newImagePath = "Images/PlayerGunRight.png";
+		}
+		else {
+			newImagePath = "Images/PlayerRight.png";
+		}
 		break;
 	case 3: // Up
-		newImagePath = "Images/PlayerUp.png";
+		if (guncollected) {
+			newImagePath = "Images/PlayerGunUp.png";
+		}
+		else {
+			newImagePath = "Images/PlayerUp.png";
+		}
 		break;
 	case 4: // Down
-		newImagePath = "Images/PlayerDown.png";
+		if (guncollected) {
+			newImagePath = "Images/PlayerGunDown.png";
+		}
+		else {
+			newImagePath = "Images/PlayerDown.png";
+		}
 		break;
 	default:
 		std::cerr << "Invalid Direction!" << std::endl;

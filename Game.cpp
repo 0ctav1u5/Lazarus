@@ -10,9 +10,6 @@
 
 std::vector<std::string> inventory = {};
 int collected = 0;
-
-
-bool swordcollected = false;
 int Level::LevelIDCounter = 0;
 
 void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
@@ -131,6 +128,7 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
 void Game::DisplayMessages(SDL_Renderer* renderer) {
     static int displaytime = 0;
     if (collected > 0 && collected < 2) {
+        Players[0]->GunCollected();
         // collected is 1 but messages is the 0th index of the array
         while (SDL_GetTicks() < displaytime + 1000) {
             Messages[collected - 1]->RenderMessage(renderer);

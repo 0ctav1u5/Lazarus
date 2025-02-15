@@ -16,6 +16,7 @@ private:
 	SDL_Rect PlayerPos = {};
 	SDL_Texture* texture = nullptr;
 	bool DEBUG_MODE = false; // for the programmer only
+	bool guncollected = false;
 
 public:
 
@@ -33,5 +34,6 @@ public:
 	void Move(int changeX, int changeY);
 	void DamagePlayer(int damage);
 	void RenderPlayerHP(SDL_Renderer* renderer);
+	void GunCollected();
 };
 #endif
