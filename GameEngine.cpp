@@ -64,7 +64,8 @@ void GameEngine::GameLoop() {
         frameStart = SDL_GetTicks(); // start of frame
         game->HandleEvents(e, running, renderer);
         game->UserInput(running, keyboardState, LevelID);
-        game->CheckPlayerStatus(LevelID, running);
+        game->CheckPlayerStatus(LevelID, running, renderer);
+        
 
         // CheckLevelID(); uncomment when debugging
 
@@ -74,6 +75,7 @@ void GameEngine::GameLoop() {
         game->GetPlayer(0)->RenderPlayerHP(renderer);
         game->ChangeLevel(LevelID);
         SDL_RenderPresent(renderer);
+        game->DisplayMessages(renderer);
         frameTime = SDL_GetTicks() - frameStart;  // time taken for this frame to have been rendered
         if (frameDelay > frameTime) {
             SDL_Delay(frameDelay - frameTime);  // delay to maintain a consistent fps

@@ -9,6 +9,7 @@
 #include "Message.hpp"
 
 std::vector<std::string> inventory = {};
+int collected = 0;
 
 
 bool swordcollected = false;
@@ -127,6 +128,20 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
     TTF_CloseFont(font);  // for closing font when function ends
 }
 
+void Game::DisplayMessages(SDL_Renderer* renderer) {
+    static int displaytime = 0;
+    if (collected > 0 && collected < 2) {
+        // collected is 1 but messages is the 0th index of the array
+        while (SDL_GetTicks() < displaytime + 1000) {
+            Messages[collected - 1]->RenderMessage(renderer);
+            SDL_RenderPresent(renderer);
+        }
+    }
+    else { // we will have a lot of elseif statements for each item
+        displaytime = SDL_GetTicks();
+    }
+}
+
 
 // we'll use LevelID here to determine which level, for setting boundaries
 // boundaries will be a struct, and we'll have an array
@@ -176,7 +191,7 @@ void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID) {
 }
 
 // this function will check if the player is being damaged, as well as other effects
-void Game::CheckPlayerStatus(int& LevelID, bool& running) {
+void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer) {
     static int OldTime = 0;  
     int cooldown = 500;
     int NewTime = SDL_GetTicks();
@@ -187,8 +202,6 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running) {
     if (NewTime - OldTime > cooldown) {
         for (int i = 0; i < Levels[LevelID]->GetGameObjectsCount(); ++i) {
             bool objectcandamage = Levels[LevelID]->GetGameObject(i)->GetCanDamage();
-            
-
             int ObjectX = Levels[LevelID]->GetGameObject(i)->GetX();
             int ObjectY = Levels[LevelID]->GetGameObject(i)->GetY();
             int ObjectWidth = Levels[LevelID]->GetGameObject(i)->GetGameObjectWidth();
@@ -204,7 +217,6 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running) {
             }
         }
     }
-
 
     std::shared_ptr<Level> level = Levels[LevelID];  
     auto& objects = level->GetGameObjectVector();   
@@ -232,22 +244,21 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running) {
                     std::cout << "You currently have in your inventory: " << std::endl;
                     std::cout << inventory[i] << std::endl;
                 }
-
-                // we need to have a function here which passes the game object
-                // and I will give the game objects names so we know whats been
-                // picked up 
-
-                // if true is returned, then the object is removed
+                std::string message = "You picked up a ";
+                std::string message2 = inventory[collected];
+                message.append(message2);
+                if (!MakeMessage(message, 140, 220, 200, 50)) { // left, right, upper, down
+                    std::cerr << "Message failed to load!" << std::endl;
+                    return false;
+                }
+                collected++;
                 return true;
             }
-
             // if false, then do not remove the object
             return false;
         }), objects.end());
 
-
     // Message msg1("Hello World!", 100, 100, 200, 100); // x, y, w, h
-
     if (Players[0]->GetHP() <= 0) {
         running = false;
     }
@@ -329,6 +340,18 @@ void Game::Level4(int& LevelID) {
 
 void Game::PlayerMove(int x, int y) {
     Players[0].get()->Move(x, y);
+}
+
+bool Game::MakeMessage(std::string msg, int x, int y, int w, int h) {
+    try {
+        auto message = std::make_shared<Message>(msg, x, y, w, h);
+        Messages.push_back(std::move(message));
+        return true;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Cannot make new message: " << e.what() << std::endl;
+        return false;
+    }
 }
 
 bool Game::MakePlayer(std::string name, int posx, int posy, const char* imagepath, int speed) {

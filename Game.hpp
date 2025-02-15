@@ -13,10 +13,14 @@ class Game {
 private:
 	std::vector<std::shared_ptr<Player>> Players;
 	std::vector<std::shared_ptr<Level>> Levels;
-	std::vector <std::shared_ptr<Message>> Messages;
+	std::vector<std::shared_ptr<Message>> Messages; 
 public:
 
 	Game() {}
+
+	~Game() {
+		
+	}
 	void PauseMenu(SDL_Renderer* renderer, bool& running);
 	bool LoadAssets(SDL_Renderer* renderer, int& LevelID);
 	bool MakePlayer(std::string name, int posx, int posy, const char* imagepath, int speed);
@@ -31,10 +35,12 @@ public:
 	void PlayerMove(int x, int y);
 	void GameObjectCollisionChecker(int levelnum, int playerY, int playerX, int playerWidth, int playerHeight,
 	bool& blockBottom, bool& blockTop, bool& blockRight, bool& blockLeft);
-	void CheckPlayerStatus(int& LevelID, bool& running);
+	void CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer);
 	void Level2(int& LevelID);
 	void Level3(int& LevelID);
 	void Level4(int& LevelID);
+	bool MakeMessage(std::string message, int x, int y, int w, int h);
+	void DisplayMessages(SDL_Renderer* renderer);
 
 };
 
