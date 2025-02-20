@@ -62,17 +62,20 @@ void GameEngine::GameLoop() {
 
     while (running) {
         frameStart = SDL_GetTicks(); // start of frame
-        game->HandleEvents(e, running, renderer);
         game->UserInput(running, keyboardState, LevelID);
+        game->HandleEvents(e, running, renderer);
         game->CheckPlayerStatus(LevelID, running, renderer);
         
-
         // CheckLevelID(); uncomment when debugging
 
         SDL_RenderClear(renderer);
         game->GetLevel(LevelID)->RenderLevel(renderer);
         game->GetPlayer(0)->RenderPlayer(renderer); 
         game->GetPlayer(0)->RenderPlayerHP(renderer);
+        // if getbulletsize > 0 && Bullets[i] < Bullets.size();
+        if (game->GetBulletsSize() > 0 && game->GetBullets()[game->GetBulletsSize() - 1] != nullptr) {
+            game->GetBullet(0)->RenderBullet(renderer);
+        }
         game->ChangeLevel(LevelID);
         SDL_RenderPresent(renderer);
         game->DisplayMessages(renderer);

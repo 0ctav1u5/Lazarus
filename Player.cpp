@@ -29,6 +29,10 @@ int Player::GetPlayerHeight() {
 	return this->PlayerRectHeight;
 }
 
+int Player::GetDirection() {
+	return this->DIRECTION;
+}
+
 void Player::Move(int changeX, int changeY) {
 	PosX += changeX * SPEED;
 	PosY += changeY * SPEED;
@@ -53,6 +57,7 @@ void Player::RenderPlayer(SDL_Renderer* renderer) {
 	case 1: // Left
 		if (guncollected) {
 			newImagePath = "Images/PlayerGunLeft.png";
+			// bools for left
 		}
 		else {
 			newImagePath = "Images/PlayerLeft.png";

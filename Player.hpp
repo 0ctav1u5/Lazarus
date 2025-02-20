@@ -35,5 +35,6 @@ public:
 	void DamagePlayer(int damage);
 	void RenderPlayerHP(SDL_Renderer* renderer);
 	void GunCollected();
+	int GetDirection();
 };
 #endif

@@ -11,14 +11,59 @@
 std::vector<std::string> inventory = {};
 int collected = 0;
 int Level::LevelIDCounter = 0;
+int testing = 0;
+
+
+// if gun is collected
+// && if gun is up, left, right or down, we are going to have
+// the bullet spawn in a different area
+// it must be deleted after it its a certain point
 
 void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
     while (SDL_PollEvent(&e)) {
-        if (e.type == SDL_QUIT || (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)) {
-            running = false;
-        }
-        if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE) {
+        if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) {
             PauseMenu(renderer, running);
+        }
+        if ((e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE) && Bullets.size() == 0 && collected > 0) {
+            int RightX = Players[0]->GetX() + 70;
+            int RightY = Players[0]->GetY() + 45; // cant be rendered until made
+
+            int LeftX = Players[0]->GetX() + 30;
+            int LeftY = Players[0]->GetY() + 45; // cant be rendered until made
+
+            int UpX = Players[0]->GetX() + 50;
+            int UpY = Players[0]->GetY(); // cant be rendered until made
+
+            int DownX = Players[0]->GetX() + 50;
+            int DownY = Players[0]->GetY() + 65; // cant be rendered until made
+
+            std::cout << Players[0]->GetDirection() << std::endl;
+
+
+            if (Players[0]->GetDirection() == 2) { // right
+                if (!MakeBullet(4, 10, RightX, RightY)) { // speed, damage
+                    std::cerr << "Bullet not created!" << std::endl;
+                }
+                Bullets[0]->SetDirection(4);
+            }
+            if (Players[0]->GetDirection() == 1) { // left
+                if (!MakeBullet(4, 10, LeftX, LeftY)) { // speed, damage
+                    std::cerr << "Bullet not created!" << std::endl;
+                }
+                Bullets[0]->SetDirection(3);
+            }
+            if (Players[0]->GetDirection() == 3) { // up
+                if (!MakeBullet(4, 10, UpX, UpY)) { // speed, damage
+                    std::cerr << "Bullet not created!" << std::endl;
+                }
+                Bullets[0]->SetDirection(1);
+            }
+            if (Players[0]->GetDirection() == 4) { // down
+                if (!MakeBullet(4, 10, DownX, DownY)) { // speed, damage
+                    std::cerr << "Bullet not created!" << std::endl;
+                }
+                Bullets[0]->SetDirection(2);
+            }
         }
     }
 }
@@ -86,7 +131,7 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
         SDL_GetMouseState(&mouseX, &mouseY);
 
         while (SDL_PollEvent(&p)) {
-            if (p.type == SDL_KEYDOWN && p.key.keysym.sym == SDLK_SPACE) {
+            if (p.type == SDL_KEYDOWN && p.key.keysym.sym == SDLK_ESCAPE) {
                 pauseloop = false;  
             } // button left = lmb
             else if (p.type == SDL_MOUSEBUTTONDOWN && p.button.button == SDL_BUTTON_LEFT) {
@@ -155,19 +200,19 @@ void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID) {
 
 
     GameObjectCollisionChecker(LevelNum, playerY, playerX, playerWidth, playerHeight, blockBottom, blockTop, blockRight, blockLeft);
-    
+
     // for instance, it would be level[i]->LEFT_BOUNDARY
     if (keyboardState[SDL_SCANCODE_LEFT]) {
         if (!blockLeft && playerX > Levels[LevelID]->GetLeftBoundary()) {
             PlayerMove(-1, 0); // Move left
-            Players[0]->SetDirectionGraphic(1); 
+            Players[0]->SetDirectionGraphic(1);
         }
     }
 
     if (keyboardState[SDL_SCANCODE_RIGHT]) {
         if (!blockRight && (playerX + playerWidth < Levels[LevelID]->GetRightBoundary())) {
             PlayerMove(1, 0); // Move right
-            Players[0]->SetDirectionGraphic(2); 
+            Players[0]->SetDirectionGraphic(2);
         }
     }
 
@@ -176,14 +221,14 @@ void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID) {
     if (keyboardState[SDL_SCANCODE_UP]) {
         if (!blockTop && (playerY >= Levels[LevelID]->GetUpperBoundary())) {
             PlayerMove(0, -1); // Move up
-            Players[0]->SetDirectionGraphic(3); 
+            Players[0]->SetDirectionGraphic(3);
         }
     }
 
     if (keyboardState[SDL_SCANCODE_DOWN]) {
         if (!blockBottom && playerY < Levels[LevelID]->GetLowerBoundary()) {
             PlayerMove(0, 1); // Move down
-            Players[0]->SetDirectionGraphic(4); 
+            Players[0]->SetDirectionGraphic(4);
         }
     }
 }
@@ -197,7 +242,7 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
     int PlayerX = Players[0]->GetX(), PlayerY = Players[0]->GetY();
     int PlayerWidth = Players[0]->GetPlayerWidth(), PlayerHeight = Players[0]->GetPlayerHeight();
 
-    if (NewTime - OldTime > cooldown) {
+    if (NewTime - OldTime > cooldown) { // cooldown period
         for (int i = 0; i < Levels[LevelID]->GetGameObjectsCount(); ++i) {
             bool objectcandamage = Levels[LevelID]->GetGameObject(i)->GetCanDamage();
             int ObjectX = Levels[LevelID]->GetGameObject(i)->GetX();
@@ -220,6 +265,7 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
     auto& objects = level->GetGameObjectVector();   
 
     // had to use a lambda expression here to solve the problem of removing shared pointers from vector
+    // this is for removing the gameobjects which are collectible
     objects.erase(std::remove_if(objects.begin(), objects.end(),
         [&](const std::shared_ptr<GameObject>& obj) {
             // check if the object must be removed
@@ -255,6 +301,13 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
             // if false, then do not remove the object
             return false;
         }), objects.end());
+
+    // this removes bullets
+    if (Bullets.size() > 0) { // getx and gety for bullets, check to see if ranges are out of bounds
+        if (Bullets[0]->GetX() < 0 || Bullets[0]->GetX() > 500 || Bullets[0]->GetY() < 0 || Bullets[0]->GetY() > 500) {
+            Bullets.erase(Bullets.begin());
+        }
+    }
 
     // Message msg1("Hello World!", 100, 100, 200, 100); // x, y, w, h
     if (Players[0]->GetHP() <= 0) {
@@ -340,6 +393,14 @@ void Game::PlayerMove(int x, int y) {
     Players[0].get()->Move(x, y);
 }
 
+int Game::GetBulletsSize() {
+    return Bullets.size();
+}
+
+std::vector<std::shared_ptr<Bullet>> Game::GetBullets() {
+    return this->Bullets;
+}
+
 bool Game::MakeMessage(std::string msg, int x, int y, int w, int h) {
     try {
         auto message = std::make_shared<Message>(msg, x, y, w, h);
@@ -364,6 +425,18 @@ bool Game::MakePlayer(std::string name, int posx, int posy, const char* imagepat
     }
 }
 
+bool Game::MakeBullet(int speed, int damage, int startx, int starty) {
+    try {
+        auto bullet = std::make_shared<Bullet>(speed, damage, startx, starty);
+        Bullets.push_back(std::move(bullet));
+        return true;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Cannot make new bullet: " << e.what() << std::endl;
+        return false;
+    }
+}
+
 bool Game::MakeLevel(std::string levelname, const char* backgroundimagepath, int& LevelID,
     int lb, int rb, int ub, int lwb) {
     try {
@@ -379,11 +452,19 @@ bool Game::MakeLevel(std::string levelname, const char* backgroundimagepath, int
 }
 
 std::shared_ptr<Player> Game::GetPlayer(int i) {
-
     if (Players[i] != nullptr && i < Players.size()) {
         return Players[i];
     }
     std::cerr << "Player out of bounds!" << std::endl;
+    return nullptr;
+}
+
+std::shared_ptr<Bullet> Game::GetBullet(int i) {
+
+    if (Bullets[i] != nullptr && i < Bullets.size()) {
+        return Bullets[i];
+    }
+    std::cerr << "Bullet out of bounds!" << std::endl;
     return nullptr;
 }
 
@@ -414,12 +495,12 @@ bool Game::LoadAssets(SDL_Renderer* renderer, int& LevelID) {
         return false;
     }
 
-    if (!Levels[0]->MakeGameObject("Block1", ObjectX, ObjectY, ObjectWidth, ObjectHeight, true, false, false, true)) {
+    if (!Levels[LevelID]->MakeGameObject("Block1", ObjectX, ObjectY, ObjectWidth, ObjectHeight, true, false, false, true)) {
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return false;
     }
 
-    if (!Levels[0]->MakeGameObject("Block2", 400, ObjectY, ObjectWidth, ObjectHeight, true, false, false, true)) {
+    if (!Levels[LevelID]->MakeGameObject("Block2", 400, ObjectY, ObjectWidth, ObjectHeight, true, false, false, true)) {
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return false;
     }
