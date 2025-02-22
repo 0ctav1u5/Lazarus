@@ -25,11 +25,22 @@ void Level::RenderLevel(SDL_Renderer* renderer) { // this will be used to render
 	for (auto& barrier : Barriers) {
 		barrier->RenderBarrier(renderer);
 	}
+	for (auto& enemy : Enemies) {
+		enemy->RenderEnemy(renderer);
+	}
 	
 }
 
 std::vector<std::shared_ptr<GameObject>>& Level::GetGameObjectVector() {
 	return this->GameObjects;
+}
+
+std::shared_ptr<Enemy> Level::GetEnemy(int i) {
+	if (i >= 0 && i < Enemies.size()) {
+		return Enemies[i];
+	}
+	std::cerr << "Enemy is out of bounds: " << i << std::endl;
+	return nullptr;
 }
 
 std::shared_ptr<GameObject> Level::GetGameObject(int i) {
@@ -42,6 +53,18 @@ std::shared_ptr<GameObject> Level::GetGameObject(int i) {
 
 size_t Level::GetGameObjectsCount() const {
 	return GameObjects.size();
+}
+
+bool Level::MakeEnemy(std::string name, int x, int y, int width, int height) {
+	try {
+		auto object = std::make_shared<Enemy>(name, x, y, width, height);
+		Enemies.push_back(object);
+		return true;
+	}
+	catch (const std::exception& e) {
+		std::cerr << "Cannot make new enemy: " << e.what() << std::endl;
+		return false;
+	}
 }
 
 bool Level::MakeGameObject(std::string name, int x, int y, int width, int height, bool cancollide,

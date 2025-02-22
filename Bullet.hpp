@@ -59,6 +59,10 @@ public:
         return this->DIRECTION;
     }
 
+    SDL_Rect& GetRect() {
+        return this->rect;
+    }
+
     int GetX() {
         return this->X;
     }

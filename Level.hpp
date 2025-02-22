@@ -7,6 +7,7 @@
 #include <memory>
 #include "GameObject.hpp"
 #include "Barrier.hpp"
+#include "Enemy.hpp"
 
 class Level {
 private:
@@ -24,6 +25,7 @@ private:
 
     std::vector<std::shared_ptr<GameObject>> GameObjects; 
     std::vector<std::shared_ptr<Barrier>> Barriers;
+    std::vector<std::shared_ptr<Enemy>> Enemies;
 
 public:
 
@@ -37,10 +39,12 @@ public:
 
     size_t GetGameObjectsCount() const;
     void RenderLevel(SDL_Renderer* renderer);
+    bool MakeEnemy(std::string name, int x, int y, int width, int height);
     bool MakeGameObject(std::string name, int x, int y, int width, int height, bool cancollide,
     bool candamage, bool cancollect, bool visible);
     void RemoveGameObject(int i);
     std::shared_ptr<GameObject> GetGameObject(int i);
+    std::shared_ptr<Enemy> GetEnemy(int i);
     std::shared_ptr<Barrier> GetBarrier(int i);
     size_t GetBarriersCount() const;
     bool MakeBarrier(int x, int y, int width, int height);

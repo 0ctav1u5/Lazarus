@@ -69,7 +69,7 @@ void GameEngine::GameLoop() {
         // CheckLevelID(); uncomment when debugging
 
         SDL_RenderClear(renderer);
-        game->GetLevel(LevelID)->RenderLevel(renderer);
+        game->GetLevel(LevelID)->RenderLevel(renderer); // renders gameobject as well
         game->GetPlayer(0)->RenderPlayer(renderer); 
         game->GetPlayer(0)->RenderPlayerHP(renderer);
         // if getbulletsize > 0 && Bullets[i] < Bullets.size();

@@ -144,6 +144,7 @@
   <ItemGroup>
     <ClInclude Include="Barrier.hpp" />
     <ClInclude Include="Bullet.hpp" />
+    <ClInclude Include="Enemy.hpp" />
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="GameEngine.hpp" />
     <ClInclude Include="GameObject.hpp" />

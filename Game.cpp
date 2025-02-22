@@ -26,40 +26,40 @@ void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
         }
         if ((e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE) && Bullets.size() == 0 && collected > 0) {
             int RightX = Players[0]->GetX() + 70;
-            int RightY = Players[0]->GetY() + 45; // cant be rendered until made
+            int RightY = Players[0]->GetY() + 45; // bullet spawn points determined by player graphic
 
             int LeftX = Players[0]->GetX() + 30;
-            int LeftY = Players[0]->GetY() + 45; // cant be rendered until made
+            int LeftY = Players[0]->GetY() + 45; 
 
             int UpX = Players[0]->GetX() + 50;
-            int UpY = Players[0]->GetY(); // cant be rendered until made
+            int UpY = Players[0]->GetY(); 
 
             int DownX = Players[0]->GetX() + 50;
-            int DownY = Players[0]->GetY() + 65; // cant be rendered until made
+            int DownY = Players[0]->GetY() + 65; 
 
             std::cout << Players[0]->GetDirection() << std::endl;
 
 
             if (Players[0]->GetDirection() == 2) { // right
-                if (!MakeBullet(4, 10, RightX, RightY)) { // speed, damage
+                if (!MakeBullet(5, 10, RightX, RightY)) { // speed, damage
                     std::cerr << "Bullet not created!" << std::endl;
                 }
                 Bullets[0]->SetDirection(4);
             }
             if (Players[0]->GetDirection() == 1) { // left
-                if (!MakeBullet(4, 10, LeftX, LeftY)) { // speed, damage
+                if (!MakeBullet(5, 10, LeftX, LeftY)) { // speed, damage
                     std::cerr << "Bullet not created!" << std::endl;
                 }
                 Bullets[0]->SetDirection(3);
             }
             if (Players[0]->GetDirection() == 3) { // up
-                if (!MakeBullet(4, 10, UpX, UpY)) { // speed, damage
+                if (!MakeBullet(5, 10, UpX, UpY)) { // speed, damage
                     std::cerr << "Bullet not created!" << std::endl;
                 }
                 Bullets[0]->SetDirection(1);
             }
             if (Players[0]->GetDirection() == 4) { // down
-                if (!MakeBullet(4, 10, DownX, DownY)) { // speed, damage
+                if (!MakeBullet(5, 10, DownX, DownY)) { // speed, damage
                     std::cerr << "Bullet not created!" << std::endl;
                 }
                 Bullets[0]->SetDirection(2);
@@ -302,13 +302,18 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
             return false;
         }), objects.end());
 
-    // this removes bullets
-    if (Bullets.size() > 0) { // getx and gety for bullets, check to see if ranges are out of bounds
-        if (Bullets[0]->GetX() < 0 || Bullets[0]->GetX() > 500 || Bullets[0]->GetY() < 0 || Bullets[0]->GetY() > 500) {
-            Bullets.erase(Bullets.begin());
+
+    if (!Bullets.empty()) {
+        SDL_Rect enemyRect = GetLevel(LevelID)->GetEnemy(0)->GetRect(); 
+        SDL_Rect bulletRect = Bullets[0]->GetRect(); 
+
+        if (Bullets[0]->GetX() < 0 || Bullets[0]->GetX() > 500 ||
+            Bullets[0]->GetY() < 0 || Bullets[0]->GetY() > 500 ||
+            SDL_HasIntersection(&enemyRect, &bulletRect))
+        {
+            Bullets.erase(Bullets.begin()); // removes bullets if conditions are met
         }
     }
-
     // Message msg1("Hello World!", 100, 100, 200, 100); // x, y, w, h
     if (Players[0]->GetHP() <= 0) {
         running = false;
@@ -382,6 +387,12 @@ void Game::Level4(int& LevelID) {
     if (!Levels[LevelID]->MakeGameObject("Gun", 170, 10, 150,
         150, false, false, true, false)) { // cancollide, candamage, cancollect, visible
         std::cerr << "Couldn't create Game Object!" << std::endl;
+        return;
+    }
+
+    if (!Levels[LevelID]->MakeEnemy("Enemy1", 250, 250, 20, // x, y, width, height
+        20)) { 
+        std::cerr << "Couldn't create Enemy!" << std::endl;
         return;
     }
 
@@ -534,7 +545,7 @@ void Game::GameObjectCollisionChecker(int levelnum, int playerY, int playerX, in
     }
 
     for (size_t i = 0; i < Levels[levelnum]->GetBarriersCount(); ++i) {
-        auto barrier = Levels[levelnum]->GetBarrier(i); // get all game objects in level[i]
+        auto barrier = Levels[levelnum]->GetBarrier(i); // get all barriers in level[i]
         if (!barrier) {
             continue;
         }
