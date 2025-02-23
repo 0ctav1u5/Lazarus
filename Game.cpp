@@ -8,11 +8,14 @@
 #include "Level.hpp"
 #include "Message.hpp"
 
+
+// Handleevents method creates the bullets
+// Checkplayerstats method destroys the bullets
+// TODO: bring them both into one method
+
 std::vector<std::string> inventory = {};
 int collected = 0;
 int Level::LevelIDCounter = 0;
-int testing = 0;
-
 
 // if gun is collected
 // && if gun is up, left, right or down, we are going to have
@@ -21,6 +24,9 @@ int testing = 0;
 
 void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
     while (SDL_PollEvent(&e)) {
+        int cooldown = 1000;
+        static int oldtime = 0;
+        int newtime = SDL_GetTicks();
         if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) {
             PauseMenu(renderer, running);
         }
@@ -37,33 +43,39 @@ void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
             int DownX = Players[0]->GetX() + 50;
             int DownY = Players[0]->GetY() + 65; 
 
-            std::cout << Players[0]->GetDirection() << std::endl;
+            /*std::cout << Players[0]->GetDirection() << std::endl;*/ // prints direction
 
 
-            if (Players[0]->GetDirection() == 2) { // right
+            // makes the bullets when conditions are met, certain direction and cooldown
+            if (Players[0]->GetDirection() == 2 && (newtime - oldtime > cooldown)) { // right
                 if (!MakeBullet(5, 10, RightX, RightY)) { // speed, damage
                     std::cerr << "Bullet not created!" << std::endl;
                 }
                 Bullets[0]->SetDirection(4);
+                oldtime = newtime;
             }
-            if (Players[0]->GetDirection() == 1) { // left
+            if (Players[0]->GetDirection() == 1 && (newtime - oldtime > cooldown)) { // left
                 if (!MakeBullet(5, 10, LeftX, LeftY)) { // speed, damage
                     std::cerr << "Bullet not created!" << std::endl;
                 }
                 Bullets[0]->SetDirection(3);
+                oldtime = newtime;
             }
-            if (Players[0]->GetDirection() == 3) { // up
+            if (Players[0]->GetDirection() == 3 && (newtime - oldtime > cooldown)) { // up
                 if (!MakeBullet(5, 10, UpX, UpY)) { // speed, damage
                     std::cerr << "Bullet not created!" << std::endl;
                 }
                 Bullets[0]->SetDirection(1);
+                oldtime = newtime;
             }
-            if (Players[0]->GetDirection() == 4) { // down
+            if (Players[0]->GetDirection() == 4 && (newtime - oldtime > cooldown)) { // down
                 if (!MakeBullet(5, 10, DownX, DownY)) { // speed, damage
                     std::cerr << "Bullet not created!" << std::endl;
                 }
                 Bullets[0]->SetDirection(2);
+                oldtime = newtime;
             }
+            
         }
     }
 }
@@ -85,13 +97,14 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
     bool pauseloop = true;
     SDL_Event p;
     static int HP = 100;
+    // has to be const char* for the ttf text library, can't be string 
     std::string str = std::to_string(HP); // converts HP member to a string
     const char* cstr = str.c_str(); // converts that string to a const char*
 
     SDL_Texture* textTexture = nullptr;
     SDL_Texture* textTexture2 = nullptr;
     SDL_Texture* textTexture3 = nullptr;
-    SDL_Color textColour = { 255, 0, 0 }; // white color for text
+    SDL_Color textColour = { 255, 0, 0 }; // red colour for text
     SDL_Surface* textSurface = TTF_RenderText_Solid(font, "Paused", textColour); // font, text, colour
     SDL_Surface* textSurface2 = TTF_RenderText_Solid(font, "Save", textColour); // font, text, colour
     SDL_Surface* textSurface3 = TTF_RenderText_Solid(font, "Exit", textColour); // font, text, colour
@@ -235,7 +248,7 @@ void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID) {
 
 // this function will check if the player is being damaged, as well as other effects
 void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer) {
-    static int OldTime = 0;  
+    static int OldTime = 0;
     int cooldown = 500;
     int NewTime = SDL_GetTicks();
 
@@ -250,19 +263,19 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
             int ObjectWidth = Levels[LevelID]->GetGameObject(i)->GetGameObjectWidth();
 
             if (objectcandamage &&
-                ((PlayerY + PlayerHeight - 20 >= ObjectY + 30) && 
-                (PlayerY + PlayerHeight - 20 <= ObjectY + 60)) &&
+                ((PlayerY + PlayerHeight - 20 >= ObjectY + 30) &&
+                    (PlayerY + PlayerHeight - 20 <= ObjectY + 60)) &&
                 PlayerX + 10 >= ObjectX &&
                 PlayerX <= ObjectX + 40) {
                 Players[0]->DamagePlayer(10);
-                OldTime = NewTime;  
-                break;  
+                OldTime = NewTime;
+                break;
             }
         }
     }
 
-    std::shared_ptr<Level> level = Levels[LevelID];  
-    auto& objects = level->GetGameObjectVector();   
+    std::shared_ptr<Level> level = Levels[LevelID];
+    auto& objects = level->GetGameObjectVector();
 
     // had to use a lambda expression here to solve the problem of removing shared pointers from vector
     // this is for removing the gameobjects which are collectible
@@ -282,7 +295,7 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
 
                 for (auto& game : objects) {
                     inventory.push_back(game->GetName());
-            }
+                }
 
                 for (int i = 0; i < inventory.size(); i++) {
                     std::cout << "You currently have in your inventory: " << std::endl;
@@ -303,18 +316,26 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
         }), objects.end());
 
 
-    if (!Bullets.empty()) {
-        SDL_Rect enemyRect = GetLevel(LevelID)->GetEnemy(0)->GetRect(); 
-        SDL_Rect bulletRect = Bullets[0]->GetRect(); 
+    if (!Bullets.empty()) { // this method removes the bullets when out of bounds or when enemies[0] shares an intersection with a bullet
+
 
         if (Bullets[0]->GetX() < 0 || Bullets[0]->GetX() > 500 ||
-            Bullets[0]->GetY() < 0 || Bullets[0]->GetY() > 500 ||
-            SDL_HasIntersection(&enemyRect, &bulletRect))
+            Bullets[0]->GetY() < 0 || Bullets[0]->GetY() > 500)
         {
+
             Bullets.erase(Bullets.begin()); // removes bullets if conditions are met
         }
+        else if (GetLevel(LevelID)->GetEnemiesSize() > 0) {
+            SDL_Rect enemyRect = GetLevel(LevelID)->GetEnemy(0)->GetRect();
+            SDL_Rect bulletRect = Bullets[0]->GetRect();
+            if (SDL_HasIntersection(&enemyRect, &bulletRect)) {
+                GetLevel(LevelID)->GetEnemy(0)->DamageEnemy(10);
+                Bullets.erase(Bullets.begin());
+                std::cout << "Enemy HP: " << GetLevel(LevelID)->GetEnemy(0)->GetEnemyHP() << std::endl;
+            }
+        }
     }
-    // Message msg1("Hello World!", 100, 100, 200, 100); // x, y, w, h
+
     if (Players[0]->GetHP() <= 0) {
         running = false;
     }

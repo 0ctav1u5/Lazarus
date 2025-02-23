@@ -54,5 +54,6 @@ public:
     int GetUpperBoundary();
     int GetLowerBoundary();
     std::vector<std::shared_ptr<GameObject>>& GetGameObjectVector();
+    int GetEnemiesSize();
 };
 #endif 

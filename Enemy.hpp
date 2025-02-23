@@ -5,6 +5,7 @@
 
 class Enemy {
 private:
+	int HP = 100;
 	std::string NAME = "";
 	SDL_Rect rect = {};
 	SDL_Surface* SURFACE = nullptr;
@@ -35,6 +36,14 @@ public:
 			SDL_FreeSurface(SURFACE); // frees the surface after texture has been
 			SURFACE = nullptr;
 		}
+	}
+
+	int GetEnemyHP() {
+		return this->HP;
+	}
+
+	void DamageEnemy(int damage) {
+		this->HP -= damage;
 	}
 
 	SDL_Rect& GetRect() {

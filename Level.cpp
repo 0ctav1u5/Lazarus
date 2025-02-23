@@ -18,17 +18,30 @@ void Level::RenderLevel(SDL_Renderer* renderer) { // this will be used to render
 	SDL_RenderCopy(renderer, BackgroundTexture, NULL, NULL);
 	SDL_DestroyTexture(BackgroundTexture);
 
-	// this is where all the game objects are rendered for the level
-	for (auto& gameobject : GameObjects) {
-		gameobject->RenderGameObject(renderer);
-	}
-	for (auto& barrier : Barriers) {
-		barrier->RenderBarrier(renderer);
-	}
+	// destroys enemy if enemies HP is less than or equal to 0, does this for all enemies
 	for (auto& enemy : Enemies) {
-		enemy->RenderEnemy(renderer);
+		if (enemy->GetEnemyHP() <= 0) {
+			Enemies.erase(Enemies.begin());
+		}
 	}
-	
+
+	// this is where all the game objects are rendered for the level
+
+	if (GameObjects.size() > 0) {
+		for (auto& gameobject : GameObjects) {
+			gameobject->RenderGameObject(renderer);
+		}
+	}
+	if (Barriers.size() > 0) {
+		for (auto& barrier : Barriers) {
+			barrier->RenderBarrier(renderer);
+		}
+	}
+	if (Enemies.size() > 0) {
+		for (auto& enemy : Enemies) {
+			enemy->RenderEnemy(renderer);
+		}
+	}
 }
 
 std::vector<std::shared_ptr<GameObject>>& Level::GetGameObjectVector() {
@@ -41,6 +54,10 @@ std::shared_ptr<Enemy> Level::GetEnemy(int i) {
 	}
 	std::cerr << "Enemy is out of bounds: " << i << std::endl;
 	return nullptr;
+}
+
+int Level::GetEnemiesSize() {
+	return this->Enemies.size();
 }
 
 std::shared_ptr<GameObject> Level::GetGameObject(int i) {
