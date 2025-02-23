@@ -8,7 +8,7 @@
 #include "Level.hpp"
 #include "Message.hpp"
 
-
+// remake
 // Handleevents method creates the bullets
 // Checkplayerstats method destroys the bullets
 // TODO: bring them both into one method
