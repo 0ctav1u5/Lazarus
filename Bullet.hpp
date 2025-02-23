@@ -32,7 +32,7 @@ public:
             return;
         }
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // RGB
-        SDL_RenderFillRect(renderer, &rect); // Draws the rectangle
+        SDL_RenderFillRect(renderer, &rect); 
         if (DIRECTION == 1 && down == false && right == false && left == false) { // up
             MoveBullet(0, -1); // x, y
             up = true;
@@ -48,6 +48,9 @@ public:
         else if (DIRECTION == 4 && down == false && up == false && left == false) { // right
             MoveBullet(1, 0); // x, y
             right = true;
+        }
+        else {
+            return;
         }
     }
 

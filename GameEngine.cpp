@@ -78,7 +78,7 @@ void GameEngine::GameLoop() {
         }
         game->ChangeLevel(LevelID);
         SDL_RenderPresent(renderer);
-        game->DisplayMessages(renderer);
+        game->DisplayMessages(renderer); // TODO: implement this in level class
         frameTime = SDL_GetTicks() - frameStart;  // time taken for this frame to have been rendered
         if (frameDelay > frameTime) {
             SDL_Delay(frameDelay - frameTime);  // delay to maintain a consistent fps

@@ -8,7 +8,7 @@
 #include "Level.hpp"
 #include "Message.hpp"
 
-// remake
+// TODO: Add AI properties to the enemy class
 // Handleevents method creates the bullets
 // Checkplayerstats method destroys the bullets
 // TODO: bring them both into one method
@@ -331,7 +331,7 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
             if (SDL_HasIntersection(&enemyRect, &bulletRect)) {
                 GetLevel(LevelID)->GetEnemy(0)->DamageEnemy(10);
                 Bullets.erase(Bullets.begin());
-                std::cout << "Enemy HP: " << GetLevel(LevelID)->GetEnemy(0)->GetEnemyHP() << std::endl;
+                std::cout << GetLevel(LevelID)->GetEnemy(0)->GetEnemyName() << " HP: " << GetLevel(LevelID)->GetEnemy(0)->GetEnemyHP() << std::endl;
             }
         }
     }
@@ -411,7 +411,7 @@ void Game::Level4(int& LevelID) {
         return;
     }
 
-    if (!Levels[LevelID]->MakeEnemy("Enemy1", 250, 250, 20, // x, y, width, height
+    if (!Levels[LevelID]->MakeEnemy("Arceus", 250, 250, 20, // x, y, width, height
         20)) { 
         std::cerr << "Couldn't create Enemy!" << std::endl;
         return;
