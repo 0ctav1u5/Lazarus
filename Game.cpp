@@ -336,6 +336,13 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
         }
     }
 
+    int Playersmallx = Players[0]->GetX();
+    int Playersmally = Players[0]->GetY();
+
+    if (GetLevel(LevelID)->GetEnemiesSize() > 0) {
+        GetLevel(LevelID)->GetEnemy(0)->MoveEnemy(Playersmallx, Playersmally);
+    }
+
     if (Players[0]->GetHP() <= 0) {
         running = false;
     }

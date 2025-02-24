@@ -2,6 +2,7 @@
 #define ENEMY
 #include <iostream>
 #include <SDL.h>
+#include <random>
 
 
 // TODO: Update this class to have the square follow the player
@@ -15,7 +16,6 @@ private:
 	SDL_Surface* SURFACE = nullptr;
 	SDL_Texture* texture = nullptr;
 	int SPEED = 0;
-	bool following = false;
 	int X, Y, WIDTH, HEIGHT;
 public:
 
@@ -47,12 +47,19 @@ public:
 	}
 
 
-	void MoveEnemy(int x, int y) {
-
-	}
-
-	void FollowPlayer() {
-		this->following = true;
+	void MoveEnemy(int PlayerX, int PlayerY) {
+		if (PlayerX > rect.x) {
+			rect.x += 1;
+		}
+		else if (PlayerX < rect.x) {
+			rect.x -= 1;
+		}
+		if (PlayerY > rect.y) {
+			rect.y += 1;
+		}
+		else if (PlayerY < rect.y) {
+			rect.y -= 1;
+		}
 	}
 
 	std::string GetEnemyName() {

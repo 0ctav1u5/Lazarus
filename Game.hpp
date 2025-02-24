@@ -47,7 +47,6 @@ public:
 	void DisplayMessages(SDL_Renderer* renderer);
 	int GetBulletsSize();
 	std::vector<std::shared_ptr<Bullet>> GetBullets();
-
 };
 
 struct ObjectProperties {

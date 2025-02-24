@@ -15,8 +15,8 @@ private:
     int DAMAGE;
     SDL_Rect rect = {};
     int X, Y;
-    const int WIDTH = 2;
-    const int HEIGHT = 2;
+    const int WIDTH = 3;
+    const int HEIGHT = 3;
     int DIRECTION = 0;
     bool left = false, right = false, up = false, down = false;
 
