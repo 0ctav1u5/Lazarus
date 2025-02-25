@@ -418,8 +418,8 @@ void Game::Level4(int& LevelID) {
         return;
     }
 
-    if (!Levels[LevelID]->MakeEnemy("Arceus", 250, 250, 20, // x, y, width, height
-        20)) { 
+    if (!Levels[LevelID]->MakeEnemy("Arceus", 250, 250, 50, // x, y, width, height
+        80, "Images/Zombie.png")) {
         std::cerr << "Couldn't create Enemy!" << std::endl;
         return;
     }

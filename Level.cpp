@@ -72,9 +72,9 @@ size_t Level::GetGameObjectsCount() const {
 	return GameObjects.size();
 }
 
-bool Level::MakeEnemy(std::string name, int x, int y, int width, int height) {
+bool Level::MakeEnemy(std::string name, int x, int y, int width, int height, const char* enemy) {
 	try {
-		auto object = std::make_shared<Enemy>(name, x, y, width, height);
+		auto object = std::make_shared<Enemy>(name, x, y, width, height, enemy);
 		Enemies.push_back(object);
 		return true;
 	}

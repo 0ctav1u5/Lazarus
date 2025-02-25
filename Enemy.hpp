@@ -2,6 +2,8 @@
 #define ENEMY
 #include <iostream>
 #include <SDL.h>
+#include <SDL_ttf.h>
+#include <SDL_image.h>
 #include <random>
 
 
@@ -10,8 +12,9 @@
 
 class Enemy {
 private:
-	int HP = 100;
+	int HP = 50;
 	std::string NAME = "";
+	const char* IMAGEPATH;
 	SDL_Rect rect = {};
 	SDL_Surface* SURFACE = nullptr;
 	SDL_Texture* texture = nullptr;
@@ -19,10 +22,11 @@ private:
 	int X, Y, WIDTH, HEIGHT;
 public:
 
-	Enemy(std::string name, int x, int y, int width, int height) :
-		NAME(name), X(x), Y(y), WIDTH(width), HEIGHT(height) 
+	Enemy(std::string name, int x, int y, int width, int height, const char* imagepath) :
+		NAME(name), X(x), Y(y), WIDTH(width), HEIGHT(height), IMAGEPATH(imagepath)
 	{
 		rect = { X, Y, WIDTH, HEIGHT };
+		SURFACE = IMG_Load(IMAGEPATH);
 	}
 
 	~Enemy() {
@@ -35,10 +39,12 @@ public:
 	}
 
 	void RenderEnemy(SDL_Renderer* renderer) {
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // RGB
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0); // RGB
 
 		// updaterect function
 		SDL_RenderFillRect(renderer, &rect); // draws the rectangle
+		SDL_RenderCopy(renderer, texture, NULL, &rect); // draws texture
 		if (SURFACE) {
 			texture = SDL_CreateTextureFromSurface(renderer, SURFACE);
 			SDL_FreeSurface(SURFACE); // frees the surface after texture has been assigned
