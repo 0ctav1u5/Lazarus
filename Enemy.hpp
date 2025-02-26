@@ -83,6 +83,22 @@ public:
 	SDL_Rect& GetRect() {
 		return this->rect;
 	}
+
+	int GetX() {
+		return this->X;
+	}
+
+	int GetY() {
+		return this->Y;
+	}
+
+	int GetWidth() {
+		return this->WIDTH;
+	}
+
+	int GetHeight() {
+		return this->HEIGHT;
+	}
 };
 
 #endif 

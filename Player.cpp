@@ -33,6 +33,10 @@ int Player::GetDirection() {
 	return this->DIRECTION;
 }
 
+SDL_Rect& Player::GetRect() {
+	return this->PlayerPos;
+}
+
 void Player::Move(int changeX, int changeY) {
 	PosX += changeX * SPEED;
 	PosY += changeY * SPEED;

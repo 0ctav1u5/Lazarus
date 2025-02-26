@@ -343,6 +343,23 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
         GetLevel(LevelID)->GetEnemy(0)->MoveEnemy(Playersmallx, Playersmally);
     }
 
+    if (GetLevel(LevelID)->GetEnemiesSize() > 0) {
+        static int oldtime = 0;
+        int newtime = SDL_GetTicks();
+        int cooldown = 200;
+        SDL_Rect playerRect = Players[0]->GetRect();
+        SDL_Rect enemyRect = GetLevel(LevelID)->GetEnemy(0)->GetRect();
+        // required to make the intersection box smaller, so that the graphic fits within the boundaries
+        enemyRect.h -= 70;
+        enemyRect.w -= 40;
+        playerRect.h -= 50;
+        playerRect.w -= 50;
+        if (SDL_HasIntersection(&playerRect, &enemyRect) && newtime - oldtime > cooldown) {
+            Players[0]->DamagePlayer(1);
+            oldtime = newtime;
+        }
+    }
+
     if (Players[0]->GetHP() <= 0) {
         running = false;
     }

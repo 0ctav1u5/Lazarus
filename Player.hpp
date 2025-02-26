@@ -29,6 +29,7 @@ public:
 	int GetHP();
 	int GetPlayerWidth();
 	int GetPlayerHeight();
+	SDL_Rect& GetRect();
 	void RenderPlayer(SDL_Renderer* renderer);
 	void SetDirectionGraphic(int direction);
 	void Move(int changeX, int changeY);
