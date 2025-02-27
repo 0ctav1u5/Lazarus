@@ -1,6 +1,7 @@
 #include "Level.hpp"
 #include "GameObject.hpp"
 #include "Barrier.hpp"
+#include <vector>
 
 void Level::RenderLevel(SDL_Renderer* renderer) { // this will be used to render the level
 	SDL_Surface* surface = IMG_Load(BackgroundImage);
@@ -19,9 +20,15 @@ void Level::RenderLevel(SDL_Renderer* renderer) { // this will be used to render
 	SDL_DestroyTexture(BackgroundTexture);
 
 	// destroys enemy if enemies HP is less than or equal to 0, does this for all enemies
-	for (auto& enemy : Enemies) {
-		if (enemy->GetEnemyHP() <= 0) {
-			Enemies.erase(Enemies.begin());
+	// iterator goes through the vector of shared pointers
+	// if the shared pointer points to an object with enemy HP lower than 0
+	// then dereference the pointer, meaning remove the object being pointed to
+	for (auto it = Enemies.begin(); it != Enemies.end(); ) {
+		if ((*it)->GetEnemyHP() <= 0) {
+			it = Enemies.erase(it); 
+		}
+		else {
+			++it; // go to the next element in the array if there's no iteration
 		}
 	}
 
@@ -58,6 +65,11 @@ std::shared_ptr<Enemy> Level::GetEnemy(int i) {
 
 int Level::GetEnemiesSize() {
 	return this->Enemies.size();
+}
+
+// returns address to enemies vector
+std::vector<std::shared_ptr<Enemy>>& Level::GetEnemiesVector() {
+	return this->Enemies;
 }
 
 std::shared_ptr<GameObject> Level::GetGameObject(int i) {

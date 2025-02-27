@@ -12,14 +12,15 @@
 
 class Enemy {
 private:
-	int HP = 50;
+	int HP = 80;
 	std::string NAME = "";
 	const char* IMAGEPATH;
 	SDL_Rect rect = {};
 	SDL_Surface* SURFACE = nullptr;
 	SDL_Texture* texture = nullptr;
-	int SPEED = 0;
+	int SPEED = 1;
 	int X, Y, WIDTH, HEIGHT;
+	bool STATIONARY = false;
 public:
 
 	Enemy(std::string name, int x, int y, int width, int height, const char* imagepath) :
@@ -52,19 +53,21 @@ public:
 		}
 	}
 
-
+	// this includes following player as the natural state of the enemy is to follow the player
+	// TODO: Make Enemy movement more random
 	void MoveEnemy(int PlayerX, int PlayerY) {
+
 		if (PlayerX > rect.x) {
-			rect.x += 1;
+			rect.x += 1 * SPEED;
 		}
 		else if (PlayerX < rect.x) {
-			rect.x -= 1;
+			rect.x -= 1 * SPEED;
 		}
 		if (PlayerY > rect.y) {
-			rect.y += 1;
+			rect.y += 1 * SPEED;
 		}
 		else if (PlayerY < rect.y) {
-			rect.y -= 1;
+			rect.y -= 1 * SPEED;
 		}
 	}
 
@@ -78,6 +81,14 @@ public:
 
 	void DamageEnemy(int damage) {
 		this->HP -= damage;
+	}
+
+	void SetEnemySpeed(int speed) {
+		this->SPEED = speed;
+	}
+
+	void SetEnemyStationary(bool stationary) {
+		this->STATIONARY = stationary;
 	}
 
 	SDL_Rect& GetRect() {
@@ -98,6 +109,10 @@ public:
 
 	int GetHeight() {
 		return this->HEIGHT;
+	}
+
+	bool& GetStationary() {
+		return this->STATIONARY;
 	}
 };
 

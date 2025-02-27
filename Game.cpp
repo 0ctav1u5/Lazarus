@@ -246,15 +246,17 @@ void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID) {
     }
 }
 
-// this function will check if the player is being damaged, as well as other effects
+// this function will check if the player is being damaged, as well as other effects on the player
+// TODO: Make a new function for some of the functionality found here
 void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer) {
     static int OldTime = 0;
     int cooldown = 500;
     int NewTime = SDL_GetTicks();
-
     int PlayerX = Players[0]->GetX(), PlayerY = Players[0]->GetY();
     int PlayerWidth = Players[0]->GetPlayerWidth(), PlayerHeight = Players[0]->GetPlayerHeight();
 
+
+    // if set time has passed and objectcandamage is true, then the gameobject can damage player
     if (NewTime - OldTime > cooldown) { // cooldown period
         for (int i = 0; i < Levels[LevelID]->GetGameObjectsCount(); ++i) {
             bool objectcandamage = Levels[LevelID]->GetGameObject(i)->GetCanDamage();
@@ -277,16 +279,17 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
     std::shared_ptr<Level> level = Levels[LevelID];
     auto& objects = level->GetGameObjectVector();
 
-    // had to use a lambda expression here to solve the problem of removing shared pointers from vector
-    // this is for removing the gameobjects which are collectible
+
+    // removes gameobjects which are collectible if 
     objects.erase(std::remove_if(objects.begin(), objects.end(),
         [&](const std::shared_ptr<GameObject>& obj) {
-            // check if the object must be removed
-            bool objectcollectible = obj->GetCanCollect();
+            bool objectcollectible = obj->GetCanCollect(); // true if cancollect = true
             int ObjectX = obj->GetX();
             int ObjectY = obj->GetY();
 
-            // if object can be collected and is within the specified range
+            // if object can be collected and is within range of the texture for gun object
+            // needs to be adjusted for new textures (new guns or other objects being added)
+            // problem here is that I am using magic numbers to define ranges
             if (objectcollectible &&
                 ((PlayerY + PlayerHeight - 20 >= ObjectY + 30) &&
                     (PlayerY + PlayerHeight - 20 <= ObjectY + 70)) &&
@@ -311,55 +314,72 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
                 collected++;
                 return true;
             }
-            // if false, then do not remove the object
+            // if false, then object is not removed
             return false;
         }), objects.end());
 
 
     if (!Bullets.empty()) { // this method removes the bullets when out of bounds or when enemies[0] shares an intersection with a bullet
 
-
-        if (Bullets[0]->GetX() < 0 || Bullets[0]->GetX() > 500 ||
+        if (Bullets[0]->GetX() < 0 || Bullets[0]->GetX() > 500 || // if bullet goes out of window
             Bullets[0]->GetY() < 0 || Bullets[0]->GetY() > 500)
         {
-
-            Bullets.erase(Bullets.begin()); // removes bullets if conditions are met
+            Bullets.erase(Bullets.begin()); 
         }
-        else if (GetLevel(LevelID)->GetEnemiesSize() > 0) {
-            SDL_Rect enemyRect = GetLevel(LevelID)->GetEnemy(0)->GetRect();
-            SDL_Rect bulletRect = Bullets[0]->GetRect();
-            if (SDL_HasIntersection(&enemyRect, &bulletRect)) {
-                GetLevel(LevelID)->GetEnemy(0)->DamageEnemy(10);
-                Bullets.erase(Bullets.begin());
-                std::cout << GetLevel(LevelID)->GetEnemy(0)->GetEnemyName() << " HP: " << GetLevel(LevelID)->GetEnemy(0)->GetEnemyHP() << std::endl;
+        else if (GetLevel(LevelID)->GetEnemiesSize() > 0) { 
+            // TODO: Get all enemies in Enemies Vector (RESOLVED)
+            // use range loop and return vector from level class
+            for (auto& enemy : GetLevel(LevelID)->GetEnemiesVector()) {
+
+                SDL_Rect enemyRect = enemy->GetRect();
+                SDL_Rect bulletRect = Bullets[0]->GetRect();
+                if (SDL_HasIntersection(&enemyRect, &bulletRect)) { // removes bullet if intersection with enemy rect
+                    enemy->DamageEnemy(10);
+                    Bullets.erase(Bullets.begin());
+                    std::cout << enemy->GetEnemyName() << " HP: " << enemy->GetEnemyHP() << std::endl;
+                    break;
+                }
             }
         }
     }
 
-    int Playersmallx = Players[0]->GetX();
-    int Playersmally = Players[0]->GetY();
+    int PlayerRectX = Players[0]->GetX();
+    int PlayerRectY = Players[0]->GetY();
+    int OffsetX = 0; // needed to slightly adjust the enemy objects so they aren't on top of eachother
+    int OffsetY = 0;
 
-    if (GetLevel(LevelID)->GetEnemiesSize() > 0) {
-        GetLevel(LevelID)->GetEnemy(0)->MoveEnemy(Playersmallx, Playersmally);
-    }
-
-    if (GetLevel(LevelID)->GetEnemiesSize() > 0) {
-        static int oldtime = 0;
-        int newtime = SDL_GetTicks();
-        int cooldown = 200;
-        SDL_Rect playerRect = Players[0]->GetRect();
-        SDL_Rect enemyRect = GetLevel(LevelID)->GetEnemy(0)->GetRect();
-        // required to make the intersection box smaller, so that the graphic fits within the boundaries
-        enemyRect.h -= 70;
-        enemyRect.w -= 40;
-        playerRect.h -= 50;
-        playerRect.w -= 50;
-        if (SDL_HasIntersection(&playerRect, &enemyRect) && newtime - oldtime > cooldown) {
-            Players[0]->DamagePlayer(1);
-            oldtime = newtime;
+    // enemy follows player 
+    // TODO: Have all enemies follow player
+    for (auto& enemy : GetLevel(LevelID)->GetEnemiesVector()) {
+        if (GetLevel(LevelID)->GetEnemiesSize() > 0 && enemy->GetStationary() == false) {
+            enemy->MoveEnemy(PlayerRectX + OffsetX, PlayerRectY + OffsetY);
+            OffsetX += 10;
+            OffsetY += 10;
         }
     }
 
+
+    // Damage player if enemy and player share an intersection
+    // TODO: Have GetEnemy() include all possible enemies
+    if (GetLevel(LevelID)->GetEnemiesSize() > 0) {
+        static int oldtime = 0;
+        int newtime = SDL_GetTicks();
+        int cooldown = 100;
+        for (auto& enemy : GetLevel(LevelID)->GetEnemiesVector()) {
+
+            SDL_Rect playerRect = Players[0]->GetRect();
+            SDL_Rect enemyRect = enemy->GetRect();
+            // required to make the intersection box smaller, so that the graphic fits within the boundaries
+            enemyRect.h -= 70;
+            enemyRect.w -= 40;
+            playerRect.h -= 50;
+            playerRect.w -= 50;
+            if (SDL_HasIntersection(&playerRect, &enemyRect) && newtime - oldtime > cooldown) {
+                Players[0]->DamagePlayer(1);
+                oldtime = newtime;
+            }
+        }
+    }
     if (Players[0]->GetHP() <= 0) {
         running = false;
     }
@@ -436,6 +456,12 @@ void Game::Level4(int& LevelID) {
     }
 
     if (!Levels[LevelID]->MakeEnemy("Arceus", 250, 250, 50, // x, y, width, height
+        80, "Images/Zombie.png")) {
+        std::cerr << "Couldn't create Enemy!" << std::endl;
+        return;
+    }
+
+    if (!Levels[LevelID]->MakeEnemy("Darius", 350, 350, 50, // x, y, width, height
         80, "Images/Zombie.png")) {
         std::cerr << "Couldn't create Enemy!" << std::endl;
         return;

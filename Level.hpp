@@ -45,6 +45,7 @@ public:
     void RemoveGameObject(int i);
     std::shared_ptr<GameObject> GetGameObject(int i);
     std::shared_ptr<Enemy> GetEnemy(int i);
+    std::vector<std::shared_ptr<Enemy>>& GetEnemiesVector();
     std::shared_ptr<Barrier> GetBarrier(int i);
     size_t GetBarriersCount() const;
     bool MakeBarrier(int x, int y, int width, int height);
