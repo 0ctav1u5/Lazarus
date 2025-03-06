@@ -24,7 +24,7 @@ int Level::LevelIDCounter = 0;
 
 void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
     while (SDL_PollEvent(&e)) {
-        int cooldown = 1000;
+        int cooldown = 500;
         static int oldtime = 0;
         int newtime = SDL_GetTicks();
         if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) {
@@ -48,28 +48,28 @@ void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
 
             // makes the bullets when conditions are met, certain direction and cooldown
             if (Players[0]->GetDirection() == 2 && (newtime - oldtime > cooldown)) { // right
-                if (!MakeBullet(5, 10, RightX, RightY)) { // speed, damage
+                if (!MakeBullet(9, 10, RightX, RightY)) { // speed, damage
                     std::cerr << "Bullet not created!" << std::endl;
                 }
                 Bullets[0]->SetDirection(4);
                 oldtime = newtime;
             }
             if (Players[0]->GetDirection() == 1 && (newtime - oldtime > cooldown)) { // left
-                if (!MakeBullet(5, 10, LeftX, LeftY)) { // speed, damage
+                if (!MakeBullet(9, 10, LeftX, LeftY)) { // speed, damage
                     std::cerr << "Bullet not created!" << std::endl;
                 }
                 Bullets[0]->SetDirection(3);
                 oldtime = newtime;
             }
             if (Players[0]->GetDirection() == 3 && (newtime - oldtime > cooldown)) { // up
-                if (!MakeBullet(5, 10, UpX, UpY)) { // speed, damage
+                if (!MakeBullet(9, 10, UpX, UpY)) { // speed, damage
                     std::cerr << "Bullet not created!" << std::endl;
                 }
                 Bullets[0]->SetDirection(1);
                 oldtime = newtime;
             }
             if (Players[0]->GetDirection() == 4 && (newtime - oldtime > cooldown)) { // down
-                if (!MakeBullet(5, 10, DownX, DownY)) { // speed, damage
+                if (!MakeBullet(6, 10, DownX, DownY)) { // speed, damage
                     std::cerr << "Bullet not created!" << std::endl;
                 }
                 Bullets[0]->SetDirection(2);

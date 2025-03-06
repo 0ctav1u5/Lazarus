@@ -25,65 +25,14 @@ public:
         : SPEED(speed), DAMAGE(damage), X(startX), Y(startY) {
         rect = { X, Y, WIDTH, HEIGHT };
     }
-
-    void RenderBullet(SDL_Renderer* renderer) {
-        if (!renderer) {
-            std::cerr << "Renderer is nullptr!" << std::endl;
-            return;
-        }
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // RGB
-        SDL_RenderFillRect(renderer, &rect); 
-        if (DIRECTION == 1 && down == false && right == false && left == false) { // up
-            MoveBullet(0, -1); // x, y
-            up = true;
-        }
-        else if (DIRECTION == 2 && up == false && right == false && left == false) { // down
-            MoveBullet(0, 1); // x, y
-            down = true;
-        }
-        else if (DIRECTION == 3 && down == false && right == false && up == false) { // left
-            MoveBullet(-1, 0); // x, y
-            left = true;
-        }
-        else if (DIRECTION == 4 && down == false && up == false && left == false) { // right
-            MoveBullet(1, 0); // x, y
-            right = true;
-        }
-        else {
-            return;
-        }
-    }
-
-    void SetDirection(int num) {
-        this->DIRECTION = num;
-    }
-
-    int GetDirection() {
-        return this->DIRECTION;
-    }
-
-    SDL_Rect& GetRect() {
-        return this->rect;
-    }
-
-    int GetX() {
-        return this->X;
-    }
-
-    int GetY() {
-        return this->Y;
-    }
-
-
-    void MoveBullet(int x, int y) {
-        X += (x * SPEED), Y += (y * SPEED);
-        rect.x = X;  
-        rect.y = Y;  
-    }
-
-    SDL_Rect GetRect() const {
-        return rect;
-    }
+    void RenderBullet(SDL_Renderer* renderer);
+    void SetDirection(int num);
+    int GetDirection();
+    SDL_Rect& GetRect();
+    int GetX();
+    int GetY();
+    void MoveBullet(int x, int y);
+    SDL_Rect GetRect() const;
 };
 
 #endif

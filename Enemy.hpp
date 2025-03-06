@@ -39,81 +39,19 @@ public:
 		}
 	}
 
-	void RenderEnemy(SDL_Renderer* renderer) {
-		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0); // RGB
-
-		// updaterect function
-		SDL_RenderFillRect(renderer, &rect); // draws the rectangle
-		SDL_RenderCopy(renderer, texture, NULL, &rect); // draws texture
-		if (SURFACE) {
-			texture = SDL_CreateTextureFromSurface(renderer, SURFACE);
-			SDL_FreeSurface(SURFACE); // frees the surface after texture has been assigned
-			SURFACE = nullptr;
-		}
-	}
-
-	// this includes following player as the natural state of the enemy is to follow the player
-	// TODO: Make Enemy movement more random
-	void MoveEnemy(int PlayerX, int PlayerY) {
-
-		if (PlayerX > rect.x) {
-			rect.x += 1 * SPEED;
-		}
-		else if (PlayerX < rect.x) {
-			rect.x -= 1 * SPEED;
-		}
-		if (PlayerY > rect.y) {
-			rect.y += 1 * SPEED;
-		}
-		else if (PlayerY < rect.y) {
-			rect.y -= 1 * SPEED;
-		}
-	}
-
-	std::string GetEnemyName() {
-		return this->NAME;
-	}
-
-	int GetEnemyHP() {
-		return this->HP;
-	}
-
-	void DamageEnemy(int damage) {
-		this->HP -= damage;
-	}
-
-	void SetEnemySpeed(int speed) {
-		this->SPEED = speed;
-	}
-
-	void SetEnemyStationary(bool stationary) {
-		this->STATIONARY = stationary;
-	}
-
-	SDL_Rect& GetRect() {
-		return this->rect;
-	}
-
-	int GetX() {
-		return this->X;
-	}
-
-	int GetY() {
-		return this->Y;
-	}
-
-	int GetWidth() {
-		return this->WIDTH;
-	}
-
-	int GetHeight() {
-		return this->HEIGHT;
-	}
-
-	bool& GetStationary() {
-		return this->STATIONARY;
-	}
+	void RenderEnemy(SDL_Renderer* renderer);
+	void MoveEnemy(int PlayerX, int PlayerY);
+	std::string GetEnemyName();
+	int GetEnemyHP();
+	void DamageEnemy(int damage);
+	void SetEnemySpeed(int speed);
+	void SetEnemyStationary(bool stationary);
+	SDL_Rect& GetRect();
+	int GetX();
+	int GetY();
+	int GetWidth();
+	int GetHeight();
+	bool& GetStationary();
 };
 
 #endif 
