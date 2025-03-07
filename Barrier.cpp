@@ -27,3 +27,9 @@ std::string Barrier::CheckBoundary(int PlayerY, int PlayerX, int PlayerWidth, in
 
 	return "";
 }
+
+
+void Barrier::MoveBarrierY(int y) {
+	Y += y;
+	BARRIER_RECT.y += Y;
+}

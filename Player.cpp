@@ -64,7 +64,7 @@ void Player::RenderPlayer(SDL_Renderer* renderer) {
 			// bools for left
 		}
 		else {
-			newImagePath = "Images/PlayerLeft.png";
+			newImagePath = "Images/RealPlayerLeft.png";
 		}
 		break;
 	case 2: // Right
@@ -72,7 +72,7 @@ void Player::RenderPlayer(SDL_Renderer* renderer) {
 			newImagePath = "Images/PlayerGunRight.png";
 		}
 		else {
-			newImagePath = "Images/PlayerRight.png";
+			newImagePath = "Images/RealPlayerRight.png";
 		}
 		break;
 	case 3: // Up

@@ -279,7 +279,6 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
     std::shared_ptr<Level> level = Levels[LevelID];
     auto& objects = level->GetGameObjectVector();
 
-
     // removes gameobjects which are collectible if 
     objects.erase(std::remove_if(objects.begin(), objects.end(),
         [&](const std::shared_ptr<GameObject>& obj) {
@@ -358,7 +357,6 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
         }
     }
 
-
     // Damage player if enemy and player share an intersection
     // TODO: Have GetEnemy() include all possible enemies
     if (GetLevel(LevelID)->GetEnemiesSize() > 0) {
@@ -380,6 +378,18 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
             }
         }
     }
+
+    // moving barriers to unlock doors
+    static int barrierints = 0;
+
+    if (collected > 0 && barrierints < 150 && LevelID == 3) { // this will be modified to handle more than one barrier
+        Levels[LevelID]->GetBarrier(0)->MoveBarrierY(-1);
+        barrierints += 10;
+    }
+    else if (LevelID == 4 && Levels[LevelID]->GetEnemiesSize() == 0) {
+        
+    }
+
     if (Players[0]->GetHP() <= 0) {
         running = false;
     }
@@ -394,6 +404,9 @@ void Game::ChangeLevel(int& LevelID) {
         }
         if (LevelID == 2 && Players[0]->GetY() == -90) {
             Level4(LevelID);
+        }
+        if (LevelID == 3 && Players[0]->GetX() == 470) {
+            Level5(LevelID);
         }
     return;
 }
@@ -455,21 +468,44 @@ void Game::Level4(int& LevelID) {
         return;
     }
 
-    if (!Levels[LevelID]->MakeEnemy("Arceus", 250, 250, 50, // x, y, width, height
-        80, "Images/Zombie.png")) {
-        std::cerr << "Couldn't create Enemy!" << std::endl;
+    //if (!Levels[LevelID]->MakeEnemy("Arceus", 250, 250, 50, // x, y, width, height
+    //    80, "Images/Zombie.png")) {
+    //    std::cerr << "Couldn't create Enemy!" << std::endl;
+    //    return;
+    //}
+
+
+    // 530
+    if (!Levels[LevelID]->MakeBarrier(530, 20, 10, 400)) { // x, y, width, height
+        std::cerr << "Couldn't create Barrier!" << std::endl;
         return;
     }
 
-    if (!Levels[LevelID]->MakeEnemy("Darius", 350, 350, 50, // x, y, width, height
-        80, "Images/Zombie.png")) {
-        std::cerr << "Couldn't create Enemy!" << std::endl;
+    if (!Levels[LevelID]->MakeBarrier(540, 0, 100, 400)) { // x, y, width, height
+        std::cerr << "Couldn't create Barrier!" << std::endl;
         return;
     }
+    
 
-    Levels[LevelID]->GetGameObject(0)->SetTexture("Images/Rifle.png"); // sets texture to true
+    Levels[LevelID]->GetGameObject(0)->SetTexture("Images/Rifle.png"); // sets texture 
     PlayerMove(-150, 280); // resets spawn point to bottom of map
 }
+
+void Game::Level5(int& LevelID) {
+    if (!MakeLevel("LevelFour", "Images/Level5.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
+        std::cerr << "Couldn't create Level four!" << std::endl;
+        return;
+    }
+    if (!Levels[LevelID]->MakeEnemy("Morgus", 350, 50, 50, // x, y, width, height
+        80, "Images/Zombie.png")) {
+        std::cerr << "Couldn't create Enemy!" << std::endl;
+        return;
+    }
+    PlayerMove(-250, 0); // x y
+}
+
+
+
 
 void Game::PlayerMove(int x, int y) {
     Players[0].get()->Move(x, y);

@@ -16,6 +16,7 @@ public:
 
 	void RenderBarrier(SDL_Renderer* renderer);
 	std::string CheckBoundary(int PlayerY, int PlayerX, int PlayerWidth, int PlayerHeight);
+	void MoveBarrierY(int y);
 };
 
 #endif

@@ -12,8 +12,8 @@ void GameObject::FlipTexture() {
 	}
 }
 
-void GameObject::SetTexture(const char* imagepath) {
-	HasTexture = true;
+void GameObject::SetTexture(const char* imagepath) { 
+	HasTexture = true; // sets texture for the game object
 	this->IMAGEPATH = imagepath;
 	SURFACE = IMG_Load(IMAGEPATH);
 }
