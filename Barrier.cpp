@@ -3,8 +3,21 @@
 #include "Barrier.hpp"
 
 void Barrier::RenderBarrier(SDL_Renderer* renderer) {
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // RGB
+	int Visibility = 0;
+	if (Visible) {
+		Visibility = 255;
+
+	}
+	else {
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+		Visibility = 0;
+	}
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, Visibility); // RGB
 	SDL_RenderFillRect(renderer, &BARRIER_RECT);
+}
+
+void Barrier::SetInvisible() {
+	Visible = false;
 }
 
 // this checks the ranges of the rects

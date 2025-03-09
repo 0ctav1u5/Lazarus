@@ -8,6 +8,7 @@ class Barrier {
 private:
 	SDL_Rect BARRIER_RECT = {};
 	int X, Y, WIDTH, HEIGHT;
+	bool Visible = true;
 public:
 
 	Barrier(int x, int y, int width, int height) : X(x), Y(y), WIDTH(width), HEIGHT(height) {
@@ -17,6 +18,7 @@ public:
 	void RenderBarrier(SDL_Renderer* renderer);
 	std::string CheckBoundary(int PlayerY, int PlayerX, int PlayerWidth, int PlayerHeight);
 	void MoveBarrierY(int y);
+	void SetInvisible();
 };
 
 #endif
