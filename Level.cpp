@@ -55,6 +55,10 @@ std::vector<std::shared_ptr<GameObject>>& Level::GetGameObjectVector() {
 	return this->GameObjects;
 }
 
+std::vector<std::shared_ptr<Barrier>>& Level::GetBarrierVector() {
+	return this->Barriers;
+}
+
 std::shared_ptr<Enemy> Level::GetEnemy(int i) {
 	if (i >= 0 && i < Enemies.size()) {
 		return Enemies[i];

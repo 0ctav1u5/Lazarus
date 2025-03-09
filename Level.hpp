@@ -34,7 +34,7 @@ public:
         RIGHT_BOUNDARY(rb), UPPER_BOUNDARY(ub), LOWER_BOUNDARY(lwb)
     {
         InstanceID = LevelIDCounter++; // this increments everytime a Level Object is created
-        std::cout << "Level " << InstanceID << " created!" << std::endl;
+        std::cout << "Level " << InstanceID + 1 << " created!" << std::endl;
     }
 
     size_t GetGameObjectsCount() const;
@@ -47,6 +47,7 @@ public:
     std::shared_ptr<Enemy> GetEnemy(int i);
     std::vector<std::shared_ptr<Enemy>>& GetEnemiesVector();
     std::shared_ptr<Barrier> GetBarrier(int i);
+    std::vector<std::shared_ptr<Barrier>>& GetBarrierVector();
     size_t GetBarriersCount() const;
     bool MakeBarrier(int x, int y, int width, int height);
     int GetInstanceID() const; 

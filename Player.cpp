@@ -50,6 +50,10 @@ void Player::DamagePlayer(int damage) {
 	this->HP -= damage;
 }
 
+
+// WARNING: The rectangle size is 100x100, but the textures are 64x64
+// this means that everything will be scaled up, and therefore slight differences
+// in flipped images will be magnified too. this will be fixed at one point
 void Player::RenderPlayer(SDL_Renderer* renderer) {
 	if (!texture) {
 		texture = SDL_CreateTextureFromSurface(renderer, SURFACE);
@@ -64,7 +68,7 @@ void Player::RenderPlayer(SDL_Renderer* renderer) {
 			// bools for left
 		}
 		else {
-			newImagePath = "Images/RealPlayerLeft.png";
+			newImagePath = "Images/PlayerLeft.png";
 		}
 		break;
 	case 2: // Right
@@ -72,7 +76,7 @@ void Player::RenderPlayer(SDL_Renderer* renderer) {
 			newImagePath = "Images/PlayerGunRight.png";
 		}
 		else {
-			newImagePath = "Images/RealPlayerRight.png";
+			newImagePath = "Images/PlayerRight.png";
 		}
 		break;
 	case 3: // Up

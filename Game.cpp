@@ -381,13 +381,17 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
 
     // moving barriers to unlock doors
     static int barrierints = 0;
+    static int level5barrier = true;
 
     if (collected > 0 && barrierints < 150 && LevelID == 3) { // this will be modified to handle more than one barrier
         Levels[LevelID]->GetBarrier(0)->MoveBarrierY(-1);
         barrierints += 10;
     }
-    else if (LevelID == 4 && Levels[LevelID]->GetEnemiesSize() == 0) {
-        
+    else if (LevelID == 4 && Levels[LevelID]->GetEnemiesSize() == 0 && level5barrier) {
+        Levels[LevelID]->GetBarrierVector().erase(Levels[LevelID]->GetBarrierVector().begin());
+        // TODO: Add functionality for moving a barrier in level 5
+        // Bullets.erase(Bullets.begin()); 
+        level5barrier = false;
     }
 
     if (Players[0]->GetHP() <= 0) {
@@ -499,6 +503,18 @@ void Game::Level5(int& LevelID) {
     if (!Levels[LevelID]->MakeEnemy("Morgus", 350, 50, 50, // x, y, width, height
         80, "Images/Zombie.png")) {
         std::cerr << "Couldn't create Enemy!" << std::endl;
+        return;
+    }
+    if (!Levels[LevelID]->MakeBarrier(540, 260, 10, 130)) { // x, y, width, height
+        std::cerr << "Couldn't create Barrier!" << std::endl;
+        return;
+    }
+    if (!Levels[LevelID]->MakeBarrier(530, 410, 10, 100)) { // x, y, width, height
+        std::cerr << "Couldn't create Barrier!" << std::endl;
+        return;
+    }
+    if (!Levels[LevelID]->MakeBarrier(530, 50, 10, 200)) { // x, y, width, height
+        std::cerr << "Couldn't create Barrier!" << std::endl;
         return;
     }
     PlayerMove(-250, 0); // x y
