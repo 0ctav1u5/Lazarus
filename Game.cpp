@@ -12,6 +12,7 @@
 // Handleevents method creates the bullets
 // Checkplayerstats method destroys the bullets
 // TODO: bring them both into one method
+// TODO: fix the graphic where you start from PlayerLeft and move to PlayerDown
 
 std::vector<std::string> inventory = {};
 int collected = 0;
@@ -211,7 +212,7 @@ void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID) {
     // LevelNum used for collisionchecker of objects
     int LevelNum = GetLevelsCount() - 1; // tells us the position of each level in the array
 
-
+    // checks the collisions with game objects to see if the player can move in a specific direction
     GameObjectCollisionChecker(LevelNum, playerY, playerX, playerWidth, playerHeight, blockBottom, blockTop, blockRight, blockLeft);
 
     // for instance, it would be level[i]->LEFT_BOUNDARY
@@ -379,19 +380,22 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
         }
     }
 
-    // moving barriers to unlock doors
-    static int barrierints = 0;
+    // these are needed so the conditionals below aren't execute more than once
+    static int level3barrier = true;
     static int level5barrier = true;
+    static int level6barrier = true;
 
-    if (collected > 0 && barrierints < 150 && LevelID == 3) { // this will be modified to handle more than one barrier
-        Levels[LevelID]->GetBarrier(0)->MoveBarrierY(-1);
-        barrierints += 10;
+    if (collected > 0 && LevelID == 3 && level3barrier) { // this will be modified to handle more than one barrier
+        Levels[LevelID]->GetBarrierVector().erase(Levels[LevelID]->GetBarrierVector().begin());
+        level3barrier = false;
     }
     else if (LevelID == 4 && Levels[LevelID]->GetEnemiesSize() == 0 && level5barrier) {
-        Levels[LevelID]->GetBarrierVector().erase(Levels[LevelID]->GetBarrierVector().begin());
-        // TODO: Add functionality for moving a barrier in level 5
-        // Bullets.erase(Bullets.begin()); 
+        Levels[LevelID]->GetBarrierVector().erase(Levels[LevelID]->GetBarrierVector().begin() + 1);
         level5barrier = false;
+    }
+    else if (LevelID == 5 && Levels[LevelID]->GetEnemiesSize() == 0 && level6barrier) {
+        Levels[LevelID]->GetBarrierVector().erase(Levels[LevelID]->GetBarrierVector().begin() + 1);
+        level6barrier = false;
     }
 
     if (Players[0]->GetHP() <= 0) {
@@ -415,6 +419,9 @@ void Game::ChangeLevel(int& LevelID) {
         if (LevelID == 4 && Players[0]->GetX() == 470) {
             Level6(LevelID);
         }
+        if (LevelID == 5 && Players[0]->GetX() == 470) {
+            Level7(LevelID);
+        }
     return;
 }
 
@@ -427,7 +434,7 @@ void Game::Level2(int& LevelID) { // loads assets for level 2
     ObjectProperties Barrier = { 530, 220, 100, 300 };
 
 
-    if (!MakeLevel("LevelTwo", "Images/Grass.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
+    if (!MakeLevel("LevelTwo", "Images/Level2.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
         std::cerr << "Couldn't create Level two!" << std::endl;
         return;
     }
@@ -451,7 +458,7 @@ void Game::Level2(int& LevelID) { // loads assets for level 2
 void Game::Level3(int& LevelID) {
     ObjectProperties Barrier = { 0, -50, 250, 50 };
 
-    if (!MakeLevel("LevelThree", "Images/RoadBackground2.png", LevelID, -30, 530, -100, 410)) { // left, right, upper, down
+    if (!MakeLevel("LevelThree", "Images/Level3.png", LevelID, -30, 530, -100, 410)) { // left, right, upper, down
         std::cerr << "Couldn't create Level three!" << std::endl;
         return;
     }
@@ -465,8 +472,8 @@ void Game::Level3(int& LevelID) {
 }
 
 void Game::Level4(int& LevelID) {
-    if (!MakeLevel("LevelFour", "Images/Map4.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
-        std::cerr << "Couldn't create Level three!" << std::endl;
+    if (!MakeLevel("LevelFour", "Images/Level4.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
+        std::cerr << "Couldn't create Level four!" << std::endl;
         return;
     }
     if (!Levels[LevelID]->MakeGameObject("Gun", 170, 10, 150,
@@ -493,38 +500,40 @@ void Game::Level4(int& LevelID) {
 
 void Game::Level5(int& LevelID) {
     if (!MakeLevel("LevelFive", "Images/Level5.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
-        std::cerr << "Couldn't create Level four!" << std::endl;
+        std::cerr << "Couldn't create Level five!" << std::endl;
         return;
     }
-    if (!Levels[LevelID]->MakeEnemy("Morgus", 350, 90, 50, // x, y, width, height
-        80, "Images/Zombie.png")) {
+    if (!Levels[LevelID]->MakeEnemy("Morgus", 400, 400, 50, 
+        80, "Images/Zombie2.png")) {
         std::cerr << "Couldn't create Enemy!" << std::endl;
         return;
     }
-    if (!Levels[LevelID]->MakeBarrier(540, 260, 10, 130)) { // x, y, width, height
-        std::cerr << "Couldn't create Barrier!" << std::endl;
-        return;
-    }
-    if (!Levels[LevelID]->MakeBarrier(530, 410, 10, 100)) { // x, y, width, height
-        std::cerr << "Couldn't create Barrier!" << std::endl;
-        return;
-    }
-    if (!Levels[LevelID]->MakeBarrier(530, 50, 10, 200)) { // x, y, width, height
-        std::cerr << "Couldn't create Barrier!" << std::endl;
-        return;
-    }
+
     if (!Levels[LevelID]->MakeBarrier(0, 10, 500, 30)) { // x, y, width, height
         std::cerr << "Couldn't create Barrier!" << std::endl;
         return;
+    } 
+
+    if (!Levels[LevelID]->MakeBarrier(540, 260, 10, 130)) { 
+        std::cerr << "Couldn't create Barrier!" << std::endl;
+        return;
     }
-    Levels[LevelID]->GetBarrier(3)->SetInvisible();
+    if (!Levels[LevelID]->MakeBarrier(530, 410, 10, 100)) { 
+        std::cerr << "Couldn't create Barrier!" << std::endl;
+        return;
+    }
+    if (!Levels[LevelID]->MakeBarrier(530, 50, 10, 200)) { 
+        std::cerr << "Couldn't create Barrier!" << std::endl;
+        return;
+    }
+    Levels[LevelID]->GetBarrier(0)->SetInvisible();
     PlayerMove(-250, 0); // x y
 }
 
 
 void Game::Level6(int& LevelID) {
     if (!MakeLevel("LevelSix", "Images/Level6.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
-        std::cerr << "Couldn't create Level four!" << std::endl;
+        std::cerr << "Couldn't create Level six!" << std::endl;
         return;
     }
     if (!Levels[LevelID]->MakeEnemy("Arceus", 350, 70, 50, // x, y, width, height
@@ -533,8 +542,36 @@ void Game::Level6(int& LevelID) {
         return;
     }
     if (!Levels[LevelID]->MakeEnemy("Korfu", 350, 150, 50, // x, y, width, height
-        80, "Images/Zombie.png")) {
+        80, "Images/Zombie2.png")) {
         std::cerr << "Couldn't create Enemy!" << std::endl;
+        return;
+    }
+    
+    if (!Levels[LevelID]->MakeBarrier(0, 10, 500, 30)) { // x, y, width, height
+        std::cerr << "Couldn't create Barrier!" << std::endl;
+        return;
+    }
+
+    if (!Levels[LevelID]->MakeBarrier(540, 260, 10, 130)) {
+        std::cerr << "Couldn't create Barrier!" << std::endl;
+        return;
+    }
+    if (!Levels[LevelID]->MakeBarrier(530, 410, 10, 100)) {
+        std::cerr << "Couldn't create Barrier!" << std::endl;
+        return;
+    }
+    if (!Levels[LevelID]->MakeBarrier(530, 50, 10, 200)) {
+        std::cerr << "Couldn't create Barrier!" << std::endl;
+        return;
+    }
+    
+    Levels[LevelID]->GetBarrier(0)->SetInvisible();
+    PlayerMove(-260, 0); // x y
+}
+
+void Game::Level7(int& LevelID) {
+    if (!MakeLevel("LevelSeven", "Images/Level7.png", LevelID, -30, 530, -4, 410)) { // left, right, upper, down
+        std::cerr << "Couldn't create Level seven!" << std::endl;
         return;
     }
     PlayerMove(-260, 0); // x y
@@ -544,7 +581,7 @@ void Game::PlayerMove(int x, int y) {
     Players[0].get()->Move(x, y);
 }
 
-int Game::GetBulletsSize() {
+size_t Game::GetBulletsSize() {
     return Bullets.size();
 }
 
@@ -641,7 +678,7 @@ bool Game::LoadAssets(SDL_Renderer* renderer, int& LevelID) {
     }
 
     // Create Level One and update LevelID
-    if (!MakeLevel("LevelOne", "Images/RoadBackground.png", LevelID, -30, 530, -100, 410)) { // l, r, u, b
+    if (!MakeLevel("LevelOne", "Images/Level1.png", LevelID, -30, 530, -100, 410)) { // l, r, u, b
         std::cerr << "Couldn't create Level one!" << std::endl;
         return false;
     }

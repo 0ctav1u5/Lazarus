@@ -1,3 +1,4 @@
+#define _CRTDBG_MAP_ALLOC
 #include <SDL.h>
 #include <SDL_image.h> // images
 #include <SDL_ttf.h> // text
@@ -7,6 +8,8 @@
 #include <Windows.h>
 #include <limits>
 #include <chrono>
+#include <cstdlib>
+#include <crtdbg.h>
 #include "GameEngine.hpp"
 
 
@@ -18,5 +21,6 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 	Engine->GameLoop();
+	_CrtDumpMemoryLeaks();
 	return 0;
 }

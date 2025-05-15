@@ -53,7 +53,7 @@ void GameEngine::GameLoop() {
     SDL_Event e;
     const Uint8* keyboardState = SDL_GetKeyboardState(nullptr);
     
-    const int FPS = 70; // increase to improve framerate
+    const int FPS = 80; // increase to improve framerate
     const int frameDelay = 1000 / FPS;  // maximum amount of time per frame
 
     Uint32 frameStart;
