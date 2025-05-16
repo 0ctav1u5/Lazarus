@@ -46,6 +46,7 @@ public:
 	void Level5(int& LevelID);
 	void Level6(int& LevelID);
 	void Level7(int& LevelID);
+	void Level8(int& LevelID);
 	bool MakeMessage(std::string message, int x, int y, int w, int h);
 	void DisplayMessages(SDL_Renderer* renderer);
 	size_t GetBulletsSize();

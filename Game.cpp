@@ -422,6 +422,9 @@ void Game::ChangeLevel(int& LevelID) {
         if (LevelID == 5 && Players[0]->GetX() == 470) {
             Level7(LevelID);
         }
+        if (LevelID == 6 && Players[0]->GetY() == -90) {
+            Level8(LevelID);
+        }
     return;
 }
 
@@ -570,11 +573,34 @@ void Game::Level6(int& LevelID) {
 }
 
 void Game::Level7(int& LevelID) {
-    if (!MakeLevel("LevelSeven", "Images/Level7.png", LevelID, -30, 530, -4, 410)) { // left, right, upper, down
+    if (!MakeLevel("LevelSeven", "Images/Level7.png", LevelID, -30, 530, -100, 410)) { // left, right, upper, down
         std::cerr << "Couldn't create Level seven!" << std::endl;
         return;
     }
     PlayerMove(-260, 0); // x y
+}
+
+void Game::Level8(int& LevelID) {
+    if (!MakeLevel("LevelEight", "Images/Level8.png", LevelID, -30, 530, 0, 410)) { // left, right, upper, down
+        std::cerr << "Couldn't create Level eight!" << std::endl;
+        return;
+    }
+    if (!Levels[LevelID]->MakeEnemy("Davus", 10, 70, 50, // x, y, width, height
+        80, "Images/Zombie.png")) {
+        std::cerr << "Couldn't create Enemy!" << std::endl;
+        return;
+    }
+    if (!Levels[LevelID]->MakeEnemy("Armadeus", 350, 70, 50, // x, y, width, height
+        80, "Images/Zombie.png")) {
+        std::cerr << "Couldn't create Enemy!" << std::endl;
+        return;
+    }
+    if (!Levels[LevelID]->MakeEnemy("Dorom", 250, 150, 50, // x, y, width, height
+        80, "Images/Zombie2.png")) {
+        std::cerr << "Couldn't create Enemy!" << std::endl;
+        return;
+    }
+    PlayerMove(-20, 260); // x y
 }
 
 void Game::PlayerMove(int x, int y) {
