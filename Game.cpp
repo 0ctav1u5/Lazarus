@@ -107,7 +107,7 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
     SDL_Texture* textTexture3 = nullptr;
     SDL_Color textColour = { 255, 0, 0 }; // red colour for text
     SDL_Surface* textSurface = TTF_RenderText_Solid(font, "Paused", textColour); // font, text, colour
-    SDL_Surface* textSurface2 = TTF_RenderText_Solid(font, "Save", textColour); // font, text, colour
+    SDL_Surface* textSurface2 = TTF_RenderText_Solid(font, "Load Level", textColour); // font, text, colour
     SDL_Surface* textSurface3 = TTF_RenderText_Solid(font, "Exit", textColour); // font, text, colour
     
     if (textSurface) {
@@ -138,8 +138,8 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
     }
     
     SDL_Rect PauseText = { 140, 220, 200, 50 };  // x, y, width, height
-    SDL_Rect SaveText = { 10, 0, 100, 50 };
-    SDL_Rect ExitText = { 390, 0, 100, 50 };
+    SDL_Rect LevelLoaderText = { 0, 0, 180, 50 };
+    SDL_Rect ExitText = { 400, 0, 100, 50 };
 
     while (pauseloop) {
         SDL_GetMouseState(&mouseX, &mouseY);
@@ -149,9 +149,9 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
                 pauseloop = false;  
             } // button left = lmb
             else if (p.type == SDL_MOUSEBUTTONDOWN && p.button.button == SDL_BUTTON_LEFT) {
-                if (mouseX >= SaveText.x && mouseX <= SaveText.x + SaveText.w &&
-                    mouseY >= SaveText.y && mouseY <= SaveText.y + SaveText.h) {
-                    std::cout << "Save button clicked!" << std::endl;
+                if (mouseX >= LevelLoaderText.x && mouseX <= LevelLoaderText.x + LevelLoaderText.w &&
+                    mouseY >= LevelLoaderText.y && mouseY <= LevelLoaderText.y + LevelLoaderText.h) {
+                    std::cout << "Level Loader Enabled" << std::endl;
                 }
 
                 if (mouseX >= ExitText.x && mouseX <= ExitText.x + ExitText.w &&
@@ -168,8 +168,8 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
         // sets draw colour for new overlay
         
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);  // r, g, b, opaqueness
-        SDL_RenderFillRect(renderer, &SaveText);
-        SDL_RenderCopy(renderer, textTexture2, nullptr, &SaveText); // draws rectangle + texture
+        SDL_RenderFillRect(renderer, &LevelLoaderText);
+        SDL_RenderCopy(renderer, textTexture2, nullptr, &LevelLoaderText); // draws rectangle + texture
         
         // exit
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -216,14 +216,14 @@ void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID) {
     GameObjectCollisionChecker(LevelNum, playerY, playerX, playerWidth, playerHeight, blockBottom, blockTop, blockRight, blockLeft);
 
     // for instance, it would be level[i]->LEFT_BOUNDARY
-    if (keyboardState[SDL_SCANCODE_LEFT]) {
+    if (keyboardState[SDL_SCANCODE_LEFT] || keyboardState[SDL_SCANCODE_A]) {
         if (!blockLeft && playerX > Levels[LevelID]->GetLeftBoundary()) {
             PlayerMove(-1, 0); // Move left
             Players[0]->SetDirectionGraphic(1);
         }
     }
 
-    if (keyboardState[SDL_SCANCODE_RIGHT]) {
+    if (keyboardState[SDL_SCANCODE_RIGHT] || keyboardState[SDL_SCANCODE_D]) {
         if (!blockRight && (playerX + playerWidth < Levels[LevelID]->GetRightBoundary())) {
             PlayerMove(1, 0); // Move right
             Players[0]->SetDirectionGraphic(2);
@@ -232,14 +232,14 @@ void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID) {
 
     // || (playerX > 96 && playerX < 306) for below
 
-    if (keyboardState[SDL_SCANCODE_UP]) {
+    if (keyboardState[SDL_SCANCODE_UP] || keyboardState[SDL_SCANCODE_W]) {
         if (!blockTop && (playerY >= Levels[LevelID]->GetUpperBoundary())) {
             PlayerMove(0, -1); // Move up
             Players[0]->SetDirectionGraphic(3);
         }
     }
 
-    if (keyboardState[SDL_SCANCODE_DOWN]) {
+    if (keyboardState[SDL_SCANCODE_DOWN] || keyboardState[SDL_SCANCODE_S]) {
         if (!blockBottom && playerY < Levels[LevelID]->GetLowerBoundary()) {
             PlayerMove(0, 1); // Move down
             Players[0]->SetDirectionGraphic(4);

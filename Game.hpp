@@ -16,6 +16,7 @@ private:
 	std::vector<std::shared_ptr<Level>> Levels;
 	std::vector<std::shared_ptr<Message>> Messages; 
 	std::vector<std::shared_ptr<Bullet>> Bullets;
+	bool LevelLoader = false;
 public:
 
 	Game() {}
