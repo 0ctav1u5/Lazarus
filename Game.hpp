@@ -33,6 +33,7 @@ public:
 	void ChangeLevel(int& LevelID);
 	void UserInput(bool& running, const Uint8* keyboardState, int& LevelID);
 	void HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer);
+	void LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID);
 	std::shared_ptr<Player> GetPlayer(int i);
 	std::shared_ptr<Level> GetLevel(int i);
 	std::shared_ptr<Bullet> GetBullet(int i);

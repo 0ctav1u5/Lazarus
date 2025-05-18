@@ -63,8 +63,10 @@ void GameEngine::GameLoop() {
     while (running) {
         frameStart = SDL_GetTicks(); // start of frame
         game->UserInput(running, keyboardState, LevelID);
+        game->LoadLevel(e, renderer, LevelID);
         game->HandleEvents(e, running, renderer);
         game->CheckPlayerStatus(LevelID, running, renderer);
+        
         
         // CheckLevelID(); uncomment when debugging
 

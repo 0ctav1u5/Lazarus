@@ -9,6 +9,14 @@ void Player::GunCollected() {
 	this->guncollected = true;
 }
 
+void Player::SetX(int x) {
+	this->PosX = x;
+}
+
+void Player::SetY(int y) {
+	this->PosY = y;
+}
+
 int Player::GetX() {
 	return this->PosX;
 }

@@ -24,6 +24,8 @@ public:
 		PosX(posx), PosY(posy), IMAGEPATH(imagepath), SPEED(speed) {
 		SURFACE = IMG_Load(IMAGEPATH);
 	}
+	void SetX(int x);
+	void SetY(int y);
 	int GetX();
 	int GetY();
 	int GetHP();

@@ -17,6 +17,18 @@
 std::vector<std::string> inventory = {};
 int collected = 0;
 int Level::LevelIDCounter = 0;
+bool LoaderEnabled = false;
+
+
+
+// buttons for levels
+bool l2 = false;
+bool l3 = false;
+bool l4 = false;
+bool l5 = false;
+bool l6 = false;
+bool l7 = false;
+bool l8 = false;
 
 // if gun is collected
 // && if gun is up, left, right or down, we are going to have
@@ -28,9 +40,11 @@ void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
         int cooldown = 500;
         static int oldtime = 0;
         int newtime = SDL_GetTicks();
+        // HANDLES PAUSE MENU
         if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) {
             PauseMenu(renderer, running);
         }
+        // HANDLES SHOOTING BULLETS
         if ((e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE) && Bullets.size() == 0 && collected > 0) {
             int RightX = Players[0]->GetX() + 70;
             int RightY = Players[0]->GetY() + 45; // bullet spawn points determined by player graphic
@@ -76,14 +90,13 @@ void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
                 Bullets[0]->SetDirection(2);
                 oldtime = newtime;
             }
-            
         }
     }
 }
 
 // TODO: convert all ttf messages to message class objects directly
 void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
-    int mouseX, mouseY;
+    int mouseX = 0, mouseY = 0;
     
     // load font
     TTF_Font* font = TTF_OpenFont("Fonts/Vipnagorgialla Rg.otf", 24);
@@ -144,6 +157,7 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
     while (pauseloop) {
         SDL_GetMouseState(&mouseX, &mouseY);
 
+
         while (SDL_PollEvent(&p)) {
             if (p.type == SDL_KEYDOWN && p.key.keysym.sym == SDLK_ESCAPE) {
                 pauseloop = false;  
@@ -152,6 +166,8 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
                 if (mouseX >= LevelLoaderText.x && mouseX <= LevelLoaderText.x + LevelLoaderText.w &&
                     mouseY >= LevelLoaderText.y && mouseY <= LevelLoaderText.y + LevelLoaderText.h) {
                     std::cout << "Level Loader Enabled" << std::endl;
+                    this->LevelLoader = true;
+                    pauseloop = false;
                 }
 
                 if (mouseX >= ExitText.x && mouseX <= ExitText.x + ExitText.w &&
@@ -183,6 +199,259 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
     SDL_DestroyTexture(textTexture);  // destroy the texture after it's been used
     TTF_CloseFont(font);  // for closing font when function ends
 }
+
+
+
+
+
+
+void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
+    int mouseX = 0, mouseY = 0;
+
+    // general
+    if (LevelLoader) { // condition has to be met
+        TTF_Font* font = TTF_OpenFont("Fonts/Vipnagorgialla Rg.otf", 14);
+        if (!font) {
+            std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
+            return;
+        }
+        else {
+            std::cout << "Level Loader Loaded!" << std::endl;
+        }
+
+
+        SDL_Texture* L8textTexture = nullptr; 
+        SDL_Texture* L7textTexture = nullptr; 
+        SDL_Texture* L6textTexture = nullptr; 
+        SDL_Texture* L5textTexture = nullptr; 
+        SDL_Texture* L4textTexture = nullptr; 
+        SDL_Texture* L3textTexture = nullptr; 
+        SDL_Texture* L2textTexture = nullptr; 
+
+
+
+
+        SDL_Color textColour = { 255, 0, 0 }; // red - general
+
+
+
+
+        SDL_Surface* L8textSurface = TTF_RenderText_Solid(font, "L8", textColour);
+        SDL_Surface* L7textSurface = TTF_RenderText_Solid(font, "L7", textColour);
+        SDL_Surface* L6textSurface = TTF_RenderText_Solid(font, "L6", textColour);
+        SDL_Surface* L5textSurface = TTF_RenderText_Solid(font, "L5", textColour);
+        SDL_Surface* L4textSurface = TTF_RenderText_Solid(font, "L4", textColour);
+        SDL_Surface* L3textSurface = TTF_RenderText_Solid(font, "L3", textColour);
+        SDL_Surface* L2textSurface = TTF_RenderText_Solid(font, "L2", textColour);
+
+
+
+       
+
+        // #L8
+        if (L8textSurface) {
+            L8textTexture = SDL_CreateTextureFromSurface(renderer, L8textSurface);
+            SDL_FreeSurface(L8textSurface);
+        }
+        else {
+            std::cerr << "Text render error: " << TTF_GetError() << std::endl;
+            return;
+        }
+
+        // #L7
+        if (L7textSurface) {
+            L7textTexture = SDL_CreateTextureFromSurface(renderer, L7textSurface);
+            SDL_FreeSurface(L7textSurface);
+        }
+        else {
+            std::cerr << "Text render error: " << TTF_GetError() << std::endl;
+            return;
+        }
+
+        // #L6
+        if (L6textSurface) {
+            L6textTexture = SDL_CreateTextureFromSurface(renderer, L6textSurface);
+            SDL_FreeSurface(L6textSurface);
+        }
+        else {
+            std::cerr << "Text render error: " << TTF_GetError() << std::endl;
+            return;
+        }
+
+        // #L5
+        if (L5textSurface) {
+            L5textTexture = SDL_CreateTextureFromSurface(renderer, L5textSurface);
+            SDL_FreeSurface(L5textSurface);
+        }
+        else {
+            std::cerr << "Text render error: " << TTF_GetError() << std::endl;
+            return;
+        }
+
+        // #L4
+        if (L4textSurface) {
+            L4textTexture = SDL_CreateTextureFromSurface(renderer, L4textSurface);
+            SDL_FreeSurface(L4textSurface);
+        }
+        else {
+            std::cerr << "Text render error: " << TTF_GetError() << std::endl;
+            return;
+        }
+
+        // #L3
+        if (L3textSurface) {
+            L3textTexture = SDL_CreateTextureFromSurface(renderer, L3textSurface);
+            SDL_FreeSurface(L3textSurface);
+        }
+        else {
+            std::cerr << "Text render error: " << TTF_GetError() << std::endl;
+            return;
+        }
+
+        // #L2
+        if (L2textSurface) {
+            L2textTexture = SDL_CreateTextureFromSurface(renderer, L2textSurface);
+            SDL_FreeSurface(L2textSurface);
+        }
+        else {
+            std::cerr << "Text render error: " << TTF_GetError() << std::endl;
+            return;
+        }
+
+
+        SDL_Rect L8Text = { 240, 0, 30, 30 };  // x, y, width, height
+        SDL_Rect L7Text = { 200, 0, 30, 30 };  // x, y, width, height
+        SDL_Rect L6Text = { 160, 0, 30, 30 };  // x, y, width, height
+        SDL_Rect L5Text = { 120, 0, 30, 30 };  // x, y, width, height
+        SDL_Rect L4Text = { 80, 0, 30, 30 };  // x, y, width, height
+        SDL_Rect L3Text = { 40, 0, 30, 30 };  // x, y, width, height
+        SDL_Rect L2Text = { 0, 0, 30, 30 };  // x, y, width, height
+        
+
+
+        while (LevelLoader) {
+            SDL_GetMouseState(&mouseX, &mouseY);
+            while (SDL_PollEvent(&e)) {
+
+                if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT) {
+
+                    if (mouseX >= L8Text.x && mouseX <= L8Text.x + L8Text.w &&
+                        mouseY >= L8Text.y && mouseY <= L8Text.y + L8Text.h) {
+                        SDL_DestroyTexture(L8textTexture);  // destroy the texture after it's been used
+                        TTF_CloseFont(font);  // for closing font when function ends
+                        LoaderEnabled = true;
+                        l8 = true;
+                        LevelLoader = false;
+                    }
+
+                    if (mouseX >= L7Text.x && mouseX <= L7Text.x + L7Text.w &&
+                        mouseY >= L7Text.y && mouseY <= L7Text.y + L7Text.h) {
+                        SDL_DestroyTexture(L7textTexture);  // destroy the texture after it's been used
+                        TTF_CloseFont(font);  // for closing font when function ends
+                        LoaderEnabled = true;
+                        l7 = true;
+                        LevelLoader = false;
+                    }
+
+                    if (mouseX >= L6Text.x && mouseX <= L6Text.x + L6Text.w &&
+                        mouseY >= L6Text.y && mouseY <= L6Text.y + L6Text.h) {
+                        SDL_DestroyTexture(L6textTexture);  // destroy the texture after it's been used
+                        TTF_CloseFont(font);  // for closing font when function ends
+                        LoaderEnabled = true;
+                        l6 = true;
+                        LevelLoader = false;
+                    }
+
+                    if (mouseX >= L5Text.x && mouseX <= L5Text.x + L5Text.w &&
+                        mouseY >= L5Text.y && mouseY <= L5Text.y + L5Text.h) {
+                        SDL_DestroyTexture(L5textTexture);  // destroy the texture after it's been used
+                        TTF_CloseFont(font);  // for closing font when function ends
+                        LoaderEnabled = true;
+                        l5 = true;
+                        LevelLoader = false;
+                    }
+
+                    if (mouseX >= L4Text.x && mouseX <= L4Text.x + L4Text.w &&
+                        mouseY >= L4Text.y && mouseY <= L4Text.y + L4Text.h) {
+                        SDL_DestroyTexture(L4textTexture);  // destroy the texture after it's been used
+                        TTF_CloseFont(font);  // for closing font when function ends
+                        LoaderEnabled = true;
+                        l4 = true;
+                        LevelLoader = false;
+                    }
+
+                    if (mouseX >= L3Text.x && mouseX <= L3Text.x + L3Text.w &&
+                        mouseY >= L3Text.y && mouseY <= L3Text.y + L3Text.h) {
+                        SDL_DestroyTexture(L3textTexture);  // destroy the texture after it's been used
+                        TTF_CloseFont(font);  // for closing font when function ends
+                        LoaderEnabled = true;
+                        l3 = true;
+                        LevelLoader = false;
+                    }
+
+                    if (mouseX >= L2Text.x && mouseX <= L2Text.x + L2Text.w &&
+                        mouseY >= L2Text.y && mouseY <= L2Text.y + L2Text.h) {
+                        SDL_DestroyTexture(L2textTexture);  // destroy the texture after it's been used
+                        TTF_CloseFont(font);  // for closing font when function ends
+                        LoaderEnabled = true;
+                        l2 = true;
+                        LevelLoader = false;
+                    }
+                }
+
+
+                // we'll keep this as the exit option from the load level menu for now
+                if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_g) {
+                    SDL_DestroyTexture(L8textTexture);  // destroy the texture after it's been used
+                    TTF_CloseFont(font);  // for closing font when function ends
+                    this->LevelLoader = false;
+                }
+
+
+            }
+            
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);  // r, g, b, opaqueness
+            SDL_RenderFillRect(renderer, &L8Text);
+            SDL_RenderCopy(renderer, L8textTexture, nullptr, &L8Text); // renders texture and rect
+
+            SDL_RenderFillRect(renderer, &L7Text); // fills the rectangle shape
+            SDL_RenderCopy(renderer, L7textTexture, nullptr, &L7Text); // copies the text
+
+            SDL_RenderFillRect(renderer, &L6Text); // fills the rectangle shape
+            SDL_RenderCopy(renderer, L6textTexture, nullptr, &L6Text); // copies the text
+
+            SDL_RenderFillRect(renderer, &L5Text); // fills the rectangle shape
+            SDL_RenderCopy(renderer, L5textTexture, nullptr, &L5Text); // copies the text
+
+            SDL_RenderFillRect(renderer, &L4Text); // fills the rectangle shape
+            SDL_RenderCopy(renderer, L4textTexture, nullptr, &L4Text); // copies the text
+
+            SDL_RenderFillRect(renderer, &L3Text); // fills the rectangle shape
+            SDL_RenderCopy(renderer, L3textTexture, nullptr, &L3Text); // copies the text
+
+            SDL_RenderFillRect(renderer, &L2Text); // fills the rectangle shape
+            SDL_RenderCopy(renderer, L2textTexture, nullptr, &L2Text); // copies the text
+
+            SDL_RenderPresent(renderer);
+        }
+
+        
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void Game::DisplayMessages(SDL_Renderer* renderer) {
     static int displaytime = 0;
@@ -404,6 +673,8 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
 }
 
 void Game::ChangeLevel(int& LevelID) {
+
+    if (!LoaderEnabled) {
         if (LevelID == 0 && Players[0]->GetY() == -90) {
             Level2(LevelID);
         }
@@ -425,6 +696,35 @@ void Game::ChangeLevel(int& LevelID) {
         if (LevelID == 6 && Players[0]->GetY() == -90) {
             Level8(LevelID);
         }
+    }
+    else if (LoaderEnabled && l8) {
+        Level8(LevelID);
+        l8 = false;
+    }
+    else if (LoaderEnabled && l7) {
+        Level7(LevelID);
+        l7 = false;
+    }
+    else if (LoaderEnabled && l6) {
+        Level6(LevelID);
+        l6 = false;
+    }
+    else if (LoaderEnabled && l5) {
+        Level5(LevelID);
+        l5 = false;
+    }
+    else if (LoaderEnabled && l4) {
+        Level4(LevelID);
+        l4 = false;
+    }
+    else if (LoaderEnabled && l3) {
+        Level3(LevelID);
+        l3 = false;
+    }
+    else if (LoaderEnabled && l2) {
+        Level2(LevelID);
+        l2 = false;
+    }
     return;
 }
 
@@ -454,7 +754,14 @@ void Game::Level2(int& LevelID) { // loads assets for level 2
         std::cerr << "Couldn't create barrier!" << std::endl;
         return;
     }
-    PlayerMove(0, 280); // resets spawn point to bottom of map
+
+    if (!LoaderEnabled) {
+        PlayerMove(0, 280); // resets spawn point to bottom of map
+    }
+    else {
+        Players[0]->SetX(210);
+        Players[0]->SetY(400);
+    }
 }
 
 
@@ -471,7 +778,13 @@ void Game::Level3(int& LevelID) {
         std::cerr << "Couldn't create barrier!" << std::endl;
         return;
     }
-    PlayerMove(-260, 140);
+    if (!LoaderEnabled) {
+        PlayerMove(-260, 140);
+    }
+    else {
+        Players[0]->SetX(210);
+        Players[0]->SetY(400);
+    }
 }
 
 void Game::Level4(int& LevelID) {
@@ -498,7 +811,14 @@ void Game::Level4(int& LevelID) {
     
 
     Levels[LevelID]->GetGameObject(0)->SetTexture("Images/Rifle.png"); // sets texture 
-    PlayerMove(-150, 280); // resets spawn point to bottom of map
+
+    if (!LoaderEnabled) {
+        PlayerMove(-150, 280); // resets spawn point to bottom of map
+    }
+    else {
+        Players[0]->SetX(210);
+        Players[0]->SetY(400);
+    }
 }
 
 void Game::Level5(int& LevelID) {
@@ -530,7 +850,14 @@ void Game::Level5(int& LevelID) {
         return;
     }
     Levels[LevelID]->GetBarrier(0)->SetInvisible();
-    PlayerMove(-250, 0); // x y
+
+    if (!LoaderEnabled) {
+        PlayerMove(-250, 0); // x y
+    }
+    else {
+        Players[0]->SetX(210);
+        Players[0]->SetY(400);
+    }
 }
 
 
@@ -569,7 +896,14 @@ void Game::Level6(int& LevelID) {
     }
     
     Levels[LevelID]->GetBarrier(0)->SetInvisible();
-    PlayerMove(-260, 0); // x y
+
+    if (!LoaderEnabled) {
+        PlayerMove(-260, 0); // x y
+    }
+    else {
+        Players[0]->SetX(210);
+        Players[0]->SetY(400);
+    }
 }
 
 void Game::Level7(int& LevelID) {
@@ -577,7 +911,13 @@ void Game::Level7(int& LevelID) {
         std::cerr << "Couldn't create Level seven!" << std::endl;
         return;
     }
-    PlayerMove(-260, 0); // x y
+    if (!LoaderEnabled) {
+        PlayerMove(-260, 0); // x y
+    }
+    else {
+        Players[0]->SetX(210);
+        Players[0]->SetY(400);
+    }
 }
 
 void Game::Level8(int& LevelID) {
@@ -600,7 +940,13 @@ void Game::Level8(int& LevelID) {
         std::cerr << "Couldn't create Enemy!" << std::endl;
         return;
     }
-    PlayerMove(-20, 260); // x y
+    if (!LoaderEnabled) {
+        PlayerMove(-20, 260); // x y
+    }
+    else {
+        Players[0]->SetX(210);
+        Players[0]->SetY(400);
+    }
 }
 
 void Game::PlayerMove(int x, int y) {
@@ -656,7 +1002,7 @@ bool Game::MakeLevel(std::string levelname, const char* backgroundimagepath, int
     try {
         auto level = std::make_shared<Level>(levelname, backgroundimagepath, lb, rb, ub, lwb);
         Levels.push_back(std::move(level)); 
-        LevelID = Levels.size() - 1;       
+        LevelID = Levels.size() - 1; // needs to be changed for level loader
         return true;
     }
     catch (const std::exception& e) {
