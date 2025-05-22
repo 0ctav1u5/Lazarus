@@ -37,7 +37,7 @@ bool l8 = false;
 
 void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
     while (SDL_PollEvent(&e)) {
-        int cooldown = 500;
+        int cooldown = 800;
         static int oldtime = 0;
         int newtime = SDL_GetTicks();
         // HANDLES PAUSE MENU
@@ -63,21 +63,21 @@ void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
 
             // makes the bullets when conditions are met, certain direction and cooldown
             if (Players[0]->GetDirection() == 2 && (newtime - oldtime > cooldown)) { // right
-                if (!MakeBullet(9, 10, RightX, RightY)) { // speed, damage
+                if (!MakeBullet(6, 10, RightX, RightY)) { // speed, damage
                     std::cerr << "Bullet not created!" << std::endl;
                 }
                 Bullets[0]->SetDirection(4);
                 oldtime = newtime;
             }
             if (Players[0]->GetDirection() == 1 && (newtime - oldtime > cooldown)) { // left
-                if (!MakeBullet(9, 10, LeftX, LeftY)) { // speed, damage
+                if (!MakeBullet(6, 10, LeftX, LeftY)) { // speed, damage
                     std::cerr << "Bullet not created!" << std::endl;
                 }
                 Bullets[0]->SetDirection(3);
                 oldtime = newtime;
             }
             if (Players[0]->GetDirection() == 3 && (newtime - oldtime > cooldown)) { // up
-                if (!MakeBullet(9, 10, UpX, UpY)) { // speed, damage
+                if (!MakeBullet(6, 10, UpX, UpY)) { // speed, damage
                     std::cerr << "Bullet not created!" << std::endl;
                 }
                 Bullets[0]->SetDirection(1);
@@ -244,9 +244,6 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
         SDL_Surface* L3textSurface = TTF_RenderText_Solid(font, "L3", textColour);
         SDL_Surface* L2textSurface = TTF_RenderText_Solid(font, "L2", textColour);
 
-
-
-       
 
         // #L8
         if (L8textSurface) {
@@ -725,7 +722,7 @@ void Game::ChangeLevel(int& LevelID) {
         Level2(LevelID);
         l2 = false;
     }
-    return;
+    return;   
 }
 
 void Game::Level2(int& LevelID) { // loads assets for level 2

@@ -13,10 +13,19 @@ class Bullet {
 private:
     int SPEED;
     int DAMAGE;
+
+
+
     SDL_Rect rect = {};
+    const char* IMAGEPATH = nullptr;
+    SDL_Surface* SURFACE = nullptr;
+    SDL_Texture* texture = nullptr;
+
+
+
     int X, Y;
-    const int WIDTH = 3;
-    const int HEIGHT = 3;
+    const int WIDTH = 12;
+    const int HEIGHT = 12;
     int DIRECTION = 0;
     bool left = false, right = false, up = false, down = false;
 
