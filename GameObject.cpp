@@ -80,6 +80,10 @@ int GameObject::GetGameObjectHeight() {
 	return this->HEIGHT;
 }
 
+SDL_Rect& GameObject::GetRect() {
+	return this->rect;
+}
+
 bool GameObject::CheckCollidable() {
 	if (CanCollide) {
 		return true;
@@ -87,6 +91,23 @@ bool GameObject::CheckCollidable() {
 	else {
 		return false;
 	}
+}
+
+
+int GameObject::GetXU() {
+	return this->XUrange;
+}
+
+int GameObject::GetXL() {
+	return this->XLrange;
+}
+
+int GameObject::GetYU() {
+	return this->YUrange;
+}
+
+int GameObject::GetYL() {
+	return this->YLrange;
 }
 
 std::string GameObject::CheckBoundary(int PlayerY, int PlayerX, int PlayerWidth, int PlayerHeight) {

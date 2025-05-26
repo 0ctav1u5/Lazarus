@@ -86,7 +86,22 @@ void GameEngine::GameLoop() {
             SDL_Delay(frameDelay - frameTime);  // delay to maintain a consistent fps
         }
     }
-    std::cout << "Game Over!" << std::endl;
+    if (game->GetPlayer(0)->GetHP() <= 0) {
+        std::cout << "You died!" << std::endl;
+    }
+    else if (game->GetPlayer(0)->GetHP() > 0 && LevelID == 10) {
+
+        int i = 0;
+
+        while (i < 2000) {
+            game->EndMessage();
+            game->DisplayMessages(renderer);
+            i++;
+        }
+    }
+    else {
+        std::cout << "Game exited." << std::endl;
+    }
 }
 
 void GameEngine::CheckLevelID() {

@@ -12,6 +12,8 @@ private:
 	SDL_Texture* texture = nullptr;
 	const char* IMAGEPATH = "";
 	int X, Y, WIDTH, HEIGHT;
+	int XUrange, XLrange;
+	int YUrange, YLrange;
 	bool CanCollide;
 	bool CanDamage; // damage zone is in the centre point line and right of the rect
 	bool CanCollect;
@@ -20,9 +22,9 @@ private:
 public:
 
 	GameObject(std::string name, int x, int y, int width, int height, bool cancollide, bool candamage, bool cancollect,
-		bool visible)
+		bool visible, int xurange, int xlrange, int yurange, int ylrange)
 		: NAME(name), X(x), Y(y), WIDTH(width), HEIGHT(height), CanCollide(cancollide), CanDamage(candamage), 
-		CanCollect(cancollect), Visible(visible)
+		CanCollect(cancollect), Visible(visible), XUrange(xurange), XLrange(xlrange), YUrange(yurange), YLrange(ylrange)
 	{
 		rect = { X, Y, WIDTH, HEIGHT };
 	}
@@ -46,6 +48,11 @@ public:
 	int GetY();
 	int GetGameObjectWidth();
 	int GetGameObjectHeight();
+	SDL_Rect& GetRect();
+	int GetXU();
+	int GetXL();
+	int GetYU();
+	int GetYL();
 	bool CheckCollidable();
 	std::string CheckBoundary(int PlayerY, int PlayerX, int PlayerWidth, int PlayerHeight);
 };

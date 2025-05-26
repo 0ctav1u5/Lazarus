@@ -101,10 +101,10 @@ bool Level::MakeEnemy(std::string name, int x, int y, int width, int height, con
 }
 
 bool Level::MakeGameObject(std::string name, int x, int y, int width, int height, bool cancollide,
-	bool candamage, bool cancollect, bool visible) {
+	bool candamage, bool cancollect, bool visible, int xurange, int xlrange, int yurange, int ylrange) {
 	try {
 		auto object = std::make_shared<GameObject>(name, x, y, width, height, cancollide, candamage, 
-		cancollect, visible);
+		cancollect, visible, xurange, xlrange, yurange, ylrange);
 		GameObjects.push_back(object);
 		return true;
 	}

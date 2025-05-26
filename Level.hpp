@@ -41,7 +41,7 @@ public:
     void RenderLevel(SDL_Renderer* renderer);
     bool MakeEnemy(std::string name, int x, int y, int width, int height, const char* enemy);
     bool MakeGameObject(std::string name, int x, int y, int width, int height, bool cancollide,
-    bool candamage, bool cancollect, bool visible);
+    bool candamage, bool cancollect, bool visible, int xurange, int xlrange, int yurange, int ylrange);
     void RemoveGameObject(int i);
     std::shared_ptr<GameObject> GetGameObject(int i);
     std::shared_ptr<Enemy> GetEnemy(int i);

@@ -17,7 +17,9 @@ private:
 	std::vector<std::shared_ptr<Message>> Messages; 
 	std::vector<std::shared_ptr<Bullet>> Bullets;
 	bool LevelLoader = false;
+
 public:
+
 
 	Game() {}
 
@@ -49,6 +51,10 @@ public:
 	void Level6(int& LevelID);
 	void Level7(int& LevelID);
 	void Level8(int& LevelID);
+	void Level9(int& LevelID);
+	void Level10p1(int& LevelID);
+	void Level10p2(int& LevelID);
+	void EndMessage();
 	bool MakeMessage(std::string message, int x, int y, int w, int h);
 	void DisplayMessages(SDL_Renderer* renderer);
 	size_t GetBulletsSize();

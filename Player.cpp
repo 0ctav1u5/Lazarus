@@ -5,7 +5,7 @@
 #include <SDL.h>
 #include "Player.hpp"
 
-void Player::GunCollected() {
+void Player::GunCollected() { // used for showing rifle player graphic
 	this->guncollected = true;
 }
 

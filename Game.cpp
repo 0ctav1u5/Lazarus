@@ -16,9 +16,17 @@
 
 std::vector<std::string> inventory = {};
 int collected = 0;
+
+
+bool riflecollected = false; // TODO: Implement functionality to the handlevents function
+bool keycardcollected = false;
+
+
+
 int Level::LevelIDCounter = 0;
 bool LoaderEnabled = false;
 
+bool endscreen = false;
 
 
 // buttons for levels
@@ -47,15 +55,15 @@ void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
         // HANDLES SHOOTING BULLETS
         if ((e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE) && Bullets.size() == 0 && collected > 0) {
             int RightX = Players[0]->GetX() + 70;
-            int RightY = Players[0]->GetY() + 45; // bullet spawn points determined by player graphic
+            int RightY = Players[0]->GetY() + 40; // bullet spawn points determined by player graphic
 
             int LeftX = Players[0]->GetX() + 30;
-            int LeftY = Players[0]->GetY() + 45; 
+            int LeftY = Players[0]->GetY() + 40; 
 
-            int UpX = Players[0]->GetX() + 50;
+            int UpX = Players[0]->GetX() + 40;
             int UpY = Players[0]->GetY(); 
 
-            int DownX = Players[0]->GetX() + 50;
+            int DownX = Players[0]->GetX() + 40;
             int DownY = Players[0]->GetY() + 65; 
 
             /*std::cout << Players[0]->GetDirection() << std::endl;*/ // prints direction
@@ -91,6 +99,10 @@ void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
                 oldtime = newtime;
             }
         }
+    }
+
+    if (endscreen) {
+        running = false;
     }
 }
 
@@ -199,9 +211,6 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
     SDL_DestroyTexture(textTexture);  // destroy the texture after it's been used
     TTF_CloseFont(font);  // for closing font when function ends
 }
-
-
-
 
 
 
@@ -437,41 +446,13 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-void Game::DisplayMessages(SDL_Renderer* renderer) {
-    static int displaytime = 0;
-    if (collected > 0 && collected < 2) {
-        Players[0]->GunCollected();
-        // collected is 1 but messages is the 0th index of the array
-        while (SDL_GetTicks() < displaytime + 1000) {
-            Messages[collected - 1]->RenderMessage(renderer);
-            SDL_RenderPresent(renderer);
-        }
-    }
-    else { // we will have a lot of elseif statements for each item
-        displaytime = SDL_GetTicks();
-    }
-}
-
-
 // we'll use LevelID here to determine which level, for setting boundaries
 // boundaries will be a struct, and we'll have an array
 // we'll have boundaries as a member of the level class
 void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID) {
     int playerX = Players[0]->GetX(), playerY = Players[0]->GetY();
     int playerWidth = Players[0]->GetPlayerWidth(), playerHeight = Players[0]->GetPlayerHeight();
+    static bool once = true;
 
     bool blockBottom = false, blockTop = false, blockLeft = false, blockRight = false;
 
@@ -502,6 +483,7 @@ void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID) {
         if (!blockTop && (playerY >= Levels[LevelID]->GetUpperBoundary())) {
             PlayerMove(0, -1); // Move up
             Players[0]->SetDirectionGraphic(3);
+            // std::cout << "X: " << Players[0]->GetX() << "| Y: " << Players[0]->GetY() << std::endl;
         }
     }
 
@@ -511,7 +493,14 @@ void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID) {
             Players[0]->SetDirectionGraphic(4);
         }
     }
+
+    if (keyboardState[SDL_SCANCODE_E] && LevelID == 9 && once && Players[0]->GetY() < 200) {
+        Level10p2(LevelID);
+        once = false;
+    }
 }
+
+
 
 // this function will check if the player is being damaged, as well as other effects on the player
 // TODO: Make a new function for some of the functionality found here
@@ -544,32 +533,34 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
     }
 
     std::shared_ptr<Level> level = Levels[LevelID];
-    auto& objects = level->GetGameObjectVector();
+    auto& objects = level->GetGameObjectVector(); // Game Objects for 1 level
 
     // removes gameobjects which are collectible if 
     objects.erase(std::remove_if(objects.begin(), objects.end(),
         [&](const std::shared_ptr<GameObject>& obj) {
             bool objectcollectible = obj->GetCanCollect(); // true if cancollect = true
-            int ObjectX = obj->GetX();
-            int ObjectY = obj->GetY();
 
-            // if object can be collected and is within range of the texture for gun object
-            // needs to be adjusted for new textures (new guns or other objects being added)
-            // problem here is that I am using magic numbers to define ranges
-            if (objectcollectible &&
-                ((PlayerY + PlayerHeight - 20 >= ObjectY + 30) &&
-                    (PlayerY + PlayerHeight - 20 <= ObjectY + 70)) &&
-                PlayerX + 10 >= ObjectX &&
-                PlayerX <= ObjectX + 40) {
+
+
+            int PlayerX = Players[0]->GetX();
+            int PlayerY = Players[0]->GetY();
+            int OXU = obj->GetXU();
+            int OXL = obj->GetXL();
+            int OYU = obj->GetYU();
+            int OYL = obj->GetYL();
+
+          
+               /* XUB = 206
+                XLB = 198
+                YUB = 8
+                YLB = 4*/
+
+            if (objectcollectible && (PlayerX >= OXL && PlayerX <= OXU) && (PlayerY >= OYL && PlayerY <= OYU)) {
 
                 for (auto& game : objects) {
                     inventory.push_back(game->GetName());
                 }
 
-                for (int i = 0; i < inventory.size(); i++) {
-                    std::cout << "You currently have in your inventory: " << std::endl;
-                    std::cout << inventory[i] << std::endl;
-                }
                 std::string message = "You picked up a ";
                 std::string message2 = inventory[collected];
                 message.append(message2);
@@ -600,7 +591,7 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
                 SDL_Rect enemyRect = enemy->GetRect();
                 SDL_Rect bulletRect = Bullets[0]->GetRect();
                 if (SDL_HasIntersection(&enemyRect, &bulletRect)) { // removes bullet if intersection with enemy rect
-                    enemy->DamageEnemy(10);
+                    enemy->DamageEnemy(10); // DAMAGE ENEMY IS HERE
                     Bullets.erase(Bullets.begin());
                     std::cout << enemy->GetEnemyName() << " HP: " << enemy->GetEnemyHP() << std::endl;
                     break;
@@ -624,7 +615,7 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
         }
     }
 
-    // Damage player if enemy and player share an intersection
+    // Damage player if enemy and player have an intersection
     // TODO: Have GetEnemy() include all possible enemies
     if (GetLevel(LevelID)->GetEnemiesSize() > 0) {
         static int oldtime = 0;
@@ -669,9 +660,42 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
     }
 }
 
+
+void Game::DisplayMessages(SDL_Renderer* renderer) {
+    static bool rifle = true, keycard = true;
+
+
+    if (collected > 0) { // collected > 0 && collected < 2
+
+
+        if (Messages.size() == 1 && rifle) {
+            Players[0]->GunCollected();
+            Messages[collected - 1]->RenderMessage(renderer);
+            SDL_RenderPresent(renderer);
+            SDL_Delay(1000); // this will be changed to a time based delay later
+            rifle = false;
+        }
+        else if (Messages.size() == 2 && keycard) {
+            Messages[collected - 1]->RenderMessage(renderer);
+            SDL_RenderPresent(renderer);
+            SDL_Delay(1000);
+            keycard = false;
+        }
+        else if (Messages.size() == 3 && endscreen) {
+            Messages[collected - 1]->RenderMessage(renderer);
+            SDL_RenderPresent(renderer);
+            SDL_Delay(1000);
+            endscreen = false;
+        }
+        else {
+            return;
+        }
+    }
+}
+
 void Game::ChangeLevel(int& LevelID) {
 
-    if (!LoaderEnabled) {
+    if (!LoaderEnabled && !l2 && !l3 && !l4 && !l5 && !l6 && !l7 && !l8) {
         if (LevelID == 0 && Players[0]->GetY() == -90) {
             Level2(LevelID);
         }
@@ -692,6 +716,12 @@ void Game::ChangeLevel(int& LevelID) {
         }
         if (LevelID == 6 && Players[0]->GetY() == -90) {
             Level8(LevelID);
+        }
+        if (LevelID == 7 && Players[0]->GetY() > 490) {
+            Level9(LevelID);
+        }
+        if (LevelID == 8 && Players[0]->GetX() < -60) {
+            Level10p1(LevelID);
         }
     }
     else if (LoaderEnabled && l8) {
@@ -742,7 +772,7 @@ void Game::Level2(int& LevelID) { // loads assets for level 2
     // In the makegameobject method, there are 4 bools at the end, for cancollide, candamage
     // cancollect and visible
     if (!Levels[LevelID]->MakeGameObject("Fire", Fire.ObjectX, Fire.ObjectY, Fire.ObjectWidth,
-        Fire.ObjectHeight, false, true, false, false)) {
+        Fire.ObjectHeight, false, true, false, false, 0, 0, 0, 0)) {
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return;
     }
@@ -789,8 +819,9 @@ void Game::Level4(int& LevelID) {
         std::cerr << "Couldn't create Level four!" << std::endl;
         return;
     }
-    if (!Levels[LevelID]->MakeGameObject("Gun", 170, 10, 150,
-        150, false, false, true, false)) { // cancollide, candamage, cancollect, visible
+
+    if (!Levels[LevelID]->MakeGameObject("Rifle", 170, 10, 150,
+        150, false, false, true, false, 208, 186, 2, -6)) { // cancollide, candamage, cancollect, visible
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return;
     }
@@ -918,31 +949,91 @@ void Game::Level7(int& LevelID) {
 }
 
 void Game::Level8(int& LevelID) {
-    if (!MakeLevel("LevelEight", "Images/Level8.png", LevelID, -30, 530, 0, 410)) { // left, right, upper, down
+    if (!MakeLevel("LevelEight", "Images/Level8.png", LevelID, -30, 530, 0, 530)) { // left, right, upper, down
         std::cerr << "Couldn't create Level eight!" << std::endl;
         return;
     }
-    if (!Levels[LevelID]->MakeEnemy("Davus", 10, 70, 50, // x, y, width, height
-        80, "Images/Zombie.png")) {
-        std::cerr << "Couldn't create Enemy!" << std::endl;
+
+    if (!Levels[LevelID]->MakeGameObject("Key card", 230, 66, 40, // x, y, width, height
+        40, false, false, true, false, 206, 198, 8, 4)) { // cancollide, candamage, cancollect, visible, xu, xl, yu, yl
+        std::cerr << "Couldn't create Game Object!" << std::endl;
         return;
     }
-    if (!Levels[LevelID]->MakeEnemy("Armadeus", 350, 70, 50, // x, y, width, height
-        80, "Images/Zombie.png")) {
-        std::cerr << "Couldn't create Enemy!" << std::endl;
-        return;
-    }
-    if (!Levels[LevelID]->MakeEnemy("Dorom", 250, 150, 50, // x, y, width, height
-        80, "Images/Zombie2.png")) {
-        std::cerr << "Couldn't create Enemy!" << std::endl;
-        return;
-    }
+
+    Levels[LevelID]->GetGameObject(0)->SetTexture("Images/Key card.png"); // sets texture 
+    
     if (!LoaderEnabled) {
         PlayerMove(-20, 260); // x y
     }
     else {
         Players[0]->SetX(210);
         Players[0]->SetY(400);
+    }
+}
+
+void Game::Level9(int& LevelID) {
+    if (!MakeLevel("LevelNine", "Images/Level7.png", LevelID, -100, 530, 0, 410)) { // left, right, upper, down
+        std::cerr << "Couldn't create Level nine!" << std::endl;
+        return;
+    }
+
+    if (!Levels[LevelID]->MakeBarrier(-40, 0, 10, 250)) { // x, y, width, height
+        std::cerr << "Couldn't create Barrier!" << std::endl;
+        return;
+    }
+
+    if (!Levels[LevelID]->MakeBarrier(-40, 410, 10, 150)) { // x, y, width, height
+        std::cerr << "Couldn't create Barrier!" << std::endl;
+        return;
+    }
+
+    if (!LoaderEnabled) {
+        PlayerMove(20, -270); // x y
+    }
+    else {
+        Players[0]->SetX(210);
+        Players[0]->SetY(400);
+    }
+}
+
+void Game::Level10p1(int& LevelID) {
+    if (!MakeLevel("LevelTenp1", "Images/Level10p1.png", LevelID, -30, 530, 0, 530)) { // left, right, upper, down
+        std::cerr << "Couldn't create Level ten!" << std::endl;
+        return;
+    }
+    if (!LoaderEnabled) {
+        PlayerMove(280, 0); // x y
+    }
+    else {
+        Players[0]->SetX(210);
+        Players[0]->SetY(400);
+    }
+}
+
+
+
+void Game::Level10p2(int& LevelID) {
+    if (!MakeLevel("LevelTenp2", "Images/Level10p2.png", LevelID, -30, 530, 0, 530)) { // left, right, upper, down
+        std::cerr << "Couldn't create Level ten!" << std::endl;
+        return;
+    }
+    if (!LoaderEnabled) {
+        PlayerMove(0, 0); // x y
+    }
+    else {
+        Players[0]->SetX(210);
+        Players[0]->SetY(400);
+    }
+    collected++;
+    endscreen = true;
+}
+
+void Game::EndMessage() {
+    std::string message = "Preview Over";
+
+    if (!MakeMessage(message, 140, 220, 200, 50)) { // left, right, upper, down
+        std::cerr << "Message failed to load!" << std::endl;
+        return;
     }
 }
 
@@ -1052,12 +1143,12 @@ bool Game::LoadAssets(SDL_Renderer* renderer, int& LevelID) {
         return false;
     }
 
-    if (!Levels[LevelID]->MakeGameObject("Block1", ObjectX, ObjectY, ObjectWidth, ObjectHeight, true, false, false, true)) {
+    if (!Levels[LevelID]->MakeGameObject("Block1", ObjectX, ObjectY, ObjectWidth, ObjectHeight, true, false, false, true, 0, 0, 0, 0)) {
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return false;
     }
 
-    if (!Levels[LevelID]->MakeGameObject("Block2", 400, ObjectY, ObjectWidth, ObjectHeight, true, false, false, true)) {
+    if (!Levels[LevelID]->MakeGameObject("Block2", 400, ObjectY, ObjectWidth, ObjectHeight, true, false, false, true, 0, 0, 0, 0)) {
         std::cerr << "Couldn't create Game Object!" << std::endl;
         return false;
     }
