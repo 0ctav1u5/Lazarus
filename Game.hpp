@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <SDL_mixer.h>
 #include "Player.hpp"
 #include "Level.hpp"
 #include "GameObject.hpp"
@@ -16,6 +17,7 @@ private:
 	std::vector<std::shared_ptr<Level>> Levels;
 	std::vector<std::shared_ptr<Message>> Messages; 
 	std::vector<std::shared_ptr<Bullet>> Bullets;
+	Mix_Chunk* BulletSound = nullptr;
 	bool LevelLoader = false;
 
 public:
@@ -26,6 +28,7 @@ public:
 	~Game() {
 		
 	}
+	void CheckAudio();
 	void PauseMenu(SDL_Renderer* renderer, bool& running);
 	bool LoadAssets(SDL_Renderer* renderer, int& LevelID);
 	bool MakePlayer(std::string name, int posx, int posy, const char* imagepath, int speed);

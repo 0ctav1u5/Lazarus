@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <SDL_image.h>
+#include <SDL_mixer.h>
 #include "GameEngine.hpp"
 #include "Game.hpp"
 #include "Player.hpp"
@@ -39,6 +40,17 @@ bool GameEngine::Initialise() {
         return false;
     }
 
+    if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+        std::cerr << "SDL_Init failed: " << SDL_GetError() << '\n';
+        return 1;
+    }
+
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        std::cerr << "Mix_OpenAudio failed: " << Mix_GetError() << '\n';
+        SDL_Quit();
+        return 1;
+    }
+
     game = std::make_unique<Game>();
     if (!game->LoadAssets(renderer, LevelID)) {
         Cleanup("Error. Failed to load game assets!");
@@ -59,6 +71,15 @@ void GameEngine::GameLoop() {
     Uint32 frameStart;
     int frameTime;
 
+    music = Mix_LoadMUS("Images/SoundTrack.mp3");
+    if (!music) {
+        std::cerr << "Failed to load music: " << Mix_GetError() << std::endl;
+        return;
+    }
+
+    Mix_PlayMusic(music, -1);
+    Mix_VolumeMusic(30);
+
 
     while (running) {
         frameStart = SDL_GetTicks(); // start of frame
@@ -66,6 +87,7 @@ void GameEngine::GameLoop() {
         game->LoadLevel(e, renderer, LevelID);
         game->HandleEvents(e, running, renderer);
         game->CheckPlayerStatus(LevelID, running, renderer);
+        game->CheckAudio(); // CHECK THIS
         
         
         // CheckLevelID(); uncomment when debugging
@@ -87,6 +109,9 @@ void GameEngine::GameLoop() {
         }
     }
     if (game->GetPlayer(0)->GetHP() <= 0) {
+        Mix_FreeMusic(music);
+        Mix_CloseAudio();
+        SDL_Quit();
         std::cout << "You died!" << std::endl;
     }
     else if (game->GetPlayer(0)->GetHP() > 0 && LevelID == 10) {
@@ -100,6 +125,9 @@ void GameEngine::GameLoop() {
         }
     }
     else {
+        Mix_FreeMusic(music);
+        Mix_CloseAudio();
+        SDL_Quit();
         std::cout << "Game exited." << std::endl;
     }
 }

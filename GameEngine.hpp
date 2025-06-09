@@ -10,6 +10,7 @@ private:
 	const char* m_WINDOW_NAME = "Lazarus";
 	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
+	Mix_Music* music = nullptr;
 	std::unique_ptr<Game> game;
 	int LevelID = 0;
 

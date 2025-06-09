@@ -2,6 +2,7 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <SDL.h>
+#include <SDL_mixer.h>
 #include <string>
 #include "Game.hpp"
 #include "Player.hpp"
@@ -91,6 +92,23 @@ void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
     if (endscreen) {
         running = false;
     }
+}
+
+
+// CHECK THIS
+void Game::CheckAudio() {
+    static bool bulletPlayed = false;
+
+    if (!bulletPlayed && !Bullets.empty()) {
+        Mix_PlayChannel(-1, BulletSound, 0);
+        bulletPlayed = true;
+    }
+
+    if (Bullets.empty()) {
+        bulletPlayed = false;
+    }
+
+    // DO NOT free BulletSound or close audio here.
 }
 
 void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
@@ -656,6 +674,7 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
     static int level3barrier = true;
     static int level5barrier = true;
     static int level6barrier = true;
+    static int level9barrier = true; // COME BACK HERE
 
     if (collected > 0 && LevelID == 3 && level3barrier) { // this will be modified to handle more than one barrier
         Levels[LevelID]->GetBarrierVector().erase(Levels[LevelID]->GetBarrierVector().begin());
@@ -668,6 +687,10 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
     else if (LevelID == 5 && Levels[LevelID]->GetEnemiesSize() == 0 && level6barrier) {
         Levels[LevelID]->GetBarrierVector().erase(Levels[LevelID]->GetBarrierVector().begin() + 1);
         level6barrier = false;
+    }
+    else if (LevelID == 8 && Levels[LevelID]->GetEnemiesSize() == 0 && level9barrier) {
+        Levels[LevelID]->GetBarrierVector().erase(Levels[LevelID]->GetBarrierVector().begin());
+        level9barrier = false;
     }
 
     if (Players[0]->GetHP() <= 0) {
@@ -1009,6 +1032,29 @@ void Game::Level9(int& LevelID) {
         return;
     }
 
+    if (!Levels[LevelID]->MakeEnemy("Juniper", 50, 450, 50, // x, y, width, height
+        80, "Images/Zombie3.png")) {
+        std::cerr << "Couldn't create Enemy!" << std::endl;
+        return;
+    }
+
+    if (!Levels[LevelID]->MakeEnemy("Jordan", 300, 450, 50, // x, y, width, height
+        80, "Images/Zombie2.png")) {
+        std::cerr << "Couldn't create Enemy!" << std::endl;
+        return;
+    }
+
+    if (!Levels[LevelID]->MakeEnemy("Xenith", 50, 350, 50, // x, y, width, height
+        80, "Images/Zombie.png")) {
+        std::cerr << "Couldn't create Enemy!" << std::endl;
+        return;
+    }
+
+    if (!Levels[LevelID]->MakeBarrier(-130, 0, 100, 600)) { // x, y, width, height
+        std::cerr << "Couldn't create Barrier!" << std::endl;
+        return;
+    }
+
     if (!Levels[LevelID]->MakeBarrier(-40, 0, 10, 250)) { // x, y, width, height
         std::cerr << "Couldn't create Barrier!" << std::endl;
         return;
@@ -1033,6 +1079,13 @@ void Game::Level10p1(int& LevelID) {
         std::cerr << "Couldn't create Level ten!" << std::endl;
         return;
     }
+    if (!Levels[LevelID]->MakeBarrier(0, 10, 500, 30)) { // x, y, width, height
+        std::cerr << "Couldn't create Barrier!" << std::endl;
+        return;
+    }
+
+    Levels[LevelID]->GetBarrier(0)->SetInvisible();
+
     if (!LoaderEnabled) {
         PlayerMove(280, 0); // x y
     }
@@ -1180,6 +1233,14 @@ bool Game::LoadAssets(SDL_Renderer* renderer, int& LevelID) {
 
     if (!Levels[LevelID]->MakeGameObject("Block2", 400, ObjectY, ObjectWidth, ObjectHeight, true, false, false, true, 0, 0, 0, 0)) {
         std::cerr << "Couldn't create Game Object!" << std::endl;
+        return false;
+    }
+
+    this->BulletSound = Mix_LoadWAV("Images/BulletSound.mp3");
+    if (!BulletSound) {
+        std::cerr << "Failed to load sound: " << Mix_GetError() << '\n';
+        Mix_CloseAudio();
+        SDL_Quit();
         return false;
     }
     return true;
