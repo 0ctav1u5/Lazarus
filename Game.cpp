@@ -8,6 +8,7 @@
 #include "Player.hpp"
 #include "Level.hpp"
 #include "Message.hpp"
+#include "OverlayObject.hpp"
 
 std::vector<std::string> inventory = {};
 int collected = 0;
@@ -19,6 +20,7 @@ int Level::LevelIDCounter = 0;
 bool LoaderEnabled = false;
 
 bool endscreen = false;
+bool mutedchannel = false; 
 
 // buttons for levels
 bool l2 = false;
@@ -30,8 +32,11 @@ bool l7 = false;
 bool l8 = false;
 bool l9 = false;
 bool l10 = false;
+bool l11 = false;
+bool l12 = false;
+bool l13 = false;
 
-void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
+void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer, int& LevelID) {
     while (SDL_PollEvent(&e)) {
         int cooldown = 800;
         static int oldtime = 0;
@@ -41,7 +46,14 @@ void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
             PauseMenu(renderer, running);
         }
         // HANDLES SHOOTING BULLETS
-        if ((e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE) && Bullets.size() == 0 && collected > 0) {
+        const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
+
+        if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE &&
+            !currentKeyStates[SDL_SCANCODE_A] &&
+            !currentKeyStates[SDL_SCANCODE_W] &&
+            !currentKeyStates[SDL_SCANCODE_S] &&
+            !currentKeyStates[SDL_SCANCODE_D] &&
+            Bullets.size() == 0 && collected > 0) {
             int RightX = Players[0]->GetX() + 70;
             int RightY = Players[0]->GetY() + 40; // bullet spawn points determined by player graphic
 
@@ -89,6 +101,10 @@ void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
         }
     }
 
+    if (LevelID == 13 && GetLevel(LevelID)->GetEnemiesSize() <= 0) {
+        endscreen = true;
+    }
+
     if (endscreen) {
         running = false;
     }
@@ -99,7 +115,7 @@ void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer) {
 void Game::CheckAudio() {
     static bool bulletPlayed = false;
 
-    if (!bulletPlayed && !Bullets.empty()) {
+    if (!bulletPlayed && !Bullets.empty() && !mutedchannel) {
         Mix_PlayChannel(-1, BulletSound, 0);
         bulletPlayed = true;
     }
@@ -133,10 +149,12 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
     SDL_Texture* textTexture = nullptr;
     SDL_Texture* textTexture2 = nullptr;
     SDL_Texture* textTexture3 = nullptr;
+    SDL_Texture* textTexture4 = nullptr;
     SDL_Color textColour = { 255, 0, 0 }; // red colour for text
     SDL_Surface* textSurface = TTF_RenderText_Solid(font, "Paused", textColour); // font, text, colour
     SDL_Surface* textSurface2 = TTF_RenderText_Solid(font, "Load Level", textColour); // font, text, colour
     SDL_Surface* textSurface3 = TTF_RenderText_Solid(font, "Exit", textColour); // font, text, colour
+    SDL_Surface* textSurface4 = TTF_RenderText_Solid(font, "Mute", textColour); // font, text, colour
     
     if (textSurface) {
         textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
@@ -164,10 +182,20 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
         std::cerr << "Text render error: " << TTF_GetError() << std::endl;
         return;
     }
+    if (textSurface4) {
+        textTexture4 = SDL_CreateTextureFromSurface(renderer, textSurface4);
+        SDL_FreeSurface(textSurface4);
+    }
+    else {
+        std::cerr << "Text render error: " << TTF_GetError() << std::endl;
+        return;
+    }
     
+    // rectangles for these things
     SDL_Rect PauseText = { 140, 220, 200, 50 };  // x, y, width, height
-    SDL_Rect LevelLoaderText = { 0, 0, 180, 50 };
-    SDL_Rect ExitText = { 400, 0, 100, 50 };
+    SDL_Rect LevelLoaderText = { 5, 5, 180, 50 };
+    SDL_Rect ExitText = { 395, 5, 100, 50 };
+    SDL_Rect MuteText = { 395, 445, 100, 50 };
 
     while (pauseloop) {
         SDL_GetMouseState(&mouseX, &mouseY);
@@ -191,6 +219,23 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
                     running = false;  // Exit pause menu
                     pauseloop = false;
                 }
+
+
+                if (mouseX >= MuteText.x && mouseX <= MuteText.x + MuteText.w &&
+                    mouseY >= MuteText.y && mouseY <= MuteText.y + MuteText.h) {
+                    std::cout << "Mute button clicked!" << std::endl;
+                    static bool switchmute = false;
+                    if (!switchmute) {
+                        Mix_VolumeMusic(0);
+                        switchmute = true;
+                        mutedchannel = true;
+                    }
+                    else {
+                        Mix_VolumeMusic(20);
+                        switchmute = false;
+                        mutedchannel = false;
+                    }
+                }
             }
         }
 
@@ -206,6 +251,11 @@ void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderFillRect(renderer, &ExitText);
         SDL_RenderCopy(renderer, textTexture3, nullptr, &ExitText);
+
+        // Mute button
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);  // r, g, b, opaqueness
+        SDL_RenderFillRect(renderer, &MuteText);
+        SDL_RenderCopy(renderer, textTexture4, nullptr, &MuteText); // draws rectangle + texture
         SDL_RenderPresent(renderer);
 
     } // end of while loop
@@ -230,6 +280,9 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
             std::cout << "Level Loader Loaded!" << std::endl;
         }
 
+        SDL_Texture* L13textTexture = nullptr;
+        SDL_Texture* L12textTexture = nullptr;
+        SDL_Texture* L11textTexture = nullptr;
         SDL_Texture* L10textTexture = nullptr;
         SDL_Texture* L9textTexture = nullptr;
         SDL_Texture* L8textTexture = nullptr; 
@@ -243,6 +296,9 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
 
         SDL_Color textColour = { 255, 0, 0 }; // red - general
 
+        SDL_Surface* L13textSurface = TTF_RenderText_Solid(font, "L13", textColour);
+        SDL_Surface* L12textSurface = TTF_RenderText_Solid(font, "L12", textColour);
+        SDL_Surface* L11textSurface = TTF_RenderText_Solid(font, "L11", textColour);
         SDL_Surface* L10textSurface = TTF_RenderText_Solid(font, "L10", textColour);
         SDL_Surface* L9textSurface = TTF_RenderText_Solid(font, "L9", textColour);
         SDL_Surface* L8textSurface = TTF_RenderText_Solid(font, "L8", textColour);
@@ -253,7 +309,35 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
         SDL_Surface* L3textSurface = TTF_RenderText_Solid(font, "L3", textColour);
         SDL_Surface* L2textSurface = TTF_RenderText_Solid(font, "L2", textColour);
 
+        // #L13
+        if (L13textSurface) {
+            L13textTexture = SDL_CreateTextureFromSurface(renderer, L13textSurface);
+            SDL_FreeSurface(L13textSurface);
+        }
+        else {
+            std::cerr << "Text render error: " << TTF_GetError() << std::endl;
+            return;
+        }
 
+        // #L12
+        if (L12textSurface) {
+            L12textTexture = SDL_CreateTextureFromSurface(renderer, L12textSurface);
+            SDL_FreeSurface(L12textSurface);
+        }
+        else {
+            std::cerr << "Text render error: " << TTF_GetError() << std::endl;
+            return;
+        }
+
+        // #L11
+        if (L11textSurface) {
+            L11textTexture = SDL_CreateTextureFromSurface(renderer, L11textSurface);
+            SDL_FreeSurface(L11textSurface);
+        }
+        else {
+            std::cerr << "Text render error: " << TTF_GetError() << std::endl;
+            return;
+        }
 
         // #L10
         if (L10textSurface) {
@@ -345,6 +429,9 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
             return;
         }
 
+        SDL_Rect L13Text = { 440, 0, 30, 30 };  // x, y, width, height
+        SDL_Rect L12Text = { 400, 0, 30, 30 };  // x, y, width, height
+        SDL_Rect L11Text = { 360, 0, 30, 30 };  // x, y, width, height
         SDL_Rect L10Text = { 320, 0, 30, 30 };  // x, y, width, height
         SDL_Rect L9Text = { 280, 0, 30, 30 };  // x, y, width, height
         SDL_Rect L8Text = { 240, 0, 30, 30 };  // x, y, width, height
@@ -356,12 +443,38 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
         SDL_Rect L2Text = { 0, 0, 30, 30 };  // x, y, width, height
         
 
-
         while (LevelLoader) {
             SDL_GetMouseState(&mouseX, &mouseY);
             while (SDL_PollEvent(&e)) {
 
                 if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT) {
+
+                    if (mouseX >= L13Text.x && mouseX <= L13Text.x + L13Text.w &&
+                        mouseY >= L13Text.y && mouseY <= L13Text.y + L13Text.h) {
+                        SDL_DestroyTexture(L13textTexture);  // destroy the texture after it's been used
+                        TTF_CloseFont(font);  // for closing font when function ends
+                        LoaderEnabled = true;
+                        l13 = true;
+                        LevelLoader = false;
+                    }
+
+                    if (mouseX >= L12Text.x && mouseX <= L12Text.x + L12Text.w &&
+                        mouseY >= L12Text.y && mouseY <= L12Text.y + L12Text.h) {
+                        SDL_DestroyTexture(L12textTexture);  // destroy the texture after it's been used
+                        TTF_CloseFont(font);  // for closing font when function ends
+                        LoaderEnabled = true;
+                        l12 = true;
+                        LevelLoader = false;
+                    }
+
+                    if (mouseX >= L11Text.x && mouseX <= L11Text.x + L11Text.w &&
+                        mouseY >= L11Text.y && mouseY <= L11Text.y + L11Text.h) {
+                        SDL_DestroyTexture(L11textTexture);  // destroy the texture after it's been used
+                        TTF_CloseFont(font);  // for closing font when function ends
+                        LoaderEnabled = true;
+                        l11 = true;
+                        LevelLoader = false;
+                    }
 
                     if (mouseX >= L10Text.x && mouseX <= L10Text.x + L10Text.w &&
                         mouseY >= L10Text.y && mouseY <= L10Text.y + L10Text.h) {
@@ -458,6 +571,15 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
             
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);  // r, g, b, opaqueness
 
+            SDL_RenderFillRect(renderer, &L13Text);
+            SDL_RenderCopy(renderer, L13textTexture, nullptr, &L13Text); // renders texture and rect
+
+            SDL_RenderFillRect(renderer, &L12Text);
+            SDL_RenderCopy(renderer, L12textTexture, nullptr, &L12Text); // renders texture and rect
+
+            SDL_RenderFillRect(renderer, &L11Text);
+            SDL_RenderCopy(renderer, L11textTexture, nullptr, &L11Text); // renders texture and rect
+
             SDL_RenderFillRect(renderer, &L10Text);
             SDL_RenderCopy(renderer, L10textTexture, nullptr, &L10Text); // renders texture and rect
 
@@ -487,8 +609,6 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
 
             SDL_RenderPresent(renderer);
         }
-
-        
     }
 }
 
@@ -761,6 +881,31 @@ void Game::ChangeLevel(int& LevelID) {
         if (LevelID == 8 && Players[0]->GetX() < -60) {
             Level10p1(LevelID);
         }
+        if (LevelID == 10 && Players[0]->GetY() == -90) {
+            Level11(LevelID);
+        }
+        if (LevelID == 11 && Players[0]->GetY() == -90) {
+            Level12(LevelID);
+        }
+        if (LevelID == 12 && Players[0]->GetY() == -90) {
+            Level13(LevelID);
+        }
+    }
+    else if (LoaderEnabled && l13) {
+        Level13(LevelID);
+        l13 = false;
+    }
+    else if (LoaderEnabled && l12) {
+        Level12(LevelID);
+        l12 = false;
+    }
+    else if (LoaderEnabled && l11) {
+        Level11(LevelID);
+        l11 = false;
+    }
+    else if (LoaderEnabled && l11) {
+        Level10p2(LevelID);
+        l11 = false;
     }
     else if (LoaderEnabled && l10) {
         Level10p1(LevelID);
@@ -803,8 +948,12 @@ void Game::ChangeLevel(int& LevelID) {
 
 void Game::Level2(int& LevelID) { 
 
+    // I'll include a function to handle this for all levels later
+    if (OverlayObjects.size() > 0) {
+        OverlayObjects.erase(OverlayObjects.begin());
+    }
     ObjectProperties Fire = { 10, 150, 100, 100 }; // x, y, width, height
-    ObjectProperties Barrier = { 530, 220, 100, 300 };
+    ObjectProperties Barrier = { 530, 200, 100, 300 };
 
 
     if (!MakeLevel("LevelTwo", "Images/Level2.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
@@ -833,6 +982,9 @@ void Game::Level2(int& LevelID) {
 }
 
 void Game::Level3(int& LevelID) {
+    if (OverlayObjects.size() > 0) {
+        OverlayObjects.erase(OverlayObjects.begin());
+    }
     ObjectProperties Barrier = { 0, -50, 250, 50 };
 
     if (!MakeLevel("LevelThree", "Images/Level3.png", LevelID, -30, 530, -100, 410)) { // left, right, upper, down
@@ -855,6 +1007,9 @@ void Game::Level3(int& LevelID) {
 }
 
 void Game::Level4(int& LevelID) {
+    if (OverlayObjects.size() > 0) {
+        OverlayObjects.erase(OverlayObjects.begin());
+    }
     if (!MakeLevel("LevelFour", "Images/Level4.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
         std::cerr << "Couldn't create Level four!" << std::endl;
         return;
@@ -889,6 +1044,9 @@ void Game::Level4(int& LevelID) {
 }
 
 void Game::Level5(int& LevelID) {
+    if (OverlayObjects.size() > 0) {
+        OverlayObjects.erase(OverlayObjects.begin());
+    }
     if (!MakeLevel("LevelFive", "Images/Level5.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
         std::cerr << "Couldn't create Level five!" << std::endl;
         return;
@@ -928,6 +1086,9 @@ void Game::Level5(int& LevelID) {
 }
 
 void Game::Level6(int& LevelID) {
+    if (OverlayObjects.size() > 0) {
+        OverlayObjects.erase(OverlayObjects.begin());
+    }
     if (!MakeLevel("LevelSix", "Images/Level6.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
         std::cerr << "Couldn't create Level six!" << std::endl;
         return;
@@ -938,7 +1099,7 @@ void Game::Level6(int& LevelID) {
         return;
     }
     if (!Levels[LevelID]->MakeEnemy("Korfu", 350, 150, 50, // x, y, width, height
-        80, "Images/Zombie2.png")) {
+        80, "Images/Zombie4.png")) {
         std::cerr << "Couldn't create Enemy!" << std::endl;
         return;
     }
@@ -973,6 +1134,9 @@ void Game::Level6(int& LevelID) {
 }
 
 void Game::Level7(int& LevelID) {
+    if (OverlayObjects.size() > 0) {
+        OverlayObjects.erase(OverlayObjects.begin());
+    }
     if (!MakeLevel("LevelSeven", "Images/Level7.png", LevelID, -30, 530, -100, 410)) { // left, right, upper, down
         std::cerr << "Couldn't create Level seven!" << std::endl;
         return;
@@ -995,6 +1159,9 @@ void Game::Level7(int& LevelID) {
 }
 
 void Game::Level8(int& LevelID) {
+    if (OverlayObjects.size() > 0) {
+        OverlayObjects.erase(OverlayObjects.begin());
+    }
     if (!MakeLevel("LevelEight", "Images/Level8.png", LevelID, -30, 530, 0, 530)) { // left, right, upper, down
         std::cerr << "Couldn't create Level eight!" << std::endl;
         return;
@@ -1027,6 +1194,9 @@ void Game::Level8(int& LevelID) {
 }
 
 void Game::Level9(int& LevelID) {
+    if (OverlayObjects.size() > 0) {
+        OverlayObjects.erase(OverlayObjects.begin());
+    }
     if (!MakeLevel("LevelNine", "Images/Level7.png", LevelID, -100, 530, 0, 410)) { // left, right, upper, down
         std::cerr << "Couldn't create Level nine!" << std::endl;
         return;
@@ -1034,18 +1204,6 @@ void Game::Level9(int& LevelID) {
 
     if (!Levels[LevelID]->MakeEnemy("Juniper", 50, 450, 50, // x, y, width, height
         80, "Images/Zombie3.png")) {
-        std::cerr << "Couldn't create Enemy!" << std::endl;
-        return;
-    }
-
-    if (!Levels[LevelID]->MakeEnemy("Jordan", 300, 450, 50, // x, y, width, height
-        80, "Images/Zombie2.png")) {
-        std::cerr << "Couldn't create Enemy!" << std::endl;
-        return;
-    }
-
-    if (!Levels[LevelID]->MakeEnemy("Xenith", 50, 350, 50, // x, y, width, height
-        80, "Images/Zombie.png")) {
         std::cerr << "Couldn't create Enemy!" << std::endl;
         return;
     }
@@ -1096,10 +1254,31 @@ void Game::Level10p1(int& LevelID) {
 }
 
 void Game::Level10p2(int& LevelID) {
-    if (!MakeLevel("LevelTenp2", "Images/Level10p2.png", LevelID, -30, 530, 0, 410)) { // left, right, upper, down
+    if (!MakeLevel("LevelTenp2", "Images/Level10p2.png", LevelID, -30, 530, -100, 410)) { // left, right, upper, down
         std::cerr << "Couldn't create Level ten!" << std::endl;
         return;
     }
+    if (!MakeOverlayObject(202, 0, 97, 45)) { // x, y, width, height
+        std::cerr << "Couldn't create Overlay Object!" << std::endl;
+        return;
+    }
+
+    if (!Levels[LevelID]->MakeBarrier(0, 0, 180, 40)) { // x, y, width, height
+        std::cerr << "Couldn't create Barrier!" << std::endl;
+        return;
+    }
+
+    if (!Levels[LevelID]->MakeBarrier(320, 0, 200, 40)) { // x, y, width, height
+        std::cerr << "Couldn't create Barrier!" << std::endl;
+        return;
+    }
+
+    Levels[LevelID]->GetBarrier(0)->SetInvisible();
+    Levels[LevelID]->GetBarrier(1)->SetInvisible();
+    
+
+    GetOverlayObject(0)->SetTexture("Images/TopGate.png");
+
     if (!LoaderEnabled) {
         PlayerMove(0, 0); // x y
     }
@@ -1108,7 +1287,112 @@ void Game::Level10p2(int& LevelID) {
         Players[0]->SetY(400);
     }
     collected++;
-    endscreen = true;
+}
+
+
+void Game::Level11(int& LevelID) {
+    if (OverlayObjects.size() > 0) {
+        OverlayObjects.erase(OverlayObjects.begin());
+    }
+    if (!MakeLevel("Level11", "Images/Level11.png", LevelID, -30, 530, -100, 410)) { // left, right, upper, down
+        std::cerr << "Couldn't create Level eleven!" << std::endl;
+        return;
+    }
+
+    if (!Levels[LevelID]->MakeEnemy("PZombie1", 50, 100, 50, // x, y, width, height
+        80, "Images/SwatZombie.png")) {
+        std::cerr << "Couldn't create Enemy!" << std::endl;
+        return;
+    }
+
+    if (!Levels[LevelID]->MakeEnemy("PZombie2", 250, 100, 50, // x, y, width, height
+        80, "Images/SwatZombie.png")) {
+        std::cerr << "Couldn't create Enemy!" << std::endl;
+        return;
+    }
+
+    Levels[LevelID]->GetEnemy(0)->SetHealth(60);
+    Levels[LevelID]->GetEnemy(1)->SetHealth(60);
+
+    if (!LoaderEnabled) {
+        Players[0]->SetX(210);
+        Players[0]->SetY(430);
+    }
+    else {
+        Players[0]->SetX(210);
+        Players[0]->SetY(400);
+    }
+}
+
+
+void Game::Level12(int& LevelID) {
+
+    if (!MakeLevel("Level12", "Images/Level12.png", LevelID, -30, 530, -100, 410)) { // left, right, upper, down
+        std::cerr << "Couldn't create Level eleven!" << std::endl;
+        return;
+    }
+
+    if (!Levels[LevelID]->MakeEnemy("PZombie1", 50, 10, 50, // x, y, width, height
+        80, "Images/SwatZombie.png")) {
+        std::cerr << "Couldn't create Enemy!" << std::endl;
+        return;
+    }
+
+    if (!Levels[LevelID]->MakeEnemy("PZombie2", 250, 10, 50, // x, y, width, height
+        80, "Images/SwatZombie.png")) {
+        std::cerr << "Couldn't create Enemy!" << std::endl;
+        return;
+    }
+    if (!Levels[LevelID]->MakeEnemy("PZombie3", 50, 100, 50, // x, y, width, height
+        80, "Images/SwatZombie.png")) {
+        std::cerr << "Couldn't create Enemy!" << std::endl;
+        return;
+    }
+
+    if (!Levels[LevelID]->MakeEnemy("PZombie4", 250, 100, 50, // x, y, width, height
+        80, "Images/SwatZombie.png")) {
+        std::cerr << "Couldn't create Enemy!" << std::endl;
+        return;
+    }
+
+    Levels[LevelID]->GetEnemy(0)->SetHealth(60);
+    Levels[LevelID]->GetEnemy(1)->SetHealth(60);
+    Levels[LevelID]->GetEnemy(2)->SetHealth(60);
+    Levels[LevelID]->GetEnemy(3)->SetHealth(60);
+
+    if (!LoaderEnabled) {
+        Players[0]->SetX(210);
+        Players[0]->SetY(430);
+    }
+    else {
+        Players[0]->SetX(210);
+        Players[0]->SetY(400);
+    }
+}
+
+void Game::Level13(int& LevelID) {
+
+    if (!MakeLevel("Level13", "Images/Level13.png", LevelID, -30, 530, 0, 410)) { // left, right, upper, down
+        std::cerr << "Couldn't create Level eleven!" << std::endl;
+        return;
+    }
+
+    if (!Levels[LevelID]->MakeEnemy("ZombieBoss", 250, 150, 100, // x, y, width, height
+        130, "Images/SwatBossZombie.png")) {
+        std::cerr << "Couldn't create Enemy!" << std::endl;
+        return;
+    }
+
+    Levels[LevelID]->GetEnemy(0)->SetHealth(150);
+
+    if (!LoaderEnabled) {
+        Players[0]->SetX(210);
+        Players[0]->SetY(430);
+    }
+    else {
+        Players[0]->SetX(210);
+        Players[0]->SetY(400);
+    }
 }
 
 void Game::EndMessage() {
@@ -1180,6 +1464,32 @@ bool Game::MakeLevel(std::string levelname, const char* backgroundimagepath, int
         std::cerr << "Cannot make new level: " << e.what() << std::endl;
         return false;
     }
+}
+
+bool Game::MakeOverlayObject(int x, int y, int width, int height) {
+    try {
+        auto overlayobject = std::make_shared<OverlayObject>(x, y, width, height);
+        OverlayObjects.push_back(std::move(overlayobject));
+        return true;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Cannot make new overlayobject: " << e.what() << std::endl;
+        return false;
+    }
+}
+
+
+std::shared_ptr<OverlayObject> Game::GetOverlayObject(int i) {
+    if (i >= 0 && i < OverlayObjects.size()) {
+        return OverlayObjects[i];
+    }
+    std::cerr << "Overlay Object index out of bounds: " << i << std::endl;
+    return nullptr;
+}
+
+
+int Game::GetOverlayObjectSize() {
+    return this->OverlayObjects.size();
 }
 
 std::shared_ptr<Player> Game::GetPlayer(int i) {

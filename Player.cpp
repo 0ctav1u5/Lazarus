@@ -167,7 +167,7 @@ void Player::RenderPlayerHP(SDL_Renderer* renderer) {
 	}
 
 	// rectangle size determines text size
-	SDL_Rect HealthBar = { 10, 440, 50, 40 }; // size of rectangle
+	SDL_Rect HealthBar = { 5, 455, 50, 40 }; // size of rectangle
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // colour of rectangle
 	SDL_RenderFillRect(renderer, &HealthBar);
 	SDL_RenderCopy(renderer, HPtexture, nullptr, &HealthBar);

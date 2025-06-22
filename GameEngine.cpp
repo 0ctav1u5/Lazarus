@@ -6,6 +6,7 @@
 #include "GameEngine.hpp"
 #include "Game.hpp"
 #include "Player.hpp"
+#include "OverlayObject.hpp"
 
 // START OF DEV BRANCH
 
@@ -64,6 +65,7 @@ void GameEngine::GameLoop() {
     bool running = true;
     SDL_Event e;
     const Uint8* keyboardState = SDL_GetKeyboardState(nullptr);
+    static int trial = LevelID;
     
     const int FPS = 80; // increase to improve framerate
     const int frameDelay = 1000 / FPS;  // maximum amount of time per frame
@@ -71,21 +73,44 @@ void GameEngine::GameLoop() {
     Uint32 frameStart;
     int frameTime;
 
-    music = Mix_LoadMUS("Images/SoundTrack.mp3");
+    music = Mix_LoadMUS("Images/BackgroundMusic.mp3");
     if (!music) {
         std::cerr << "Failed to load music: " << Mix_GetError() << std::endl;
         return;
     }
 
     Mix_PlayMusic(music, -1);
-    Mix_VolumeMusic(30);
+    Mix_VolumeMusic(10);
 
+    int MainMenuTimer = 0;
+
+    while (MainMenuTimer < 350) {
+        MenuImage = "Images/Menu.png";
+        SDL_Surface* surface = IMG_Load(MenuImage);
+        // std::cout << MainMenuTimer << std::endl;
+        if (!surface) {
+            std::cerr << "IMG_Load Error: " << IMG_GetError() << std::endl;
+            return;
+        }
+
+        MenuTexture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
+
+        if (!MenuTexture) {
+            std::cerr << "SDL_CreateTexture Error: " << SDL_GetError() << std::endl;
+            return;
+        }
+        SDL_RenderCopy(renderer, MenuTexture, NULL, NULL);
+        SDL_DestroyTexture(MenuTexture);
+        MainMenuTimer++;
+        SDL_RenderPresent(renderer);
+    }
 
     while (running) {
         frameStart = SDL_GetTicks(); // start of frame
         game->UserInput(running, keyboardState, LevelID);
         game->LoadLevel(e, renderer, LevelID);
-        game->HandleEvents(e, running, renderer);
+        game->HandleEvents(e, running, renderer, LevelID);
         game->CheckPlayerStatus(LevelID, running, renderer);
         game->CheckAudio(); // CHECK THIS
         
@@ -96,10 +121,17 @@ void GameEngine::GameLoop() {
         game->GetLevel(LevelID)->RenderLevel(renderer); // renders gameobject as well
         game->GetPlayer(0)->RenderPlayer(renderer); 
         game->GetPlayer(0)->RenderPlayerHP(renderer);
+        if (game->GetOverlayObjectSize() > 0) {
+            game->GetOverlayObject(0)->RenderOverlayObject(renderer);
+        }
+        //if (game->GetOverlayObjectSize() > 0) {
+        //    game->DeleteOverLayObjects();
+        //}
         // if getbulletsize > 0 && Bullets[i] < Bullets.size();
         if (game->GetBulletsSize() > 0 && game->GetBullets()[game->GetBulletsSize() - 1] != nullptr) {
             game->GetBullet(0)->RenderBullet(renderer);
         }
+
         game->ChangeLevel(LevelID);
         SDL_RenderPresent(renderer);
         game->DisplayMessages(renderer); // TODO: implement this in level class
@@ -114,15 +146,18 @@ void GameEngine::GameLoop() {
         SDL_Quit();
         std::cout << "You died!" << std::endl;
     }
-    else if (game->GetPlayer(0)->GetHP() > 0 && LevelID == 10) {
 
+    else if (LevelID == 13 && game->GetLevel(LevelID)->GetEnemiesSize() <= 0) {
         int i = 0;
-
         while (i < 2000) {
             game->EndMessage();
             game->DisplayMessages(renderer);
             i++;
         }
+        Mix_FreeMusic(music);
+        Mix_CloseAudio();
+        SDL_Quit();
+        std::cout << "You win!" << std::endl;
     }
     else {
         Mix_FreeMusic(music);

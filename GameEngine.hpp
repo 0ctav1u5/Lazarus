@@ -11,6 +11,8 @@ private:
 	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
 	Mix_Music* music = nullptr;
+	const char* MenuImage = "";
+	SDL_Texture* MenuTexture = nullptr;
 	std::unique_ptr<Game> game;
 	int LevelID = 0;
 

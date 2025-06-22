@@ -13,22 +13,22 @@ void Bullet::RenderBullet(SDL_Renderer* renderer) {
 
     if (DIRECTION == 1 && down == false && right == false && left == false) { // up
         MoveBullet(0, -1); // x, y
-        newImagePath = "Images/u.png";
+        newImagePath = "Images/BulletUp.png";
         up = true;
     }
     else if (DIRECTION == 2 && up == false && right == false && left == false) { // down
         MoveBullet(0, 1); // x, y
-        newImagePath = "Images/d.png";
+        newImagePath = "Images/BulletDown.png";
         down = true;
     }
     else if (DIRECTION == 3 && down == false && right == false && up == false) { // left
         MoveBullet(-1, 0); // x, y
-        newImagePath = "Images/l.png";
+        newImagePath = "Images/BulletLeft.png";
         left = true;
     }
     else if (DIRECTION == 4 && down == false && up == false && left == false) { // right
         MoveBullet(1, 0); // x, y
-        newImagePath = "Images/r.png";
+        newImagePath = "Images/BulletRight.png";
         right = true;
     }
     else {

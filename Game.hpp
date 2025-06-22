@@ -10,6 +10,7 @@
 #include "GameObject.hpp"
 #include "Message.hpp"
 #include "Bullet.hpp"
+#include "OverlayObject.hpp"
 
 class Game {
 private:
@@ -17,6 +18,7 @@ private:
 	std::vector<std::shared_ptr<Level>> Levels;
 	std::vector<std::shared_ptr<Message>> Messages; 
 	std::vector<std::shared_ptr<Bullet>> Bullets;
+	std::vector<std::shared_ptr<OverlayObject>> OverlayObjects;
 	Mix_Chunk* BulletSound = nullptr;
 	bool LevelLoader = false;
 
@@ -35,9 +37,10 @@ public:
 	bool MakeLevel(std::string levelname, const char* backgroundimagepath, int& LevelID,
 	int lb, int rb, int ub, int lwb);
 	bool MakeBullet(int speed, int damage, int startx, int starty);
+	bool MakeOverlayObject(int x, int y, int width, int height);
 	void ChangeLevel(int& LevelID);
 	void UserInput(bool& running, const Uint8* keyboardState, int& LevelID);
-	void HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer);
+	void HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer, int& LevelID);
 	void LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID);
 	std::shared_ptr<Player> GetPlayer(int i);
 	std::shared_ptr<Level> GetLevel(int i);
@@ -57,11 +60,16 @@ public:
 	void Level9(int& LevelID);
 	void Level10p1(int& LevelID);
 	void Level10p2(int& LevelID);
+	void Level11(int& LevelID);
+	void Level12(int& LevelID);
+	void Level13(int& LevelID);
 	void EndMessage();
 	bool MakeMessage(std::string message, int x, int y, int w, int h);
 	void DisplayMessages(SDL_Renderer* renderer);
 	size_t GetBulletsSize();
 	std::vector<std::shared_ptr<Bullet>> GetBullets();
+	std::shared_ptr<OverlayObject> GetOverlayObject(int i);
+	int GetOverlayObjectSize();
 };
 
 struct ObjectProperties {

@@ -12,7 +12,7 @@
 
 class Enemy {
 private:
-	int HP = 80;
+	int HP = 40;
 	std::string NAME = "";
 	const char* IMAGEPATH;
 	SDL_Rect rect = {};
@@ -52,6 +52,7 @@ public:
 	int GetWidth();
 	int GetHeight();
 	bool& GetStationary();
+	void SetHealth(int newHP);
 };
 
 #endif 
