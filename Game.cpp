@@ -10,6 +10,8 @@
 #include "Message.hpp"
 #include "OverlayObject.hpp"
 
+// ALPHA COMPLETE
+
 std::vector<std::string> inventory = {};
 int collected = 0;
 
