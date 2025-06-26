@@ -10,13 +10,10 @@
 #include "Message.hpp"
 #include "OverlayObject.hpp"
 
-// ALPHA COMPLETE
+
 
 std::vector<std::string> inventory = {};
 int collected = 0;
-
-bool riflecollected = false; // TODO: Implement functionality to the handlevents function
-bool keycardcollected = false;
 
 int Level::LevelIDCounter = 0;
 bool LoaderEnabled = false;
@@ -68,9 +65,6 @@ void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer, int
             int DownX = Players[0]->GetX() + 40;
             int DownY = Players[0]->GetY() + 65; 
 
-            /*std::cout << Players[0]->GetDirection() << std::endl;*/ // prints direction
-
-
             // makes the bullets when conditions are met, certain direction and cooldown
             if (Players[0]->GetDirection() == 2 && (newtime - oldtime > cooldown)) { // right
                 if (!MakeBullet(6, 10, RightX, RightY)) { // speed, damage
@@ -112,8 +106,6 @@ void Game::HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer, int
     }
 }
 
-
-// CHECK THIS
 void Game::CheckAudio() {
     static bool bulletPlayed = false;
 
@@ -125,8 +117,6 @@ void Game::CheckAudio() {
     if (Bullets.empty()) {
         bulletPlayed = false;
     }
-
-    // DO NOT free BulletSound or close audio here.
 }
 
 void Game::PauseMenu(SDL_Renderer* renderer, bool& running) {
@@ -462,8 +452,8 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
 
                     if (mouseX >= L12Text.x && mouseX <= L12Text.x + L12Text.w &&
                         mouseY >= L12Text.y && mouseY <= L12Text.y + L12Text.h) {
-                        SDL_DestroyTexture(L12textTexture);  // destroy the texture after it's been used
-                        TTF_CloseFont(font);  // for closing font when function ends
+                        SDL_DestroyTexture(L12textTexture);  
+                        TTF_CloseFont(font);  
                         LoaderEnabled = true;
                         l12 = true;
                         LevelLoader = false;
@@ -471,8 +461,8 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
 
                     if (mouseX >= L11Text.x && mouseX <= L11Text.x + L11Text.w &&
                         mouseY >= L11Text.y && mouseY <= L11Text.y + L11Text.h) {
-                        SDL_DestroyTexture(L11textTexture);  // destroy the texture after it's been used
-                        TTF_CloseFont(font);  // for closing font when function ends
+                        SDL_DestroyTexture(L11textTexture);  
+                        TTF_CloseFont(font);  
                         LoaderEnabled = true;
                         l11 = true;
                         LevelLoader = false;
@@ -480,8 +470,8 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
 
                     if (mouseX >= L10Text.x && mouseX <= L10Text.x + L10Text.w &&
                         mouseY >= L10Text.y && mouseY <= L10Text.y + L10Text.h) {
-                        SDL_DestroyTexture(L10textTexture);  // destroy the texture after it's been used
-                        TTF_CloseFont(font);  // for closing font when function ends
+                        SDL_DestroyTexture(L10textTexture);  
+                        TTF_CloseFont(font);  
                         LoaderEnabled = true;
                         l10 = true;
                         LevelLoader = false;
@@ -489,8 +479,8 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
 
                     if (mouseX >= L9Text.x && mouseX <= L9Text.x + L9Text.w &&
                         mouseY >= L9Text.y && mouseY <= L9Text.y + L9Text.h) {
-                        SDL_DestroyTexture(L9textTexture);  // destroy the texture after it's been used
-                        TTF_CloseFont(font);  // for closing font when function ends
+                        SDL_DestroyTexture(L9textTexture);  
+                        TTF_CloseFont(font);  
                         LoaderEnabled = true;
                         l9 = true;
                         LevelLoader = false;
@@ -498,8 +488,8 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
 
                     if (mouseX >= L8Text.x && mouseX <= L8Text.x + L8Text.w &&
                         mouseY >= L8Text.y && mouseY <= L8Text.y + L8Text.h) {
-                        SDL_DestroyTexture(L8textTexture);  // destroy the texture after it's been used
-                        TTF_CloseFont(font);  // for closing font when function ends
+                        SDL_DestroyTexture(L8textTexture);  
+                        TTF_CloseFont(font);  
                         LoaderEnabled = true;
                         l8 = true;
                         LevelLoader = false;
@@ -507,8 +497,8 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
 
                     if (mouseX >= L7Text.x && mouseX <= L7Text.x + L7Text.w &&
                         mouseY >= L7Text.y && mouseY <= L7Text.y + L7Text.h) {
-                        SDL_DestroyTexture(L7textTexture);  // destroy the texture after it's been used
-                        TTF_CloseFont(font);  // for closing font when function ends
+                        SDL_DestroyTexture(L7textTexture);  
+                        TTF_CloseFont(font);  
                         LoaderEnabled = true;
                         l7 = true;
                         LevelLoader = false;
@@ -516,8 +506,8 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
 
                     if (mouseX >= L6Text.x && mouseX <= L6Text.x + L6Text.w &&
                         mouseY >= L6Text.y && mouseY <= L6Text.y + L6Text.h) {
-                        SDL_DestroyTexture(L6textTexture);  // destroy the texture after it's been used
-                        TTF_CloseFont(font);  // for closing font when function ends
+                        SDL_DestroyTexture(L6textTexture);  
+                        TTF_CloseFont(font);  
                         LoaderEnabled = true;
                         l6 = true;
                         LevelLoader = false;
@@ -525,8 +515,8 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
 
                     if (mouseX >= L5Text.x && mouseX <= L5Text.x + L5Text.w &&
                         mouseY >= L5Text.y && mouseY <= L5Text.y + L5Text.h) {
-                        SDL_DestroyTexture(L5textTexture);  // destroy the texture after it's been used
-                        TTF_CloseFont(font);  // for closing font when function ends
+                        SDL_DestroyTexture(L5textTexture);  
+                        TTF_CloseFont(font);  
                         LoaderEnabled = true;
                         l5 = true;
                         LevelLoader = false;
@@ -534,8 +524,8 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
 
                     if (mouseX >= L4Text.x && mouseX <= L4Text.x + L4Text.w &&
                         mouseY >= L4Text.y && mouseY <= L4Text.y + L4Text.h) {
-                        SDL_DestroyTexture(L4textTexture);  // destroy the texture after it's been used
-                        TTF_CloseFont(font);  // for closing font when function ends
+                        SDL_DestroyTexture(L4textTexture);  
+                        TTF_CloseFont(font);  
                         LoaderEnabled = true;
                         l4 = true;
                         LevelLoader = false;
@@ -543,8 +533,8 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
 
                     if (mouseX >= L3Text.x && mouseX <= L3Text.x + L3Text.w &&
                         mouseY >= L3Text.y && mouseY <= L3Text.y + L3Text.h) {
-                        SDL_DestroyTexture(L3textTexture);  // destroy the texture after it's been used
-                        TTF_CloseFont(font);  // for closing font when function ends
+                        SDL_DestroyTexture(L3textTexture);  
+                        TTF_CloseFont(font);  
                         LoaderEnabled = true;
                         l3 = true;
                         LevelLoader = false;
@@ -552,8 +542,8 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
 
                     if (mouseX >= L2Text.x && mouseX <= L2Text.x + L2Text.w &&
                         mouseY >= L2Text.y && mouseY <= L2Text.y + L2Text.h) {
-                        SDL_DestroyTexture(L2textTexture);  // destroy the texture after it's been used
-                        TTF_CloseFont(font);  // for closing font when function ends
+                        SDL_DestroyTexture(L2textTexture);  
+                        TTF_CloseFont(font);  
                         LoaderEnabled = true;
                         l2 = true;
                         LevelLoader = false;
@@ -561,10 +551,10 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
                 }
 
 
-                // we'll keep this as the exit option from the load level menu for now
+                // Press g to exit the load level menu
                 if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_g) {
-                    SDL_DestroyTexture(L8textTexture);  // destroy the texture after it's been used
-                    TTF_CloseFont(font);  // for closing font when function ends
+                    SDL_DestroyTexture(L8textTexture);  
+                    TTF_CloseFont(font);  
                     this->LevelLoader = false;
                 }
 
@@ -574,46 +564,45 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);  // r, g, b, opaqueness
 
             SDL_RenderFillRect(renderer, &L13Text);
-            SDL_RenderCopy(renderer, L13textTexture, nullptr, &L13Text); // renders texture and rect
+            SDL_RenderCopy(renderer, L13textTexture, nullptr, &L13Text); 
 
             SDL_RenderFillRect(renderer, &L12Text);
-            SDL_RenderCopy(renderer, L12textTexture, nullptr, &L12Text); // renders texture and rect
+            SDL_RenderCopy(renderer, L12textTexture, nullptr, &L12Text); 
 
             SDL_RenderFillRect(renderer, &L11Text);
-            SDL_RenderCopy(renderer, L11textTexture, nullptr, &L11Text); // renders texture and rect
+            SDL_RenderCopy(renderer, L11textTexture, nullptr, &L11Text); 
 
             SDL_RenderFillRect(renderer, &L10Text);
-            SDL_RenderCopy(renderer, L10textTexture, nullptr, &L10Text); // renders texture and rect
+            SDL_RenderCopy(renderer, L10textTexture, nullptr, &L10Text); 
 
             SDL_RenderFillRect(renderer, &L9Text);
-            SDL_RenderCopy(renderer, L9textTexture, nullptr, &L9Text); // renders texture and rect
+            SDL_RenderCopy(renderer, L9textTexture, nullptr, &L9Text); 
 
             SDL_RenderFillRect(renderer, &L8Text);
-            SDL_RenderCopy(renderer, L8textTexture, nullptr, &L8Text); // renders texture and rect
+            SDL_RenderCopy(renderer, L8textTexture, nullptr, &L8Text); 
 
             SDL_RenderFillRect(renderer, &L7Text); // fills the rectangle shape
             SDL_RenderCopy(renderer, L7textTexture, nullptr, &L7Text); // copies the text
 
-            SDL_RenderFillRect(renderer, &L6Text); // fills the rectangle shape
-            SDL_RenderCopy(renderer, L6textTexture, nullptr, &L6Text); // copies the text
+            SDL_RenderFillRect(renderer, &L6Text); 
+            SDL_RenderCopy(renderer, L6textTexture, nullptr, &L6Text); 
 
-            SDL_RenderFillRect(renderer, &L5Text); // fills the rectangle shape
-            SDL_RenderCopy(renderer, L5textTexture, nullptr, &L5Text); // copies the text
+            SDL_RenderFillRect(renderer, &L5Text); 
+            SDL_RenderCopy(renderer, L5textTexture, nullptr, &L5Text); 
 
-            SDL_RenderFillRect(renderer, &L4Text); // fills the rectangle shape
-            SDL_RenderCopy(renderer, L4textTexture, nullptr, &L4Text); // copies the text
+            SDL_RenderFillRect(renderer, &L4Text); 
+            SDL_RenderCopy(renderer, L4textTexture, nullptr, &L4Text); 
 
-            SDL_RenderFillRect(renderer, &L3Text); // fills the rectangle shape
-            SDL_RenderCopy(renderer, L3textTexture, nullptr, &L3Text); // copies the text
+            SDL_RenderFillRect(renderer, &L3Text); 
+            SDL_RenderCopy(renderer, L3textTexture, nullptr, &L3Text); 
 
-            SDL_RenderFillRect(renderer, &L2Text); // fills the rectangle shape
-            SDL_RenderCopy(renderer, L2textTexture, nullptr, &L2Text); // copies the text
+            SDL_RenderFillRect(renderer, &L2Text); 
+            SDL_RenderCopy(renderer, L2textTexture, nullptr, &L2Text); 
 
             SDL_RenderPresent(renderer);
         }
     }
 }
-
 
 void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID) {
     int playerX = Players[0]->GetX(), playerY = Players[0]->GetY();
@@ -628,7 +617,7 @@ void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID) {
     // checks the collisions with game objects to see if the player can move in a specific direction
     GameObjectCollisionChecker(LevelNum, playerY, playerX, playerWidth, playerHeight, blockBottom, blockTop, blockRight, blockLeft);
 
-    // for instance, it would be level[i]->LEFT_BOUNDARY
+    // it would be level[i]->LEFT_BOUNDARY
     if (keyboardState[SDL_SCANCODE_LEFT] || keyboardState[SDL_SCANCODE_A]) {
         if (!blockLeft && playerX > Levels[LevelID]->GetLeftBoundary()) {
             PlayerMove(-1, 0); // Move left
@@ -647,7 +636,6 @@ void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID) {
         if (!blockTop && (playerY >= Levels[LevelID]->GetUpperBoundary())) {
             PlayerMove(0, -1); // Move up
             Players[0]->SetDirectionGraphic(3);
-            // std::cout << "X: " << Players[0]->GetX() << "| Y: " << Players[0]->GetY() << std::endl;
         }
     }
 
@@ -672,7 +660,7 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
     int PlayerX = Players[0]->GetX(), PlayerY = Players[0]->GetY();
     int PlayerWidth = Players[0]->GetPlayerWidth(), PlayerHeight = Players[0]->GetPlayerHeight();
 
-
+    // This code is for objects that can damage
     // if set time has passed and objectcandamage is true, then the gameobject can damage player
     if (NewTime - OldTime > cooldown) { // cooldown period
         for (int i = 0; i < Levels[LevelID]->GetGameObjectsCount(); ++i) {
@@ -701,8 +689,11 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
         [&](const std::shared_ptr<GameObject>& obj) {
             bool objectcollectible = obj->GetCanCollect(); // true if cancollect = true
 
-
-
+            // checking the positions of the player and the object to determine whether the object can be collected or not
+            // X upper, 
+            // X Lower
+            // Y Upper
+            // Y Lower
             int PlayerX = Players[0]->GetX();
             int PlayerY = Players[0]->GetY();
             int OXU = obj->GetXU();
@@ -710,11 +701,6 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
             int OYU = obj->GetYU();
             int OYL = obj->GetYL();
 
-          
-               /* XUB = 206
-                XLB = 198
-                YUB = 8
-                YLB = 4*/
 
             if (objectcollectible && (PlayerX >= OXL && PlayerX <= OXU) && (PlayerY >= OYL && PlayerY <= OYU)) {
 
@@ -732,12 +718,12 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
                 collected++; // increments by 1 each time an object is collected
                 return true;
             }
-            // if false, then object is not removed
+            // if false, then object is not collected
             return false;
         }), objects.end());
 
 
-    if (!Bullets.empty()) { // this method removes the bullets when out of bounds or when enemies[0] shares an intersection with a bullet
+    if (!Bullets.empty()) { // this method removes the bullets when out of bounds or when enemies[0] shares an intersection with a bullet object
 
         if (Bullets[0]->GetX() < 0 || Bullets[0]->GetX() > 500 || // if bullet goes out of window
             Bullets[0]->GetY() < 0 || Bullets[0]->GetY() > 500)
@@ -752,7 +738,7 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
                 SDL_Rect enemyRect = enemy->GetRect();
                 SDL_Rect bulletRect = Bullets[0]->GetRect();
                 if (SDL_HasIntersection(&enemyRect, &bulletRect)) { // removes bullet if intersection with enemy rect
-                    enemy->DamageEnemy(10); // DAMAGE ENEMY IS HERE
+                    enemy->DamageEnemy(10); // Damages Enemy
                     Bullets.erase(Bullets.begin());
                     std::cout << enemy->GetEnemyName() << " HP: " << enemy->GetEnemyHP() << std::endl;
                     break;
@@ -763,7 +749,7 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
 
     int PlayerRectX = Players[0]->GetX();
     int PlayerRectY = Players[0]->GetY();
-    int OffsetX = 0; // needed to slightly adjust the enemy objects so they aren't on top of eachother
+    int OffsetX = 0; // offset used to slightly alter position, so they aren't standing directly on top of eachother
     int OffsetY = 0;
 
     for (auto& enemy : GetLevel(LevelID)->GetEnemiesVector()) {
@@ -796,9 +782,11 @@ void Game::CheckPlayerStatus(int& LevelID, bool& running, SDL_Renderer* renderer
     static int level3barrier = true;
     static int level5barrier = true;
     static int level6barrier = true;
-    static int level9barrier = true; // COME BACK HERE
+    static int level9barrier = true; 
 
-    if (collected > 0 && LevelID == 3 && level3barrier) { // this will be modified to handle more than one barrier
+    // section for erasing barriers from the vector when the enemies have been killed
+
+    if (collected > 0 && LevelID == 3 && level3barrier) { 
         Levels[LevelID]->GetBarrierVector().erase(Levels[LevelID]->GetBarrierVector().begin());
         level3barrier = false;
     }
@@ -825,7 +813,7 @@ void Game::DisplayMessages(SDL_Renderer* renderer) {
     static bool rifle = true, keycard = true;
 
 
-    if (collected > 0) { // collected > 0 && collected < 2
+    if (collected > 0) { // collected > 0
 
 
         if (Messages.size() == 1 && rifle) {
@@ -950,10 +938,8 @@ void Game::ChangeLevel(int& LevelID) {
 
 void Game::Level2(int& LevelID) { 
 
-    // I'll include a function to handle this for all levels later
-    if (OverlayObjects.size() > 0) {
-        OverlayObjects.erase(OverlayObjects.begin());
-    }
+
+    RemoveOverlayObject();
     ObjectProperties Fire = { 10, 150, 100, 100 }; // x, y, width, height
     ObjectProperties Barrier = { 530, 200, 100, 300 };
 
@@ -983,10 +969,15 @@ void Game::Level2(int& LevelID) {
     }
 }
 
-void Game::Level3(int& LevelID) {
+
+void Game::RemoveOverlayObject() {
     if (OverlayObjects.size() > 0) {
         OverlayObjects.erase(OverlayObjects.begin());
     }
+}
+
+void Game::Level3(int& LevelID) {
+    RemoveOverlayObject();
     ObjectProperties Barrier = { 0, -50, 250, 50 };
 
     if (!MakeLevel("LevelThree", "Images/Level3.png", LevelID, -30, 530, -100, 410)) { // left, right, upper, down
@@ -1009,9 +1000,7 @@ void Game::Level3(int& LevelID) {
 }
 
 void Game::Level4(int& LevelID) {
-    if (OverlayObjects.size() > 0) {
-        OverlayObjects.erase(OverlayObjects.begin());
-    }
+    RemoveOverlayObject();
     if (!MakeLevel("LevelFour", "Images/Level4.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
         std::cerr << "Couldn't create Level four!" << std::endl;
         return;
@@ -1023,12 +1012,12 @@ void Game::Level4(int& LevelID) {
         return;
     }
 
-    if (!Levels[LevelID]->MakeBarrier(530, 20, 10, 400)) { // x, y, width, height
+    if (!Levels[LevelID]->MakeBarrier(530, 20, 10, 400)) { 
         std::cerr << "Couldn't create Barrier!" << std::endl;
         return;
     }
 
-    if (!Levels[LevelID]->MakeBarrier(540, 0, 100, 400)) { // x, y, width, height
+    if (!Levels[LevelID]->MakeBarrier(540, 0, 100, 400)) { 
         std::cerr << "Couldn't create Barrier!" << std::endl;
         return;
     }
@@ -1046,9 +1035,7 @@ void Game::Level4(int& LevelID) {
 }
 
 void Game::Level5(int& LevelID) {
-    if (OverlayObjects.size() > 0) {
-        OverlayObjects.erase(OverlayObjects.begin());
-    }
+    RemoveOverlayObject();
     if (!MakeLevel("LevelFive", "Images/Level5.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
         std::cerr << "Couldn't create Level five!" << std::endl;
         return;
@@ -1088,9 +1075,7 @@ void Game::Level5(int& LevelID) {
 }
 
 void Game::Level6(int& LevelID) {
-    if (OverlayObjects.size() > 0) {
-        OverlayObjects.erase(OverlayObjects.begin());
-    }
+    RemoveOverlayObject();
     if (!MakeLevel("LevelSix", "Images/Level6.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
         std::cerr << "Couldn't create Level six!" << std::endl;
         return;
@@ -1100,13 +1085,13 @@ void Game::Level6(int& LevelID) {
         std::cerr << "Couldn't create Enemy!" << std::endl;
         return;
     }
-    if (!Levels[LevelID]->MakeEnemy("Korfu", 350, 150, 50, // x, y, width, height
+    if (!Levels[LevelID]->MakeEnemy("Korfu", 350, 150, 50, 
         80, "Images/Zombie4.png")) {
         std::cerr << "Couldn't create Enemy!" << std::endl;
         return;
     }
     
-    if (!Levels[LevelID]->MakeBarrier(0, 10, 500, 30)) { // x, y, width, height
+    if (!Levels[LevelID]->MakeBarrier(0, 10, 500, 30)) { 
         std::cerr << "Couldn't create Barrier!" << std::endl;
         return;
     }
@@ -1136,9 +1121,7 @@ void Game::Level6(int& LevelID) {
 }
 
 void Game::Level7(int& LevelID) {
-    if (OverlayObjects.size() > 0) {
-        OverlayObjects.erase(OverlayObjects.begin());
-    }
+    RemoveOverlayObject();
     if (!MakeLevel("LevelSeven", "Images/Level7.png", LevelID, -30, 530, -100, 410)) { // left, right, upper, down
         std::cerr << "Couldn't create Level seven!" << std::endl;
         return;
@@ -1161,9 +1144,7 @@ void Game::Level7(int& LevelID) {
 }
 
 void Game::Level8(int& LevelID) {
-    if (OverlayObjects.size() > 0) {
-        OverlayObjects.erase(OverlayObjects.begin());
-    }
+    RemoveOverlayObject();
     if (!MakeLevel("LevelEight", "Images/Level8.png", LevelID, -30, 530, 0, 530)) { // left, right, upper, down
         std::cerr << "Couldn't create Level eight!" << std::endl;
         return;
@@ -1196,9 +1177,7 @@ void Game::Level8(int& LevelID) {
 }
 
 void Game::Level9(int& LevelID) {
-    if (OverlayObjects.size() > 0) {
-        OverlayObjects.erase(OverlayObjects.begin());
-    }
+    RemoveOverlayObject();
     if (!MakeLevel("LevelNine", "Images/Level7.png", LevelID, -100, 530, 0, 410)) { // left, right, upper, down
         std::cerr << "Couldn't create Level nine!" << std::endl;
         return;
@@ -1293,9 +1272,7 @@ void Game::Level10p2(int& LevelID) {
 
 
 void Game::Level11(int& LevelID) {
-    if (OverlayObjects.size() > 0) {
-        OverlayObjects.erase(OverlayObjects.begin());
-    }
+    RemoveOverlayObject();
     if (!MakeLevel("Level11", "Images/Level11.png", LevelID, -30, 530, -100, 410)) { // left, right, upper, down
         std::cerr << "Couldn't create Level eleven!" << std::endl;
         return;
@@ -1328,6 +1305,7 @@ void Game::Level11(int& LevelID) {
 
 
 void Game::Level12(int& LevelID) {
+    RemoveOverlayObject();
 
     if (!MakeLevel("Level12", "Images/Level12.png", LevelID, -30, 530, -100, 410)) { // left, right, upper, down
         std::cerr << "Couldn't create Level eleven!" << std::endl;
@@ -1532,7 +1510,6 @@ bool Game::LoadAssets(SDL_Renderer* renderer, int& LevelID) {
         return false;
     }
 
-    // Create Level One and update LevelID
     if (!MakeLevel("LevelOne", "Images/Level1.png", LevelID, -30, 530, -100, 410)) { // l, r, u, b
         std::cerr << "Couldn't create Level one!" << std::endl;
         return false;

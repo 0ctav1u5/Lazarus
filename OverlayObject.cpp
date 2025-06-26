@@ -4,9 +4,6 @@
 #include "OverlayObject.hpp"
 
 
-
-
-
 void OverlayObject::SetTexture(const char* imagepath) {
 	this->IMAGEPATH = imagepath;
 	SURFACE = IMG_Load(IMAGEPATH);
@@ -26,8 +23,6 @@ void OverlayObject::RenderOverlayObject(SDL_Renderer* renderer) {
 			SDL_RenderCopy(renderer, texture, nullptr, &rect);
 		}
 }
-
-
 
 void OverlayObject::Remove() {
 	this->exists = false;

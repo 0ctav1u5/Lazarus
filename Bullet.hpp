@@ -5,23 +5,15 @@
 #include <SDL_ttf.h>
 #include <SDL_image.h>
 
-
-// this class works
-
-
 class Bullet {
 private:
     int SPEED;
     int DAMAGE;
 
-
-
     SDL_Rect rect = {};
     const char* IMAGEPATH = nullptr;
     SDL_Surface* SURFACE = nullptr;
     SDL_Texture* texture = nullptr;
-
-
 
     int X, Y;
     const int WIDTH = 12;

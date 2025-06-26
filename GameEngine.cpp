@@ -8,8 +8,6 @@
 #include "Player.hpp"
 #include "OverlayObject.hpp"
 
-// START OF DEV BRANCH
-
 
 bool GameEngine::Initialise() {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -87,7 +85,6 @@ void GameEngine::GameLoop() {
     while (MainMenuTimer < 350) {
         MenuImage = "Images/Menu.png";
         SDL_Surface* surface = IMG_Load(MenuImage);
-        // std::cout << MainMenuTimer << std::endl;
         if (!surface) {
             std::cerr << "IMG_Load Error: " << IMG_GetError() << std::endl;
             return;
@@ -112,9 +109,8 @@ void GameEngine::GameLoop() {
         game->LoadLevel(e, renderer, LevelID);
         game->HandleEvents(e, running, renderer, LevelID);
         game->CheckPlayerStatus(LevelID, running, renderer);
-        game->CheckAudio(); // CHECK THIS
-        
-        
+        game->CheckAudio();
+       
         // CheckLevelID(); uncomment when debugging
 
         SDL_RenderClear(renderer);
@@ -124,17 +120,13 @@ void GameEngine::GameLoop() {
         if (game->GetOverlayObjectSize() > 0) {
             game->GetOverlayObject(0)->RenderOverlayObject(renderer);
         }
-        //if (game->GetOverlayObjectSize() > 0) {
-        //    game->DeleteOverLayObjects();
-        //}
-        // if getbulletsize > 0 && Bullets[i] < Bullets.size();
         if (game->GetBulletsSize() > 0 && game->GetBullets()[game->GetBulletsSize() - 1] != nullptr) {
             game->GetBullet(0)->RenderBullet(renderer);
         }
 
         game->ChangeLevel(LevelID);
         SDL_RenderPresent(renderer);
-        game->DisplayMessages(renderer); // TODO: implement this in level class
+        game->DisplayMessages(renderer); 
         frameTime = SDL_GetTicks() - frameStart;  // time taken for this frame to have been rendered
         if (frameDelay > frameTime) {
             SDL_Delay(frameDelay - frameTime);  // delay to maintain a consistent fps

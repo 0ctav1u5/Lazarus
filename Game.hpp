@@ -38,6 +38,7 @@ public:
 	int lb, int rb, int ub, int lwb);
 	bool MakeBullet(int speed, int damage, int startx, int starty);
 	bool MakeOverlayObject(int x, int y, int width, int height);
+	void RemoveOverlayObject();
 	void ChangeLevel(int& LevelID);
 	void UserInput(bool& running, const Uint8* keyboardState, int& LevelID);
 	void HandleEvents(SDL_Event& e, bool& running, SDL_Renderer* renderer, int& LevelID);

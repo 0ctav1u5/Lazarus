@@ -24,7 +24,6 @@ void Message::RenderMessage(SDL_Renderer* renderer) {
         return;
     }
 
-    // frees last texture
     if (textTexture) {
         SDL_DestroyTexture(textTexture);
         textTexture = nullptr;

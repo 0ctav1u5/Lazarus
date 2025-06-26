@@ -3,7 +3,6 @@
 #ifndef BARRIER
 #define BARRIER
 
-// the barrier class is for customisable rects
 class Barrier {
 private:
 	SDL_Rect BARRIER_RECT = {};
