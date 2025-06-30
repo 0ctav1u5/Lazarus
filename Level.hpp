@@ -15,12 +15,19 @@ private:
     int InstanceID = 0;            // unique ID
     std::string LevelName = "";
     const char* BackgroundImage;
+
+
+
     SDL_Surface* SURFACE = nullptr;
+
+
+
     SDL_Texture* BackgroundTexture = nullptr;
     int LEFT_BOUNDARY = 0;
     int RIGHT_BOUNDARY = 0;
     int UPPER_BOUNDARY = 0;
     int LOWER_BOUNDARY = 0;
+    SDL_Renderer* RENDERER = nullptr;
 
 
     std::vector<std::shared_ptr<GameObject>> GameObjects; 
@@ -29,12 +36,33 @@ private:
 
 public:
 
-    Level(std::string levelname, const char* backgroundimage, int lb, int rb, int ub, int lwb)
+
+    Level(std::string levelname, const char* backgroundimage, int lb, int rb, int ub, int lwb, SDL_Renderer* renderer)
         : LevelName(levelname), BackgroundImage(backgroundimage), LEFT_BOUNDARY(lb),
-        RIGHT_BOUNDARY(rb), UPPER_BOUNDARY(ub), LOWER_BOUNDARY(lwb)
+        RIGHT_BOUNDARY(rb), UPPER_BOUNDARY(ub), LOWER_BOUNDARY(lwb), RENDERER(renderer)
     {
         InstanceID = LevelIDCounter++; // this increments everytime a Level Object is created
         std::cout << "Level " << InstanceID + 1 << " created!" << std::endl;
+
+
+        SURFACE = IMG_Load(BackgroundImage);
+        if (!SURFACE) {
+            std::cerr << "IMG_Load Error: " << IMG_GetError() << std::endl;
+            return;
+        }
+
+        BackgroundTexture = SDL_CreateTextureFromSurface(RENDERER, SURFACE);
+        SDL_FreeSurface(SURFACE);
+        if (!BackgroundTexture) {
+            std::cerr << "SDL_CreateTexture Error: " << SDL_GetError() << std::endl;
+            return;
+        }
+
+    }
+
+
+    ~Level() {
+        SDL_DestroyTexture(BackgroundTexture);
     }
 
     size_t GetGameObjectsCount() const;

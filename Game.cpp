@@ -10,8 +10,6 @@
 #include "Message.hpp"
 #include "OverlayObject.hpp"
 
-
-
 std::vector<std::string> inventory = {};
 int collected = 0;
 
@@ -604,7 +602,7 @@ void Game::LoadLevel(SDL_Event& e, SDL_Renderer* renderer, int& LevelID) {
     }
 }
 
-void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID) {
+void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID, SDL_Renderer* renderer) {
     int playerX = Players[0]->GetX(), playerY = Players[0]->GetY();
     int playerWidth = Players[0]->GetPlayerWidth(), playerHeight = Players[0]->GetPlayerHeight();
     static bool opendoorcondition = true;
@@ -647,7 +645,7 @@ void Game::UserInput(bool& running, const Uint8* keyboardState, int& LevelID) {
     }
 
     if (keyboardState[SDL_SCANCODE_E] && LevelID == 9 && opendoorcondition && Players[0]->GetY() < 200) {
-        Level10p2(LevelID);
+        Level10p2(LevelID, renderer);
         opendoorcondition = false;
     }
 }
@@ -841,102 +839,102 @@ void Game::DisplayMessages(SDL_Renderer* renderer) {
     }
 }
 
-void Game::ChangeLevel(int& LevelID) {
+void Game::ChangeLevel(int& LevelID, SDL_Renderer* renderer) {
 
     if (!LoaderEnabled && !l2 && !l3 && !l4 && !l5 && !l6 && !l7 && !l8) {
         if (LevelID == 0 && Players[0]->GetY() == -90) {
-            Level2(LevelID);
+            Level2(LevelID, renderer);
         }
         if (LevelID == 1 && Players[0]->GetX() == 470) {
-            Level3(LevelID);
+            Level3(LevelID, renderer);
         }
         if (LevelID == 2 && Players[0]->GetY() == -90) {
-            Level4(LevelID);
+            Level4(LevelID, renderer);
         }
         if (LevelID == 3 && Players[0]->GetX() == 470) {
-            Level5(LevelID);
+            Level5(LevelID, renderer);
         }
         if (LevelID == 4 && Players[0]->GetX() == 470) {
-            Level6(LevelID);
+            Level6(LevelID, renderer);
         }
         if (LevelID == 5 && Players[0]->GetX() == 470) {
-            Level7(LevelID);
+            Level7(LevelID, renderer);
         }
         if (LevelID == 6 && Players[0]->GetY() == -90) {
-            Level8(LevelID);
+            Level8(LevelID, renderer);
         }
         if (LevelID == 7 && Players[0]->GetY() > 490) {
-            Level9(LevelID);
+            Level9(LevelID, renderer);
         }
         if (LevelID == 8 && Players[0]->GetX() < -60) {
-            Level10p1(LevelID);
+            Level10p1(LevelID, renderer);
         }
         if (LevelID == 10 && Players[0]->GetY() == -90) {
-            Level11(LevelID);
+            Level11(LevelID, renderer);
         }
         if (LevelID == 11 && Players[0]->GetY() == -90) {
-            Level12(LevelID);
+            Level12(LevelID, renderer);
         }
         if (LevelID == 12 && Players[0]->GetY() == -90) {
-            Level13(LevelID);
+            Level13(LevelID, renderer);
         }
     }
     else if (LoaderEnabled && l13) {
-        Level13(LevelID);
+        Level13(LevelID, renderer);
         l13 = false;
     }
     else if (LoaderEnabled && l12) {
-        Level12(LevelID);
+        Level12(LevelID, renderer);
         l12 = false;
     }
     else if (LoaderEnabled && l11) {
-        Level11(LevelID);
+        Level11(LevelID, renderer);
         l11 = false;
     }
     else if (LoaderEnabled && l11) {
-        Level10p2(LevelID);
+        Level10p2(LevelID, renderer);
         l11 = false;
     }
     else if (LoaderEnabled && l10) {
-        Level10p1(LevelID);
+        Level10p1(LevelID, renderer);
         l10 = false;
     }
     else if (LoaderEnabled && l9) {
-        Level9(LevelID);
+        Level9(LevelID, renderer);
         l9 = false;
     }
     else if (LoaderEnabled && l8) {
-        Level8(LevelID);
+        Level8(LevelID, renderer);
         l8 = false;
     }
     else if (LoaderEnabled && l7) {
-        Level7(LevelID);
+        Level7(LevelID, renderer);
         l7 = false;
     }
     else if (LoaderEnabled && l6) {
-        Level6(LevelID);
+        Level6(LevelID, renderer);
         l6 = false;
     }
     else if (LoaderEnabled && l5) {
-        Level5(LevelID);
+        Level5(LevelID, renderer);
         l5 = false;
     }
     else if (LoaderEnabled && l4) {
-        Level4(LevelID);
+        Level4(LevelID, renderer);
         l4 = false;
     }
     else if (LoaderEnabled && l3) {
-        Level3(LevelID);
+        Level3(LevelID, renderer);
         l3 = false;
     }
     else if (LoaderEnabled && l2) {
-        Level2(LevelID);
+        Level2(LevelID, renderer);
         l2 = false;
     }
     return;   
 }
 
-void Game::Level2(int& LevelID) { 
+void Game::Level2(int& LevelID, SDL_Renderer* renderer) { 
 
 
     RemoveOverlayObject();
@@ -944,7 +942,7 @@ void Game::Level2(int& LevelID) {
     ObjectProperties Barrier = { 530, 200, 100, 300 };
 
 
-    if (!MakeLevel("LevelTwo", "Images/Level2.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
+    if (!MakeLevel("LevelTwo", "Images/Level2.png", LevelID, -30, 570, -4, 410, renderer)) { // left, right, upper, down
         std::cerr << "Couldn't create Level two!" << std::endl;
         return;
     }
@@ -976,11 +974,11 @@ void Game::RemoveOverlayObject() {
     }
 }
 
-void Game::Level3(int& LevelID) {
+void Game::Level3(int& LevelID, SDL_Renderer* renderer) {
     RemoveOverlayObject();
     ObjectProperties Barrier = { 0, -50, 250, 50 };
 
-    if (!MakeLevel("LevelThree", "Images/Level3.png", LevelID, -30, 530, -100, 410)) { // left, right, upper, down
+    if (!MakeLevel("LevelThree", "Images/Level3.png", LevelID, -30, 530, -100, 410, renderer)) { // left, right, upper, down
         std::cerr << "Couldn't create Level three!" << std::endl;
         return;
     }
@@ -999,9 +997,9 @@ void Game::Level3(int& LevelID) {
     }
 }
 
-void Game::Level4(int& LevelID) {
+void Game::Level4(int& LevelID, SDL_Renderer* renderer) {
     RemoveOverlayObject();
-    if (!MakeLevel("LevelFour", "Images/Level4.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
+    if (!MakeLevel("LevelFour", "Images/Level4.png", LevelID, -30, 570, -4, 410, renderer)) { // left, right, upper, down
         std::cerr << "Couldn't create Level four!" << std::endl;
         return;
     }
@@ -1034,9 +1032,9 @@ void Game::Level4(int& LevelID) {
     }
 }
 
-void Game::Level5(int& LevelID) {
+void Game::Level5(int& LevelID, SDL_Renderer* renderer) {
     RemoveOverlayObject();
-    if (!MakeLevel("LevelFive", "Images/Level5.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
+    if (!MakeLevel("LevelFive", "Images/Level5.png", LevelID, -30, 570, -4, 410, renderer)) { // left, right, upper, down
         std::cerr << "Couldn't create Level five!" << std::endl;
         return;
     }
@@ -1074,9 +1072,9 @@ void Game::Level5(int& LevelID) {
     }
 }
 
-void Game::Level6(int& LevelID) {
+void Game::Level6(int& LevelID, SDL_Renderer* renderer) {
     RemoveOverlayObject();
-    if (!MakeLevel("LevelSix", "Images/Level6.png", LevelID, -30, 570, -4, 410)) { // left, right, upper, down
+    if (!MakeLevel("LevelSix", "Images/Level6.png", LevelID, -30, 570, -4, 410, renderer)) { // left, right, upper, down
         std::cerr << "Couldn't create Level six!" << std::endl;
         return;
     }
@@ -1120,9 +1118,9 @@ void Game::Level6(int& LevelID) {
     }
 }
 
-void Game::Level7(int& LevelID) {
+void Game::Level7(int& LevelID, SDL_Renderer* renderer) {
     RemoveOverlayObject();
-    if (!MakeLevel("LevelSeven", "Images/Level7.png", LevelID, -30, 530, -100, 410)) { // left, right, upper, down
+    if (!MakeLevel("LevelSeven", "Images/Level7.png", LevelID, -30, 530, -100, 410, renderer)) { // left, right, upper, down
         std::cerr << "Couldn't create Level seven!" << std::endl;
         return;
     }
@@ -1143,9 +1141,9 @@ void Game::Level7(int& LevelID) {
     }
 }
 
-void Game::Level8(int& LevelID) {
+void Game::Level8(int& LevelID, SDL_Renderer* renderer) {
     RemoveOverlayObject();
-    if (!MakeLevel("LevelEight", "Images/Level8.png", LevelID, -30, 530, 0, 530)) { // left, right, upper, down
+    if (!MakeLevel("LevelEight", "Images/Level8.png", LevelID, -30, 530, 0, 530, renderer)) { // left, right, upper, down
         std::cerr << "Couldn't create Level eight!" << std::endl;
         return;
     }
@@ -1176,9 +1174,9 @@ void Game::Level8(int& LevelID) {
     }
 }
 
-void Game::Level9(int& LevelID) {
+void Game::Level9(int& LevelID, SDL_Renderer* renderer) {
     RemoveOverlayObject();
-    if (!MakeLevel("LevelNine", "Images/Level7.png", LevelID, -100, 530, 0, 410)) { // left, right, upper, down
+    if (!MakeLevel("LevelNine", "Images/Level7.png", LevelID, -100, 530, 0, 410, renderer)) { // left, right, upper, down
         std::cerr << "Couldn't create Level nine!" << std::endl;
         return;
     }
@@ -1213,8 +1211,8 @@ void Game::Level9(int& LevelID) {
     }
 }
 
-void Game::Level10p1(int& LevelID) {
-    if (!MakeLevel("LevelTenp1", "Images/Level10p1.png", LevelID, -30, 530, 0, 410)) { // left, right, upper, down
+void Game::Level10p1(int& LevelID, SDL_Renderer* renderer) {
+    if (!MakeLevel("LevelTenp1", "Images/Level10p1.png", LevelID, -30, 530, 0, 410, renderer)) { // left, right, upper, down
         std::cerr << "Couldn't create Level ten!" << std::endl;
         return;
     }
@@ -1234,8 +1232,8 @@ void Game::Level10p1(int& LevelID) {
     }
 }
 
-void Game::Level10p2(int& LevelID) {
-    if (!MakeLevel("LevelTenp2", "Images/Level10p2.png", LevelID, -30, 530, -100, 410)) { // left, right, upper, down
+void Game::Level10p2(int& LevelID, SDL_Renderer* renderer) {
+    if (!MakeLevel("LevelTenp2", "Images/Level10p2.png", LevelID, -30, 530, -100, 410, renderer)) { // left, right, upper, down
         std::cerr << "Couldn't create Level ten!" << std::endl;
         return;
     }
@@ -1271,9 +1269,9 @@ void Game::Level10p2(int& LevelID) {
 }
 
 
-void Game::Level11(int& LevelID) {
+void Game::Level11(int& LevelID, SDL_Renderer* renderer) {
     RemoveOverlayObject();
-    if (!MakeLevel("Level11", "Images/Level11.png", LevelID, -30, 530, -100, 410)) { // left, right, upper, down
+    if (!MakeLevel("Level11", "Images/Level11.png", LevelID, -30, 530, -100, 410, renderer)) { // left, right, upper, down
         std::cerr << "Couldn't create Level eleven!" << std::endl;
         return;
     }
@@ -1304,10 +1302,10 @@ void Game::Level11(int& LevelID) {
 }
 
 
-void Game::Level12(int& LevelID) {
+void Game::Level12(int& LevelID, SDL_Renderer* renderer) {
     RemoveOverlayObject();
 
-    if (!MakeLevel("Level12", "Images/Level12.png", LevelID, -30, 530, -100, 410)) { // left, right, upper, down
+    if (!MakeLevel("Level12", "Images/Level12.png", LevelID, -30, 530, -100, 410, renderer)) { // left, right, upper, down
         std::cerr << "Couldn't create Level eleven!" << std::endl;
         return;
     }
@@ -1350,9 +1348,9 @@ void Game::Level12(int& LevelID) {
     }
 }
 
-void Game::Level13(int& LevelID) {
+void Game::Level13(int& LevelID, SDL_Renderer* renderer) {
 
-    if (!MakeLevel("Level13", "Images/Level13.png", LevelID, -30, 530, 0, 410)) { // left, right, upper, down
+    if (!MakeLevel("Level13", "Images/Level13.png", LevelID, -30, 530, 0, 410, renderer)) { // left, right, upper, down
         std::cerr << "Couldn't create Level eleven!" << std::endl;
         return;
     }
@@ -1433,9 +1431,9 @@ bool Game::MakeBullet(int speed, int damage, int startx, int starty) {
 }
 
 bool Game::MakeLevel(std::string levelname, const char* backgroundimagepath, int& LevelID,
-    int lb, int rb, int ub, int lwb) {
+    int lb, int rb, int ub, int lwb, SDL_Renderer* renderer) {
     try {
-        auto level = std::make_shared<Level>(levelname, backgroundimagepath, lb, rb, ub, lwb);
+        auto level = std::make_shared<Level>(levelname, backgroundimagepath, lb, rb, ub, lwb, renderer);
         Levels.push_back(std::move(level)); 
         LevelID = Levels.size() - 1; // needs to be changed for level loader
         return true;
@@ -1510,7 +1508,7 @@ bool Game::LoadAssets(SDL_Renderer* renderer, int& LevelID) {
         return false;
     }
 
-    if (!MakeLevel("LevelOne", "Images/Level1.png", LevelID, -30, 530, -100, 410)) { // l, r, u, b
+    if (!MakeLevel("LevelOne", "Images/Level1.png", LevelID, -30, 530, -100, 410, renderer)) { // l, r, u, b
         std::cerr << "Couldn't create Level one!" << std::endl;
         return false;
     }

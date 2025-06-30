@@ -105,7 +105,7 @@ void GameEngine::GameLoop() {
 
     while (running) {
         frameStart = SDL_GetTicks(); // start of frame
-        game->UserInput(running, keyboardState, LevelID);
+        game->UserInput(running, keyboardState, LevelID, renderer);
         game->LoadLevel(e, renderer, LevelID);
         game->HandleEvents(e, running, renderer, LevelID);
         game->CheckPlayerStatus(LevelID, running, renderer);
@@ -114,9 +114,22 @@ void GameEngine::GameLoop() {
         // CheckLevelID(); uncomment when debugging
 
         SDL_RenderClear(renderer);
-        game->GetLevel(LevelID)->RenderLevel(renderer); // renders gameobject as well
+
+
+
+
+        game->GetLevel(LevelID)->RenderLevel(renderer); 
+
+
+
         game->GetPlayer(0)->RenderPlayer(renderer); 
+
+
         game->GetPlayer(0)->RenderPlayerHP(renderer);
+
+
+
+
         if (game->GetOverlayObjectSize() > 0) {
             game->GetOverlayObject(0)->RenderOverlayObject(renderer);
         }
@@ -124,7 +137,10 @@ void GameEngine::GameLoop() {
             game->GetBullet(0)->RenderBullet(renderer);
         }
 
-        game->ChangeLevel(LevelID);
+        game->ChangeLevel(LevelID, renderer);
+
+
+
         SDL_RenderPresent(renderer);
         game->DisplayMessages(renderer); 
         frameTime = SDL_GetTicks() - frameStart;  // time taken for this frame to have been rendered
