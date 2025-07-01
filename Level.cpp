@@ -19,7 +19,7 @@ void Level::RenderLevel(SDL_Renderer* renderer) { // this will be used to render
 
 	// renders gameobjects, barriers and enemies if the vector sizes are above 0
 
-	if (GameObjects.size() > 0) {
+	if (GameObjects.size() > 0) { // updates all these as well
 		for (auto& gameobject : GameObjects) {
 			gameobject->RenderGameObject(renderer);
 		}

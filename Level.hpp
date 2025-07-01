@@ -52,7 +52,6 @@ public:
         }
 
         BackgroundTexture = SDL_CreateTextureFromSurface(RENDERER, SURFACE);
-        SDL_FreeSurface(SURFACE);
         if (!BackgroundTexture) {
             std::cerr << "SDL_CreateTexture Error: " << SDL_GetError() << std::endl;
             return;
@@ -62,6 +61,7 @@ public:
 
 
     ~Level() {
+        SDL_FreeSurface(SURFACE);
         SDL_DestroyTexture(BackgroundTexture);
     }
 
