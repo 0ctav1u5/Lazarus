@@ -24,6 +24,18 @@ public:
 		PosX(posx), PosY(posy), IMAGEPATH(imagepath), SPEED(speed) {
 		SURFACE = IMG_Load(IMAGEPATH);
 	}
+
+	~Player() {
+		if (SURFACE) {
+			SDL_FreeSurface(SURFACE);
+		}
+		if (texture) {
+			SDL_DestroyTexture(texture);
+		}
+	}
+
+
+
 	void SetX(int x);
 	void SetY(int y);
 	int GetX();

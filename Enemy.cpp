@@ -78,4 +78,8 @@ bool& Enemy::GetStationary() {
 	return this->STATIONARY;
 }
 
+void Enemy::SetHealth(int newHP) {
+	this->HP = newHP;
+}
+
 

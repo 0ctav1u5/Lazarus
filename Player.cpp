@@ -147,28 +147,36 @@ void Player::RenderPlayer(SDL_Renderer* renderer) {
 
 void Player::RenderPlayerHP(SDL_Renderer* renderer) {
 	TTF_Font* font = TTF_OpenFont("Fonts/Vipnagorgialla Rg.otf", 24);
-
-	int localHP = this->HP;
-	std::string HPstring = std::to_string(localHP);
-	const char* cstr = HPstring.c_str();
-
-	SDL_Color textColour = { 255, 0, 0 }; // red
-
-	SDL_Texture* HPtexture = nullptr;
-	SDL_Surface* HPSurface = TTF_RenderText_Solid(font, cstr, textColour); // font, text, colour
-
-	if (HPSurface) {
-		HPtexture = SDL_CreateTextureFromSurface(renderer, HPSurface);
-		SDL_FreeSurface(HPSurface);
-	}
-	else {
-		std::cerr << "Text render error: " << TTF_GetError() << std::endl;
+	if (!font) {
+		std::cerr << "Font load error: " << TTF_GetError() << std::endl;
 		return;
 	}
 
-	// rectangle size determines text size
-	SDL_Rect HealthBar = { 10, 440, 50, 40 }; // size of rectangle
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // colour of rectangle
+	int localHP = this->HP;
+	std::string HPstring = std::to_string(localHP);
+	SDL_Color textColour = { 255, 0, 0 }; 
+
+	SDL_Surface* HPSurface = TTF_RenderText_Solid(font, HPstring.c_str(), textColour);
+	if (!HPSurface) {
+		std::cerr << "Text render error: " << TTF_GetError() << std::endl;
+		TTF_CloseFont(font);
+		return;
+	}
+
+	SDL_Texture* HPtexture = SDL_CreateTextureFromSurface(renderer, HPSurface);
+	SDL_FreeSurface(HPSurface);
+
+	if (!HPtexture) {
+		std::cerr << "Texture creation error: " << SDL_GetError() << std::endl;
+		TTF_CloseFont(font);
+		return;
+	}
+
+	SDL_Rect HealthBar = { 5, 455, 50, 40 };
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_RenderFillRect(renderer, &HealthBar);
 	SDL_RenderCopy(renderer, HPtexture, nullptr, &HealthBar);
+
+	SDL_DestroyTexture(HPtexture);
+	TTF_CloseFont(font);
 }

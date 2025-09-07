@@ -40,6 +40,7 @@ public:
 
 	void FlipTexture();
 	void SetTexture(const char* imagepath);
+	void LoadGameObject(SDL_Renderer* renderer);
 	void RenderGameObject(SDL_Renderer* renderer);
 	std::string GetName();
 	bool GetCanDamage();

@@ -39,10 +39,10 @@ void GameObject::RenderGameObject(SDL_Renderer* renderer) {
 		}
 		if (texture) { // if texture does exist then execute this condition
 			SDL_RenderCopy(renderer, texture, nullptr, &rect);
-			return; // prevents drawing over the texture with the black rectangle
+			return; 
 		}
 	}
-	else { // TODO: have this be for collectible items instead of clicking save button
+	else { 
 		if (SURFACE) {
 			SDL_FreeSurface(SURFACE);
 		}
